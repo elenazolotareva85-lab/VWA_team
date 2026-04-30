@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Analytics Dashboard | Аналіз Команди</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #0a0e1a;
+            --color-surface: #141826;
+            --color-surface-elevated: #1e2333;
+            --color-border: #2a3142;
+            --color-primary: #3b82f6;
+            --color-secondary: #8b5cf6;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-text-primary: #f8fafc;
+            --color-text-secondary: #94a3b8;
+            --color-text-muted: #64748b;
+            
+            --color-iq-high: #10b981;
+            --color-iq-medium: #3b82f6;
+            --color-iq-low: #f59e0b;
+            
+            --color-hunter: #ef4444;
+            --color-farmer: #10b981;
+            --color-universal: #8b5cf6;
+            
+            --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-main);
+            background: var(--color-bg);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Background Pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Header */
+        .header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .header p {
+            color: var(--color-text-secondary);
+            font-size: 1.125rem;
+        }
+        
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 0.5rem;
+            background: var(--color-surface);
+            border-radius: 12px;
+            border: 1px solid var(--color-border);
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            color: var(--color-text-secondary);
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-tab:hover {
+            background: var(--color-surface-elevated);
+            color: var(--color-text-primary);
+        }
+        
+        .nav-tab.active {
+            background: var(--color-primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+        
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-text-primary);
+        }
+        
+        /* Team Overview Grid */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .member-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .member-card:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .member-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .member-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .member-info h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .member-type {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .type-hunter {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--color-hunter);
+        }
+        
+        .type-farmer {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--color-farmer);
+        }
+        
+        .type-universal {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--color-universal);
+        }
+        
+        .type-developing {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--color-warning);
+        }
+        
+        /* Metrics */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .metric {
+            text-align: center;
+        }
+        
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            font-family: var(--font-mono);
+        }
+        
+        .metric-value.iq-high { color: var(--color-iq-high); }
+        .metric-value.iq-medium { color: var(--color-iq-medium); }
+        .metric-value.iq-low { color: var(--color-iq-low); }
+        
+        /* Progress Bars */
+        .progress-group {
+            margin-top: 1rem;
+        }
+        
+        .progress-item {
+            margin-bottom: 1rem;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .progress-bar-container {
+            height: 8px;
+            background: var(--color-surface-elevated);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s ease;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+        }
+        
+        /* Alerts/Warnings */
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+        }
+        
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--color-warning);
+        }
+        
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--color-danger);
+        }
+        
+        .alert-icon {
+            font-size: 1.25rem;
+        }
+        
+        /* Team Analysis Section */
+        .analysis-section {
+            margin-bottom: 2rem;
+        }
+        
+        .analysis-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--color-text-primary);
+        }
+        
+        .strength-item, .weakness-item {
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .strength-item {
+            background: rgba(16, 185, 129, 0.1);
+            border-left-color: var(--color-success);
+        }
+        
+        .weakness-item {
+            background: rgba(239, 68, 68, 0.1);
+            border-left-color: var(--color-danger);
+        }
+        
+        .item-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .item-description {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        /* Roadmap */
+        .roadmap {
+            position: relative;
+        }
+        
+        .roadmap-item {
+            position: relative;
+            padding-left: 2.5rem;
+            padding-bottom: 2rem;
+        }
+        
+        .roadmap-item::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--color-border);
+        }
+        
+        .roadmap-item:last-child::before {
+            display: none;
+        }
+        
+        .roadmap-dot {
+            position: absolute;
+            left: 0;
+            top: 0.25rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 50%;
+            background: var(--color-primary);
+            border: 3px solid var(--color-surface);
+        }
+        
+        .roadmap-content {
+            background: var(--color-surface-elevated);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--color-border);
+        }
+        
+        .roadmap-title {
+            font-weight: 700;
+            font-size: 1.125rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .roadmap-description {
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        /* Recommendations */
+        .recommendations {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        .recommendation-card {
+            background: var(--color-surface-elevated);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--color-border);
+        }
+        
+        .recommendation-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .recommendation-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .recommendation-text {
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--color-surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--color-border);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            font-family: var(--font-mono);
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            color: var(--color-text-muted);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.5rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 HR Analytics Dashboard</h1>
+            <p>Глибокий аналіз команди • Психометрична оцінка • Дорожня карта розвитку</p>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('overview')">🏠 Огляд команди</button>
+            <button class="nav-tab" onclick="showTab('strengths')">💪 Сильні сторони</button>
+            <button class="nav-tab" onclick="showTab('development')">📈 Зони розвитку</button>
+            <button class="nav-tab" onclick="showTab('ceo')">👔 Для CEO</button>
+            <button class="nav-tab" onclick="showTab('teamlead')">🎯 Для Team Lead</button>
+            <button class="nav-tab" onclick="showTab('roadmap')">🗺️ Дорожня карта</button>
+        </div>
+        
+        <!-- Tab: Overview -->
+        <div id="overview" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">Членів команди</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">110</div>
+                    <div class="stat-label">Середній IQ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">49</div>
+                    <div class="stat-label">Середній DAA</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">57%</div>
+                    <div class="stat-label">У стресі (тимчасово)</div>
+                </div>
+            </div>
+            
+            <div class="team-grid" id="teamGrid">
+                <!-- Team members will be inserted here by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Tab: Strengths -->
+        <div id="strengths" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">💪 Сильні сторони команди</h2>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="strength-item">
+                        <div class="item-title">🧠 Інтелектуальний потенціал</div>
+                        <div class="item-description">
+                            <strong>Богдана Лозинська (IQ 141)</strong> — інтелектуальна зірка команди з виняткими аналітичними здібностями. Здатна швидко опановувати складні концепції та знаходити нестандартні рішення.
+                        </div>
+                    </div>
+                    
+                    <div class="strength-item">
+                        <div class="item-title">👥 Експеримент: "Команда на два голоси"</div>
+                        <div class="item-description">
+                            <strong>Єлизавета Мельничук (Розуміння 70) + Олександр Дорош (Енергія 70)</strong> — ідеальна комплементарна пара для роботи в тандемі.
+                            <br><br>
+                            <strong>Формат експерименту (1 місяць):</strong> Плотна зв'язка, робота РАЗОМ над кожним клієнтом "на два голоси":
+                            <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                                <li>Олександр відкриває діалог, створює першу точку контакту (висока енергія)</li>
+                                <li>Єлизавета заглиблює відносини, розуміє потреби (висока емпатія)</li>
+                                <li>Разом закривають угоди — один напір, інша турбота</li>
+                            </ul>
+                            <br>
+                            <strong>Очікуваний результат:</strong> Збільшення конверсії на 25-40% + вищий рівень утримання клієнтів.
+                        </div>
+                    </div>
+                    
+                    <div class="strength-item">
+                        <div class="item-title">⚡ Енергія та драйв</div>
+                        <div class="item-description">
+                            <strong>Олександр Дорош (Енергія 70)</strong> — класичний "хантер", який не боїться холодних дзвінків та активних продажів. Високий рівень напористості для закриття угод.
+                        </div>
+                    </div>
+                    
+                    <div class="strength-item">
+                        <div class="item-title">💎 Прихований скарб: Ірина Макаро</div>
+                        <div class="item-description">
+                            <strong>IQ 116 + DAA 70</strong> — найбільш збалансований профіль у команді. Вона розумна (вище середнього) ТА дисциплінована (висока здатність слідувати інструкціям). 
+                            <br><br>
+                            <strong>Критично важливо:</strong> Її "розсіяність" у тесті SalesStar — це НЕ характер, а ТИМЧАСОВА реакція на кризу. DAA 70 доводить: за природою вона структурна та надійна.
+                            <br><br>
+                            <strong>Потенціал:</strong> При правильному менторингу може стати головним ментором по адаптації нових співробітників. Вона має той баланс "розум + система", якого бракує іншим.
+                        </div>
+                    </div>
+                    
+                    <div class="strength-item">
+                        <div class="item-title">📋 Виконавча дисципліна</div>
+                        <div class="item-description">
+                            <strong>Ірина Макаро, Іван Вишинський, Олександр Дорош (DAA 69-70)</strong> — здатність чітко слідувати інструкціям та процедурам. Ідеальні для ролей, де потрібна точність та системність.
+                        </div>
+                    </div>
+                    
+                    <div class="strength-item">
+                        <div class="item-title">🎓 Потенціал для зростання</div>
+                        <div class="item-description">
+                            <strong>Іван Вишинський, Прохор Лісовий, Ірина Макаро (IQ 115-117)</strong> — трійця з високим когнітивним ресурсом. При правильному менторингу можуть стати топ-перформерами.
+                        </div>
+                    </div>
+                    
+                    <div class="strength-item">
+                        <div class="item-title">👑 Лідерський потенціал: Юлія Бондар</div>
+                        <div class="item-description">
+                            <strong>DAA 25 + позиція CEO</strong> — не баг, а фіча для ролі демлідера!
+                            <br><br>
+                            <strong>Чому низький DAA це ПЛЮС для лідера:</strong>
+                            <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                                <li>Не прив'язана до чужих правил → створює СВОЇ</li>
+                                <li>Креативний підхід до проблем → нестандартні рішення</li>
+                                <li>Не боїться експериментувати → драйвер інновацій</li>
+                                <li>Природна незалежність → сильна позиція в переговорах</li>
+                            </ul>
+                            <br>
+                            <strong>Модель успіху:</strong> Юлія = Візіонер + Натхнення. Помічник (DAA 60+) = Виконання + Система.
+                            <br><br>
+                            <strong>Приклади з історії:</strong> Стів Джобс (візіонер) + Тім Кук (операціоніст) = Apple. Ілон Маск (ідеї) + Гвінн Шотвелл (виконання) = SpaceX.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Development Areas -->
+        <div id="development" class="tab-content">
+            <div class="card" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3);">
+                <div class="card-header">
+                    <h2 class="card-title">🔥 ВАЖЛИВО: Стрес vs Характер</h2>
+                </div>
+                
+                <div style="padding: 1rem; line-height: 1.8;">
+                    <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+                        <strong>57% команди (Єлизавета, Богдана, Юлія, Ірина)</strong> мають маркер <span style="color: #f59e0b; font-weight: 700;">"⚠️ СТРЕС: Тимчасова дестабілізація"</span> у тестах SalesStar.
+                    </p>
+                    
+                    <p style="margin-bottom: 1rem;">
+                        <strong style="color: #f59e0b;">Це означає:</strong> Їхні результати тестування показують НЕ справжній характер, а ПОТОЧНИЙ стан під впливом кризи/проблеми/тиску.
+                    </p>
+                    
+                    <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #10b981;">
+                        <strong>Гарна новина:</strong> Стрес — це ТИМЧАСОВО. Якщо знайти та усунути причину, через 2-3 місяці ви побачите ЗОВСІМ іншу команду з набагато вищими показниками.
+                    </div>
+                    
+                    <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid #ef4444;">
+                        <strong>Погана новина:</strong> Якщо ігнорувати — втратите 4 цінних співробітників протягом 6 місяців (звільнення або вигорання).
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📈 Зони розвитку та ризики</h2>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="weakness-item">
+                        <div class="item-title">⚠️ КРИТИЧНО: Масовий стрес команди (57% = 4 з 7)</div>
+                        <div class="item-description">
+                            <strong>Єлизавета, Богдана, Юлія, Ірина</strong> — усі мають маркер "⚠️ СТРЕС: Тимчасова дестабілізація" у тестах.
+                            <br><br>
+                            <strong>ВАЖЛИВО:</strong> Це НЕ їхній справжній характер! Тести показують ПОТОЧНИЙ стан під тиском кризи/проблеми. Їхні справжні здібності замасковані стресом.
+                            <br><br>
+                            <strong>Докази тимчасовості:</strong>
+                            <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                                <li><strong>Ірина:</strong> DAA 70 (висока дисципліна) суперечить "розсіяності" → це стрес, не характер</li>
+                                <li><strong>Єлизавета:</strong> Розуміння 70 (емпатія) + стрес → може бути топ-фермером після кризи</li>
+                                <li><strong>Богдана:</strong> IQ 141 + низька енергія → блокована депресією/кризою</li>
+                                <li><strong>Юлія:</strong> Низький DAA постійний, але стрес посилює все інше</li>
+                            </ul>
+                            <br>
+                            <strong>Що робити:</strong> Це НЕ індивідуальна проблема — це СИСТЕМНА криза. Терміновий аудит: що відбувається в компанії? Який тиск? Які проблеми?
+                            <br><br>
+                            <strong>Прогноз:</strong> Якщо усунути причину стресу — побачите ЗОВСІМ іншу команду через 2-3 місяці.
+                        </div>
+                    </div>
+                    
+                    <div class="weakness-item">
+                        <div class="item-title">🎯 Богдана Лозинська — "Геній під тиском"</div>
+                        <div class="item-description">
+                            <strong>IQ 141 + DAA 10 + СТРЕС</strong> — найскладніший випадок у команді.
+                            <br><br>
+                            <strong>Базовий профіль:</strong> Вона геніальна, але ФІЗИЧНО не здатна слідувати чужим інструкціям (DAA 10). Це її природа, не баг.
+                            <br><br>
+                            <strong>Поточний стан:</strong> Додайте до цього серйозну кризу/стрес → отримаєте повну блокаду потенціалу. Енергія 45, Розуміння 20 — це НЕ норма для IQ 141.
+                            <br><br>
+                            <strong>Що це означає:</strong> Зараз вона працює на 10-15% від свого потенціалу. Це як Ferrari, що стоїть у гаражі з пробитим колесом.
+                            <br><br>
+                            <strong>План дій:</strong>
+                            <ol style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                                <li>Особиста розмова: "Що сталося? Як допомогти?"</li>
+                                <li>Усунути джерело стресу (можливо, зміна проєкту/ролі)</li>
+                                <li>Дати ПОВНУ автономію та складну задачу</li>
+                                <li>Через місяць повторне тестування</li>
+                            </ol>
+                            <br>
+                            <strong>Прогноз:</strong> Без стресу + правильна роль = ваша найсильніша гравчиня. Зі стресом + мікроменеджмент = звільнення через 3 місяці.
+                        </div>
+                    </div>
+                    
+                    <div class="weakness-item">
+                        <div class="item-title">📉 Критично низький DAA — Тріо "анархістів"</div>
+                        <div class="item-description">
+                            <strong>Богдана (10), Прохор (18), Юлія (25)</strong> — троє людей, які практично не можуть працювати за інструкціями. Це 43% команди!
+                            <br><br>
+                            <strong>Проблема:</strong> Якщо ваша культура побудована на "чітких скриптах" та "покрокових процесах" — вони будуть саботувати (навіть ненавмисно).
+                            <br><br>
+                            <strong>Рішення:</strong> Створити окремий "креативний підрозділ" з автономією. Або звільнити всіх трьох. Спроби "навчити дисципліни" — марні.
+                        </div>
+                    </div>
+                    
+                    <div class="weakness-item">
+                        <div class="item-title">🔻 Когнітивні обмеження</div>
+                        <div class="item-description">
+                            <strong>Олександр Дорош (IQ 90), Юлія Бондар (IQ 96)</strong> — будуть мати труднощі з аналітичними задачами та швидким навчанням нового. Потребують більше часу та практики для опанування навичок.
+                        </div>
+                    </div>
+                    
+                    <div class="weakness-item">
+                        <div class="item-title">⚡ Дефіцит справжніх "хантерів"</div>
+                        <div class="item-description">
+                            <strong>Лише 1 з 7</strong> має профіль активного продавця. Команда схильна до пасивних продажів та очікування вхідних запитів. Це проблема для агресивного росту.
+                        </div>
+                    </div>
+                    
+                    <div class="weakness-item">
+                        <div class="item-title">⚖️ Дисбаланс: 43% команди = "Креативні анархісти"</div>
+                        <div class="item-description">
+                            <strong>3 з 7 людей (Богдана, Прохор, Юлія)</strong> мають DAA нижче 25. Це означає, що майже половина команди не може працювати в жорстko структурованому середовищі.
+                            <br><br>
+                            <strong>Питання до керівництва:</strong> Чи готові ви створити "креативний підрозділ" з автономією? Або ви хочете традиційну структуру, де всі йдуть в ногу? Компроміс неможливий — треба обрати одне з двох.
+                        </div>
+                    </div>
+                    
+                    <div class="weakness-item">
+                        <div class="item-title">👑 Юлія як CEO: Потреба в систематизації</div>
+                        <div class="item-description">
+                            <strong>Поточна ситуація:</strong> Юлія — CEO з DAA 25. Вона має бачення та лідерські якості, але їй бракує системності для операційного управління.
+                            <br><br>
+                            <strong>Ризик БЕЗ помічника:</strong>
+                            <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                                <li>Хаос у процесах та невиконання обіцянок</li>
+                                <li>Втрата довіри команди через непослідовність</li>
+                                <li>Вигорання Юлії від рутини та деталей</li>
+                                <li>Конфлікти через забуті домовленості</li>
+                            </ul>
+                            <br>
+                            <strong>Рішення — модель "Візіонер + Систематизатор":</strong>
+                            <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                                <li><strong>Юлія (CEO + Демлідер):</strong> стратегія, культура, мотивація, ключові рішення, зовнішні комунікації</li>
+                                <li><strong>Помічник (DAA 60+):</strong> структурування ідей, контроль виконання, CRM, документація, календар, нагадування</li>
+                            </ul>
+                            <br>
+                            <strong>Хто може бути помічником:</strong> Іван (DAA 69, IQ 117) або зовнішній найм з профілем "виконавець-систематизатор".
+                            <br><br>
+                            <strong>Важливо:</strong> Це НЕ "няня для некомпетентного CEO". Це класична модель "Візіонер + Операціоніст", яка працює в найуспішніших компаніях світу.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: For CEO -->
+        <div id="ceo" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">👔 Рекомендації для CEO</h2>
+                </div>
+                
+                <div class="recommendations">
+                    <div class="recommendation-card">
+                        <div class="recommendation-icon">🚨</div>
+                        <div class="recommendation-title">Термінова антистресова інтервенція</div>
+                        <div class="recommendation-text">
+                            57% команди (4 з 7) у стані ТИМЧАСОВОГО стресу. Їхні тести показують не справжній характер, а реакцію на кризу. Через 2-3 місяці після усунення причини стресу — побачите ЗОВСІМ іншу команду. Питання: що їх так "накрило" одночасно?
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-card">
+                        <div class="recommendation-icon">💎</div>
+                        <div class="recommendation-title">Богдана: "Загнаний геній"</div>
+                        <div class="recommendation-text">
+                            IQ 141 + DAA 10 = людина, яка може вирішити будь-яку проблему, але ТІЛЬКИ своїм способом. Їй потрібен окремий проєкт з ПОВНОЮ автономією. Створіть для неї роль "внутрішнього консультанта" або "стратега", де вона сама вирішує "як".
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-card">
+                        <div class="recommendation-icon">🎯</div>
+                        <div class="recommendation-title">Ірина: Ментор по адаптації</div>
+                        <div class="recommendation-text">
+                            IQ 116 + DAA 70 — це ідеальний баланс: розумна та виконавча. Вона може стати вашим головним ментором для адаптації нових співробітників. Потребує менторства та віри у її потенціал.
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-card">
+                        <div class="recommendation-icon">🎯</div>
+                        <div class="recommendation-title">Переглянути KPI</div>
+                        <div class="recommendation-text">
+                            Якщо 71% команди в кризі, можливо, проблема не в людях, а в метриках/навантаженні. Перевірте: чи реалістичні цілі? Чи є підтримка? Чи адекватна компенсація?
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-card">
+                        <div class="recommendation-icon">🔄</div>
+                        <div class="recommendation-title">Експеримент: Команда на два голоси</div>
+                        <div class="recommendation-text">
+                            Єлизавета (Фермер, Розуміння 70) + Олександр (Хантер, Енергія 70) = плотна зв'язка для роботи в парі. Експеримент на 1 місяць: працюють разом над кожним клієнтом "на два голоси". Це збільшить конверсію та утримання.
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-card">
+                        <div class="recommendation-icon">📊</div>
+                        <div class="recommendation-title">Інвестиції в навчання</div>
+                        <div class="recommendation-text">
+                            Іван, Прохор, Ірина (IQ 115-117) — це ваш резерв лідерів. Інвестуйте в їхнє навчання зараз, і через 6 місяців вони замінять будь-кого з топ-менеджменту.
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-card">
+                        <div class="recommendation-icon">⚖️</div>
+                        <div class="recommendation-title">Юлія: CEO + Демлідер</div>
+                        <div class="recommendation-text">
+                            DAA 25 означає креативність без системності. Вивести Юлю на роль демлідера (управління командою), але дати їй помічника для систематизації. Вона генерує ідеї та мотивує — помічник структурує та контролює виконання.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: For Team Lead -->
+        <div id="teamlead" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🎯 Інструкції для Team Lead</h2>
+                </div>
+                
+                <div class="analysis-section">
+                    <h3 style="margin-bottom: 1rem; color: var(--color-primary);">📋 Щоденне управління</h3>
+                    
+                    <div class="roadmap-item">
+                        <div class="roadmap-dot"></div>
+                        <div class="roadmap-content">
+                            <div class="roadmap-title">Єлизавета Мельничук — "Фермер під тиском"</div>
+                            <div class="roadmap-description">
+                                <strong>⚠️ СТРЕС:</strong> Зараз у кризі — тести показують тимчасову дестабілізацію, НЕ справжній характер!<br><br>
+                                <strong>Справжній профіль:</strong> Розуміння 70 (топова емпатія) + IQ 107 (нормальний) + DAA 67 (прийнятна дисципліна) = природний "фермер".<br><br>
+                                <strong>Як керувати ЗАРАЗ:</strong> Максимально м'яко, як психолог. Зниження навантаження на 30-40% до виходу з кризи.<br>
+                                <strong>Перший крок:</strong> "Лізо, я бачу, що ти не в собі. Що сталося? Як можу допомогти?"<br>
+                                <strong>Мотивація:</strong> Емоційна підтримка, похвала за якість (не кількість), визнання експертності.<br>
+                                <strong>Контроль:</strong> Мінімальний. Раз на тиждень неформально (кава).<br>
+                                <strong>Задачі ЗАРАЗ:</strong> Тільки існуючі клієнти, утримання, VIP. НІЯКИХ холодних дзвінків!<br>
+                                <strong>НЕ давати:</strong> Нових лідів, агресивні KPI, публічну критику.<br><br>
+                                <strong>Прогноз:</strong> Коли стрес мине (2-3 місяці) — вона може стати вашим топ-фермером для великих клієнтів. Розуміння 70 — це рідкість!
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="roadmap-item">
+                        <div class="roadmap-dot"></div>
+                        <div class="roadmap-content">
+                            <div class="roadmap-title">Богдана Лозинська — "Геній-анархіст"</div>
+                            <div class="roadmap-description">
+                                <strong>Як керувати:</strong> НІЯК. Поставте задачу та зникніть. Будь-які спроби "направити" викличуть опір.<br>
+                                <strong>Формат:</strong> "Богдано, нам потрібно збільшити конверсію на 30%. Терміни — місяць. Як ти це зробиш — твоя справа. Питання?"<br>
+                                <strong>Мотивація:</strong> Складність задачі + повна автономія + визнання геніальності.<br>
+                                <strong>Контроль:</strong> ТІЛЬКИ дедлайн. Процес — ЗАБОРОНЕНО питати.<br>
+                                <strong>Задачі:</strong> Те, що ніхто інший не може/не хоче робити. Нестандартні кейси.<br>
+                                <strong>НЕ давати:</strong> Рутину, інструкції, "правильні способи".<br>
+                                <strong>⚠️ КРИТИЧНО:</strong> DAA 10 — вона ФІЗИЧНО не може слідувати вашим інструкціям. Навіть якщо ХОЧЕ. Її мозок так не працює. Прийміть це як факт.<br>
+                                <strong>Ризик:</strong> Якщо спробуєте її "виправити" — втратите геніальну співробітницю. Вона звільниться або вигорить.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="roadmap-item">
+                        <div class="roadmap-dot"></div>
+                        <div class="roadmap-content">
+                            <div class="roadmap-title">Олександр Дорош — "Хантер з обмеженнями"</div>
+                            <div class="roadmap-description">
+                                <strong>Як керувати:</strong> Чіткі інструкції, покрокові скрипти.<br>
+                                <strong>Мотивація:</strong> Бонуси за кількість, змагання, публічне визнання.<br>
+                                <strong>Контроль:</strong> Щоденно, короткі стендапи.<br>
+                                <strong>Задачі:</strong> Холодні дзвінки, масові розсилки, первинний контакт.<br>
+                                <strong>НЕ давати:</strong> Складну аналітику, довгі презентації, написання пропозицій.<br>
+                                <strong>⚠️ Увага:</strong> IQ 90 — потребує більше часу на навчання. Дайте готові шаблони та скрипти.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="roadmap-item">
+                        <div class="roadmap-dot"></div>
+                        <div class="roadmap-content">
+                            <div class="roadmap-title">Юлія Бондар — "CEO + Демлідер з помічником"</div>
+                            <div class="roadmap-description">
+                                <strong>⚠️ СТРЕС:</strong> Зараз у кризі — тести показують тимчасову дестабілізацію.<br><br>
+                                <strong>Базовий профіль:</strong> IQ 96 (достатньо) + DAA 25 (креативний хаос) = сильний ЛІДЕР, слабкий МЕНЕДЖЕР.<br><br>
+                                <strong>Нова роль:</strong> Демлідер (team lead) при збереженні позиції CEO.<br>
+                                <strong>Що це означає:</strong> Юлія фокусується на функціях управління командою:<br>
+                                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                    <li>Стратегічне бачення та цілі</li>
+                                    <li>Мотивація та натхнення команди</li>
+                                    <li>Формування культури та цінностей</li>
+                                    <li>Прийняття ключових рішень</li>
+                                    <li>Зовнішня комунікація (клієнти, партнери)</li>
+                                </ul><br>
+                                <strong>КРИТИЧНО: Призначити помічника!</strong> Хтось з DAA 60+ (наприклад, Іван або зовнішній найм), який буде:<br>
+                                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                    <li>Структурувати її ідеї у конкретні завдання</li>
+                                    <li>Контролювати виконання та дедлайни</li>
+                                    <li>Вести CRM, документацію, звітність</li>
+                                    <li>Організовувати зустрічі та календар</li>
+                                    <li>Бути "правою рукою" для деталей</li>
+                                </ul><br>
+                                <strong>Як керувати:</strong> НЕ керувати — вона ваш босс! Але підтримувати модель "Лідер + Систематизатор".<br>
+                                <strong>Мотивація:</strong> Свобода творити, довіра команди, визнання авторитету.<br>
+                                <strong>Контроль:</strong> Тільки через помічника — він слідкує за виконанням.<br>
+                                <strong>Задачі:</strong> Стратегічні, креативні, лідерські — НЕ операційні!<br>
+                                <strong>НЕ давати:</strong> Рутину, деталі, процеси, звітність.<br><br>
+                                <strong>Чому це працює:</strong> DAA 25 = вона НІКОЛИ не буде системною. Але вона може бути натхненним лідером. Помічник закриває слабкість, підсилює силу.<br>
+                                <strong>Прогноз:</strong> З помічником — ефективний CEO. Без помічника — хаос та вигорання.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="roadmap-item">
+                        <div class="roadmap-dot"></div>
+                        <div class="roadmap-content">
+                            <div class="roadmap-title">Ірина Макаро — "Ментор по адаптації"</div>
+                            <div class="roadmap-description">
+                                <strong>ВАЖЛИВО:</strong> IQ 116 + DAA 70 = ідеальний баланс розуму та дисципліни. Вона НЕ "розсіяна" за характером - це ТИМЧАСОВА криза!<br><br>
+                                <strong>Що сталося:</strong> Тест SalesStar показує "розсіяність та розгубленість", але DAA 70 доводить, що це НЕ її природа. Це реакція на якусь подію/проблему.<br><br>
+                                <strong>Як керувати:</strong> Як ментор та коуч. Спочатку - з'ясувати причину кризи.<br>
+                                <strong>Перший крок:</strong> Особиста розмова: "Що сталося? Я бачу, що ти не в собі. Це не схоже на тебе."<br>
+                                <strong>Нова роль:</strong> Ментор по адаптації нових співробітників. Дати їй 2-3 новачків під опіку.<br>
+                                <strong>Мотивація:</strong> Відповідальність за розвиток інших, довіра, визнання експертності.<br>
+                                <strong>Контроль:</strong> Регулярні 1-on-1 (раз на тиждень), конструктивний фідбек.<br>
+                                <strong>Задачі:</strong> Навчання новачків, створення адаптаційних матеріалів, підтримка в перші 3 місяці.<br>
+                                <strong>⚠️ Прогноз:</strong> Коли криза мине — вона стане вашою головною опорою в онбордингу. DAA 70 означає, що вона МОЖЕ і ХОЧЕ передавати систему іншим!
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="roadmap-item">
+                        <div class="roadmap-dot"></div>
+                        <div class="roadmap-content">
+                            <div class="roadmap-title">Іван Вишинський — "Надійний виконавець"</div>
+                            <div class="roadmap-description">
+                                <strong>Як керувати:</strong> Чітко та структуровано.<br>
+                                <strong>Мотивація:</strong> Стабільність, зрозумілість очікувань.<br>
+                                <strong>Контроль:</strong> Регулярні чек-поінти, чіткі дедлайни.<br>
+                                <strong>Задачі:</strong> Все, що потребує точності та системності.<br>
+                                <strong>⚠️ Увага:</strong> DAA 69 — може виконувати складні інструкції, але IQ 117 — може більше! Дайте можливість зростання.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="roadmap-item">
+                        <div class="roadmap-dot"></div>
+                        <div class="roadmap-content">
+                            <div class="roadmap-title">Прохор Лісовий — "Креативний хаос"</div>
+                            <div class="roadmap-description">
+                                <strong>Як керувати:</strong> Мінімально. Дайте мету та свободу.<br>
+                                <strong>Мотивація:</strong> Автономія, довіра, визнання унікальності.<br>
+                                <strong>Контроль:</strong> Тільки результат.<br>
+                                <strong>Задачі:</strong> Нестандартні кейси, де потрібна креативність.<br>
+                                <strong>НЕ давати:</strong> Рутину та чіткі скрипти.<br>
+                                <strong>⚠️ Увага:</strong> DAA 18 — він НІКОЛИ не буде слідувати інструкціям. Прийміть це та використайте як силу.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Roadmap -->
+        <div id="roadmap" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🗺️ Дорожня карта розвитку команди</h2>
+                </div>
+                
+                <div class="roadmap">
+                    <div class="roadmap-item">
+                        <div class="roadmap-dot" style="background: var(--color-danger);"></div>
+                        <div class="roadmap-content">
+                            <div class="roadmap-title">Тиждень 1-2: НЕГАЙНО — Діагностика та усунення джерела стресу</div>
+                            <div class="roadmap-description">
+                                <strong>Факт:</strong> 57% команди у ТИМЧАСОВОМУ стресі. Це не "погані люди" — це реакція на щось конкретне.<br><br>
+                                <strong>Дія 1:</strong> Індивідуальні конфіденційні розмови з кожним зі стресованих (Єлизавета, Богдана, Юлія, Ірина).<br>
+                                <strong>Питання:</strong> "Що сталося? Коли почалося? Що допоможе?". НЕ "чому ти так працюєш".<br><br>
+                                <strong>Дія 2:</strong> Знайти спільний паттерн — якщо 4 людини під стресом одночасно, є спільна причина:<br>
+                                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                    <li>Нереалістичні KPI?</li>
+                                    <li>Токсичний колега/менеджер?</li>
+                                    <li>Особиста криза (сім'я, здоров'я)?</li>
+                                    <li>Зміни в компанії (реорганізація, скорочення)?</li>
+                                    <li>Проблеми з оплатою/компенсацією?</li>
+                                </ul><br>
+                                <strong>Результат:</strong> Список конкретних проблем + план швидких дій для зниження тиску.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="roadmap-item">
+                        <div class="roadmap-dot" style="background: var(--color-warning);"></div>
+                        <div class="roadmap-content">
+                            <div class="roadmap-title">Тиждень 3-4: Швидкі перемоги</div>
+                            <div class="roadmap-description">
+                                <strong>Дія 1:</strong> Запустити експеримент "Команда на два голоси" — Єлизавета + Олександр працюють в плотній зв'язці (1 місяць).<br>
+                                <strong>Формат:</strong> Не розподіл ролей, а робота РАЗОМ над кожним клієнтом. Олександр відкриває діалог (Енергія 70), Єлизавета заглиблює та закриває (Розуміння 70).<br><br>
+                                <strong>Дія 2:</strong> Вивести Юлію Бондар на роль демлідера (team lead) при збереженні позиції CEO.<br>
+                                <strong>Формат:</strong> Юлія залишається директором, але фокусується на функціях управління командою (стратегія, мотивація, культура).<br>
+                                <strong>Критично важливо:</strong> Призначити їй помічника/асистента для систематизації (хтось з DAA 60+), який буде:<br>
+                                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                    <li>Структурувати її ідеї та рішення</li>
+                                    <li>Контролювати виконання завдань</li>
+                                    <li>Вести CRM та документацію</li>
+                                    <li>Нагадувати про дедлайни та зустрічі</li>
+                                </ul>
+                                <strong>Чому це працює:</strong> DAA 25 + креативність = сильний лідер НА РІВНІ ІДЕЙ. Помічник забезпечує виконання.<br><br>
+                                <strong>Дія 3:</strong> Дати Богдані СКЛАДНИЙ проєкт з ПОВНОЮ автономією (наприклад: "Розроби нову стратегію залучення клієнтів за місяць").<br>
+                                <strong>Дія 4:</strong> Призначити Ірину ментором для адаптації — дати їй 2-3 нових співробітників під опіку.<br>
+                                <strong>Дія 5:</strong> Створити "креативний підрозділ" для Богдани, Юлії та Прохора — без скриптів, тільки результати.<br>
+                                <strong>Результат:</strong> Перші позитивні зміни та сигнали команді "ми вас чуємо".
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="roadmap-item">
+                        <div class="roadmap-dot" style="background: var(--color-primary);"></div>
+                        <div class="roadmap-content">
+                            <div class="roadmap-title">Місяць 2-3: Системні зміни</div>
+                            <div class="roadmap-description">
+                                <strong>Дія 1:</strong> Розділити команду на ТРИ напрямки: "Хантери" (нові клієнти), "Фермери" (утримання), "Інноватори" (Богдана, Юлія, Прохор з автономією).<br>
+                                <strong>Дія 2:</strong> Запустити програму менторингу: Ірина → відповідає за адаптацію та навчання нових, Іван → системи та процеси.<br>
+                                <strong>Дія 3:</strong> Переглянути KPI: для "Інноваторів" — тільки результат, для "Хантерів" — активність, для "Фермерів" — задоволеність клієнтів.<br>
+                                <strong>Результат:</strong> Кожен працює там, де його сила максимальна.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="roadmap-item">
+                        <div class="roadmap-dot" style="background: var(--color-success);"></div>
+                        <div class="roadmap-content">
+                            <div class="roadmap-title">Місяць 4-6: Закріплення та масштабування</div>
+                            <div class="roadmap-description">
+                                <strong>Дія 1:</strong> Офіційно закріпити роль Юлії як CEO + Демлідер з чіткою структурою:<br>
+                                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                    <li>Юлія: стратегія, культура, мотивація, ключові рішення</li>
+                                    <li>Помічник: виконання, контроль, система, документація</li>
+                                    <li>Щотижневі синхронізації "Візіонер + Систематизатор"</li>
+                                </ul><br>
+                                <strong>Дія 2:</strong> Офіційно призначити Ірину головним ментором по адаптації — розробити з нею систему онбордингу.<br>
+                                <strong>Дія 3:</strong> Богдана стає "Головним стратегом" — окрема роль поза лінійним менеджментом.<br>
+                                <strong>Дія 4:</strong> Запустити внутрішню академію: Ірина + Іван = викладачі для нових співробітників.<br>
+                                <strong>Дія 5:</strong> Оцінити експеримент "Команда на два голоси" (Єлизавета + Олександр) — якщо працює, масштабувати модель.<br>
+                                <strong>Результат:</strong> Стабільна команда з чіткими ролями, де кожен розкриває свій потенціал максимально. Юлія керує як натхненний лідер, не втопаючи в операційці.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Team data
+        const teamData = [
+            {
+                name: "Єлизавета Мельничук",
+                initials: "ЄМ",
+                iq: { score: 107, category: "Середній" },
+                daa: { score: 67, category: "Приємлемий" },
+                salesstar: {
+                    type: "Фермер",
+                    energy: 25,
+                    understanding: 70,
+                    redFlags: ["⚠️ СТРЕС: Тимчасова дестабілізація", "Низька впевненість", "Серйозна проблема"],
+                    isStressed: true
+                }
+            },
+            {
+                name: "Богдана Лозинська",
+                initials: "БЛ",
+                iq: { score: 141, category: "Дуже високий" },
+                daa: { score: 10, category: "Критично низький" },
+                salesstar: {
+                    type: "Розвиваючий",
+                    energy: 45,
+                    understanding: 20,
+                    redFlags: ["⚠️ СТРЕС: Тимчасова дестабілізація", "Низька впевненість", "Серйозна проблема"],
+                    isStressed: true
+                }
+            },
+            {
+                name: "Олександр Дорош",
+                initials: "ОД",
+                iq: { score: 90, category: "Нижче середнього" },
+                daa: { score: 69, category: "Приємлемий" },
+                salesstar: {
+                    type: "Хантер",
+                    energy: 70,
+                    understanding: 30,
+                    redFlags: ["Сумніви у здібностях (може бути посилено стресом)"],
+                    isStressed: false
+                }
+            },
+            {
+                name: "Юлія Бондар",
+                initials: "ЮБ",
+                iq: { score: 96, category: "Нижче середнього" },
+                daa: { score: 25, category: "Низький" },
+                salesstar: {
+                    type: "Розвиваючий",
+                    energy: 55,
+                    understanding: 30,
+                    redFlags: ["⚠️ СТРЕС: Тимчасова дестабілізація", "Низька впевненість"],
+                    isStressed: true
+                }
+            },
+            {
+                name: "Ірина Макаро",
+                initials: "ІМ",
+                iq: { score: 116, category: "Вище середнього" },
+                daa: { score: 70, category: "Приємлемий" },
+                salesstar: {
+                    type: "Розвиваючий",
+                    energy: 25,
+                    understanding: 15,
+                    redFlags: ["⚠️ СТРЕС: Тимчасова дестабілізація", "Низька впевненість"],
+                    isStressed: true
+                }
+            },
+            {
+                name: "Іван Вишинський",
+                initials: "ІВ",
+                iq: { score: 117, category: "Вище середнього" },
+                daa: { score: 69, category: "Приємлемий" },
+                salesstar: {
+                    type: "Розвиваючий",
+                    energy: 45,
+                    understanding: 25,
+                    redFlags: ["Низька впевненість (може бути посилено стресом)", "Сумніви у здібностях"],
+                    isStressed: false
+                }
+            },
+            {
+                name: "Прохор Лісовий",
+                initials: "ПЛ",
+                iq: { score: 115, category: "Вище середнього" },
+                daa: { score: 18, category: "Низький" },
+                salesstar: {
+                    type: "Розвиваючий",
+                    energy: 55,
+                    understanding: 15,
+                    redFlags: ["Сумніви у здібностях (може бути посилено стресом)"],
+                    isStressed: false
+                }
+            }
+        ];
+        
+        // Render team grid
+        function renderTeamGrid() {
+            const grid = document.getElementById('teamGrid');
+            grid.innerHTML = '';
+            
+            teamData.forEach(member => {
+                const card = document.createElement('div');
+                card.className = 'member-card';
+                
+                const typeClass = member.salesstar.type === 'Хантер' ? 'type-hunter' : 
+                                 member.salesstar.type === 'Фермер' ? 'type-farmer' :
+                                 member.salesstar.type === 'Універсал' ? 'type-universal' : 'type-developing';
+                
+                const iqClass = member.iq.score >= 120 ? 'iq-high' : 
+                               member.iq.score >= 100 ? 'iq-medium' : 'iq-low';
+                
+                card.innerHTML = `
+                    <div class="member-header">
+                        <div class="member-avatar">${member.initials}</div>
+                        <div class="member-info">
+                            <h3>${member.name}</h3>
+                            <span class="member-type ${typeClass}">${member.salesstar.type}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-label">IQ</div>
+                            <div class="metric-value ${iqClass}">${member.iq.score}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">DAA</div>
+                            <div class="metric-value">${member.daa.score || 'N/A'}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Енергія</div>
+                            <div class="metric-value">${member.salesstar.energy}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-group">
+                        <div class="progress-item">
+                            <div class="progress-label">
+                                <span>Енергія</span>
+                                <span>${member.salesstar.energy}%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: ${member.salesstar.energy}%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-label">
+                                <span>Розуміння</span>
+                                <span>${member.salesstar.understanding}%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: ${member.salesstar.understanding}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${member.salesstar.redFlags.length > 0 ? `
+                        <div class="alert alert-${member.salesstar.redFlags.length >= 3 ? 'danger' : 'warning'}">
+                            <span class="alert-icon">⚠️</span>
+                            <div>
+                                ${member.salesstar.isStressed ? '<strong style="color: #f59e0b;">🔥 СТРЕС: Тимчасовий стан, НЕ постійна риса!</strong><br>' : ''}
+                                <strong>Червоні прапорці:</strong><br>
+                                ${member.salesstar.redFlags.join(', ')}
+                            </div>
+                        </div>
+                    ` : ''}
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // Tab switching
+        function showTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            
+            // Add active class to clicked nav tab
+            event.target.classList.add('active');
+        }
+        
+        // Initialize
+        renderTeamGrid();
+    </script>
+</body>
+</html>
