@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест знань регламенту CRM - Visa Work Agency</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        :root {
+            --color-background-primary: #ffffff;
+            --color-background-secondary: #f5f5f5;
+            --color-background-tertiary: #fafafa;
+            --color-background-info: #e6f1fb;
+            --color-background-success: #eaf3de;
+            --color-background-warning: #faeeda;
+            --color-background-danger: #fcebeb;
+            
+            --color-text-primary: #1a1a1a;
+            --color-text-secondary: #666666;
+            --color-text-tertiary: #999999;
+            --color-text-info: #185fa5;
+            --color-text-success: #3b6d11;
+            --color-text-warning: #854f0b;
+            --color-text-danger: #a32d2d;
+            
+            --color-border-primary: rgba(0,0,0,0.4);
+            --color-border-secondary: rgba(0,0,0,0.3);
+            --color-border-tertiary: rgba(0,0,0,0.15);
+            --color-border-info: #85b7eb;
+            --color-border-success: #97c459;
+            --color-border-warning: #fac775;
+            --color-border-danger: #f09595;
+            
+            --border-radius-md: 8px;
+            --border-radius-lg: 12px;
+            
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-background-primary: #1e1e1e;
+                --color-background-secondary: #2a2a2a;
+                --color-background-tertiary: #333333;
+                --color-background-info: #0c447c;
+                --color-background-success: #27500a;
+                --color-background-warning: #633806;
+                --color-background-danger: #791f1f;
+                
+                --color-text-primary: #ffffff;
+                --color-text-secondary: #b3b3b3;
+                --color-text-tertiary: #808080;
+                --color-text-info: #b5d4f4;
+                --color-text-success: #c0dd97;
+                --color-text-warning: #fac775;
+                --color-text-danger: #f7c1c1;
+                
+                --color-border-primary: rgba(255,255,255,0.4);
+                --color-border-secondary: rgba(255,255,255,0.3);
+                --color-border-tertiary: rgba(255,255,255,0.15);
+            }
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: var(--font-sans);
+            background: var(--color-background-tertiary);
+            color: var(--color-text-primary);
+            line-height: 1.7;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1.5rem 0;
+        }
+        
+        .header {
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            font-size: 22px;
+            font-weight: 500;
+            margin: 0 0 8px;
+            color: var(--color-text-primary);
+        }
+        
+        .header p {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            margin: 0;
+        }
+        
+        .progress-bar {
+            background: var(--color-background-secondary);
+            height: 6px;
+            border-radius: 3px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--color-background-info);
+            transition: width 0.3s ease;
+            width: 0;
+        }
+        
+        .question-card {
+            background: var(--color-background-primary);
+            border: 0.5px solid var(--color-border-tertiary);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .question-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .question-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--color-background-info);
+            color: var(--color-text-info);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .question-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--color-text-primary);
+        }
+        
+        .question-category {
+            display: inline-block;
+            background: var(--color-background-secondary);
+            color: var(--color-text-secondary);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: var(--border-radius-md);
+            margin-bottom: 12px;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .option {
+            padding: 12px 16px;
+            border: 0.5px solid var(--color-border-tertiary);
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--color-background-primary);
+        }
+        
+        .option:hover {
+            background: var(--color-background-secondary);
+            border-color: var(--color-border-secondary);
+        }
+        
+        .option.selected {
+            background: var(--color-background-info);
+            border-color: var(--color-border-info);
+            color: var(--color-text-info);
+        }
+        
+        .option.correct {
+            background: var(--color-background-success);
+            border-color: var(--color-border-success);
+            color: var(--color-text-success);
+        }
+        
+        .option.incorrect {
+            background: var(--color-background-danger);
+            border-color: var(--color-border-danger);
+            color: var(--color-text-danger);
+        }
+        
+        .option.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        
+        .explanation {
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: var(--color-background-secondary);
+            border-radius: var(--border-radius-md);
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--color-text-secondary);
+            display: none;
+        }
+        
+        .explanation.show {
+            display: block;
+        }
+        
+        .explanation strong {
+            color: var(--color-text-primary);
+            font-weight: 500;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 1.5rem;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--border-radius-md);
+            border: 0.5px solid var(--color-border-secondary);
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            color: var(--color-text-primary);
+        }
+        
+        .btn:hover {
+            background: var(--color-background-secondary);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-primary {
+            background: var(--color-background-info);
+            border-color: var(--color-border-info);
+            color: var(--color-text-info);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .results-card {
+            background: var(--color-background-primary);
+            border: 0.5px solid var(--color-border-tertiary);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .results-card.show {
+            display: block;
+        }
+        
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 500;
+        }
+        
+        .score-good {
+            background: var(--color-background-success);
+            color: var(--color-text-success);
+        }
+        
+        .score-ok {
+            background: var(--color-background-warning);
+            color: var(--color-text-warning);
+        }
+        
+        .score-bad {
+            background: var(--color-background-danger);
+            color: var(--color-text-danger);
+        }
+        
+        .results-title {
+            font-size: 22px;
+            font-weight: 500;
+            margin: 0 0 8px;
+        }
+        
+        .results-subtitle {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            margin: 0 0 24px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: var(--color-background-secondary);
+            border-radius: var(--border-radius-md);
+            padding: 1rem;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 500;
+        }
+        
+        .ti {
+            font-size: 16px;
+            vertical-align: -2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="header">
+            <h1>Перевірка знань регламенту CRM</h1>
+            <p>Тест охоплює всі ключові етапи воронки продажів та правила роботи в CRM • 15 теоретичних питань + 15 практичних кейсів</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+        
+        <div id="questionsContainer"></div>
+        
+        <div class="button-group" id="controlButtons">
+            <button class="btn" id="prevBtn" onclick="prevQuestion()" disabled>
+                <i class="ti ti-arrow-left"></i> Попереднє
+            </button>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">
+                Наступне <i class="ti ti-arrow-right"></i>
+            </button>
+            <button class="btn btn-primary" id="finishBtn" onclick="finishTest()" style="display: none;">
+                Завершити тест <i class="ti ti-check"></i>
+            </button>
+        </div>
+        
+        <div class="results-card" id="resultsCard">
+            <div class="score-circle" id="scoreCircle"></div>
+            <h2 class="results-title" id="resultsTitle"></h2>
+            <p class="results-subtitle" id="resultsSubtitle"></p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Всього питань</div>
+                    <div class="stat-value" id="totalQuestions"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Правильних</div>
+                    <div class="stat-value" style="color: var(--color-text-success);" id="correctAnswers"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Неправильних</div>
+                    <div class="stat-value" style="color: var(--color-text-danger);" id="incorrectAnswers"></div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="restartTest()">
+                <i class="ti ti-refresh"></i> Пройти знову
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                id: 1,
+                category: "Загальні правила",
+                question: "Яке максимальне SLA для етапу New Lead (Новий лід)?",
+                options: [
+                    "До 30 хвилин",
+                    "До 1 години в робочий час",
+                    "До 3 годин",
+                    "До кінця робочого дня"
+                ],
+                correct: 1,
+                explanation: "За регламентом, SLA для етапу New Lead становить до 1 години в робочий час. Це критично важливо для швидкої реакції на нового ліда."
+            },
+            {
+                id: 2,
+                category: "Воронка продажів",
+                question: "Що таке принцип «Зміни голосу»?",
+                options: [
+                    "Зміна тону спілкування з клієнтом",
+                    "Підключення іншого спеціаліста (наприклад, керівника) якщо клієнт зависає понад 3 дні",
+                    "Використання різних каналів комунікації",
+                    "Зміна скрипта продажу"
+                ],
+                correct: 1,
+                explanation: "Принцип «Зміни голосу» означає, що якщо клієнт зависає або ігнорує повідомлення понад 3 дні на критичних етапах, SM підключає іншого спеціаліста для відновлення довіри."
+            },
+            {
+                id: 3,
+                category: "Етапи CRM",
+                question: "Що потрібно заповнити ОБОВ'ЯЗКОВО після етапу Presentation was conducted?",
+                options: [
+                    "Appointment Time",
+                    "The Result of the Meeting",
+                    "Client Rating",
+                    "Expected Revenue"
+                ],
+                correct: 1,
+                explanation: "Після етапу презентації обов'язково потрібно заповнити поле The Result of the Meeting — які країни обрано, головні заперечення, наступний крок."
+            },
+            {
+                id: 4,
+                category: "Етапи CRM",
+                question: "Скільки становить SLA для етапу Go To Work (Перший контакт)?",
+                options: [
+                    "До 7 днів",
+                    "До 10 днів",
+                    "До 14 днів",
+                    "До 21 дня"
+                ],
+                correct: 2,
+                explanation: "SLA для етапу Go To Work становить до 14 днів. Якщо лід ігнорує — переводимо в No Answer або «Реактивація»."
+            },
+            {
+                id: 5,
+                category: "Етапи CRM",
+                question: "Коли НЕ можна скидати прайси клієнту?",
+                options: [
+                    "Після першого дзвінка",
+                    "До повного розуміння ситуації клієнта",
+                    "На етапі New Lead",
+                    "Взагалі не можна скидати"
+                ],
+                correct: 1,
+                explanation: "За регламентом НЕ можна скидати прайси до повного розуміння ситуації клієнта. Спочатку потрібно провести глибоке інтерв'ю (Discovery)."
+            },
+            {
+                id: 6,
+                category: "Етапи CRM",
+                question: "Скільки часу клієнт може знаходитись у статусі Delayed Demand?",
+                options: [
+                    "До 1 місяця",
+                    "До 2 місяців",
+                    "До 3 місяців",
+                    "Необмежено"
+                ],
+                correct: 2,
+                explanation: "Delayed Demand має SLA до 3 місяців. Якщо за 3 місяці немає зрушень — закриваємо угоду."
+            },
+            {
+                id: 7,
+                category: "Етапи CRM",
+                question: "Яке SLA для етапу Agent Invoice (Виставлення рахунку)?",
+                options: [
+                    "До 5 днів",
+                    "До 7 днів",
+                    "До 10 днів",
+                    "До 14 днів"
+                ],
+                correct: 2,
+                explanation: "SLA для етапу Agent Invoice становить до 10 днів. Якщо більше — вказуємо причину або переводимо в Delayed Demand."
+            },
+            {
+                id: 8,
+                category: "Робота з клієнтом",
+                question: "Як часто потрібно інформувати агента про статус документів після отримання передоплати?",
+                options: [
+                    "Раз на день",
+                    "Раз на 3 дні",
+                    "Раз на тиждень",
+                    "Раз на 2 тижні"
+                ],
+                correct: 2,
+                explanation: "Після отримання передоплати встановлюється регулярна задача раз на тиждень — інформувати агента про статус документів."
+            },
+            {
+                id: 9,
+                category: "Закриття угод",
+                question: "Яка причина закриття угоди: клієнт оплатив першу частину, документи готові, але відмовляється вносити залишок?",
+                options: [
+                    "Дорого",
+                    "Немає довіри",
+                    "Відмова доплачувати",
+                    "Не виходить на зв'язок"
+                ],
+                correct: 2,
+                explanation: "Правильна причина закриття — «Відмова доплачувати». Це окрема категорія, коли клієнт оплатив аванс, але відмовляється вносити залишок."
+            },
+            {
+                id: 10,
+                category: "Робота після закриття",
+                question: "Через скільки днів після успішного закриття угоди потрібно запропонувати новий оффер?",
+                options: [
+                    "Одразу",
+                    "Через 3 дні",
+                    "Через тиждень",
+                    "Через місяць"
+                ],
+                correct: 2,
+                explanation: "Через 7 днів (тиждень) після закриття потрібно ініціювати повторний контакт та запропонувати новий оффер — нові країни, квоти, спеціальні умови."
+            },
+            {
+                id: 11,
+                category: "Синхронізація",
+                question: "Всі комунікації у WhatsApp мають бути:",
+                options: [
+                    "Збережені локально",
+                    "Переслані керівнику",
+                    "Синхронізовані з CRM та відображені в карточці клієнта",
+                    "Експортовані в Excel"
+                ],
+                correct: 2,
+                explanation: "Всі комунікації у WhatsApp мають бути синхронізовані з CRM та відображатись в карточці клієнта — це обов'язкова вимога регламенту."
+            },
+            {
+                id: 12,
+                category: "Воронка «Наші клієнти»",
+                question: "Що потрібно зробити після успішного закриття угоди ПЕРЕД новим оффером?",
+                options: [
+                    "Зачекати місяць",
+                    "Отримати зворотній зв'язок та попросити відгук",
+                    "Перевести в архів",
+                    "Відправити подарунок"
+                ],
+                correct: 1,
+                explanation: "Перед новим оффером потрібно зв'язатись з агентом, отримати зворотній зв'язок про процес роботи та попросити відгук (відео, текст, скріншот)."
+            },
+            {
+                id: 13,
+                category: "Етапи CRM",
+                question: "Яку дію НЕ потрібно виконувати на етапі New Lead?",
+                options: [
+                    "Ознайомитись з історією комунікації Кваліфікатора",
+                    "Вивчити прикріплені посилання на агенцію",
+                    "Відправити прайс-лист",
+                    "Перевірити поля Number of People та Country of Interest"
+                ],
+                correct: 2,
+                explanation: "На етапі New Lead НЕ потрібно відправляти прайс-лист. Спочатку потрібно ознайомитись з історією, вивчити агенцію, перевірити поля та провести Discovery."
+            },
+            {
+                id: 14,
+                category: "Робота з документами",
+                question: "Що потрібно відправити клієнту після отримання готових документів?",
+                options: [
+                    "Оригінали одразу",
+                    "Заблюрені файли разом з інвойсом на повну оплату",
+                    "Тільки інвойс",
+                    "Посилання на трекінг"
+                ],
+                correct: 1,
+                explanation: "Після отримання документів потрібно відправити заблюрені файли клієнту разом з інвойсом на повну оплату. Оригінали — тільки після повної оплати."
+            },
+            {
+                id: 15,
+                category: "Заборони",
+                question: "Що означає заборона «Кладовища лідів»?",
+                options: [
+                    "Не можна видаляти старі ліди",
+                    "Жодна картка не може знаходитись в активному етапі довше встановленого SLA без задачі на наступний крок",
+                    "Не можна закривати неактивні ліди",
+                    "Потрібно зберігати всі ліди в архіві"
+                ],
+                correct: 1,
+                explanation: "Заборона «Кладовища лідів» означає, що жодна картка не може знаходитись в активному етапі довше встановленого SLA без задачі на наступний крок."
+            },
+            {
+                id: 16,
+                category: "КЕЙС: Перший контакт",
+                question: "Кейс 1: До вас потрапив новий лід о 14:00. Агенція має сайт з 50+ вакансіями, активні соцмережі. В полі Number of People стоїть 15, Country of Interest — Польща. Ви зателефонували о 15:30, але клієнт не відповідає. Що робити?",
+                options: [
+                    "Відправити прайс на Польщу в WhatsApp і чекати",
+                    "Написати в WhatsApp, представитись, запитати зручний час для дзвінка, не скидаючи прайс",
+                    "Перевести лід в No Answer, бо не відповів на дзвінок",
+                    "Зачекати до наступного дня і зателефонувати знову"
+                ],
+                correct: 1,
+                explanation: "Правильна дія: написати в WhatsApp, представитись і запитати зручний час. Прайси НЕ скидаємо до Discovery. До No Answer переводимо тільки після 14 днів ігнорування, а не після першого дзвінка."
+            },
+            {
+                id: 17,
+                category: "КЕЙС: Discovery",
+                question: "Кейс 2: Під час першої розмови агент каже: 'Мені потрібна Польща, скільки коштує?' Ваші дії?",
+                options: [
+                    "Одразу назвати ціну на work permit Польща",
+                    "Відправити прайс-лист по всіх країнах",
+                    "Задати питання: скільки людей, з якої країни, який досвід, коли потрібно, чи є документи",
+                    "Запропонувати зустріч і обговорити деталі на ній"
+                ],
+                correct: 2,
+                explanation: "Потрібно провести глибоке Discovery-інтерв'ю. Не скидаємо прайси до повного розуміння ситуації клієнта: кількість людей, їх походження, терміни, наявність документів."
+            },
+            {
+                id: 18,
+                category: "КЕЙС: Презентація",
+                question: "Кейс 3: Ви провели презентацію, запропонували Польщу, Чехію і Словаччину. Агент каже: 'Дайте подумати'. Що робити далі?",
+                options: [
+                    "Поставити задачу на фолоу-ап через 2-3 дні та заповнити The Result of the Meeting",
+                    "Відправити додаткові матеріали і чекати дзвінка від клієнта",
+                    "Одразу перевести в Delayed Demand",
+                    "Зачекати тиждень і нагадати про себе"
+                ],
+                correct: 0,
+                explanation: "Після презентації обов'язково: 1) Заповнити The Result of the Meeting (які країни обрано, заперечення, наступний крок), 2) Поставити задачу на фолоу-ап через 2-3 дні."
+            },
+            {
+                id: 19,
+                category: "КЕЙС: Зависання клієнта",
+                question: "Кейс 4: Агент на етапі Offer Accepted вже 4 дні не надсилає документи, ігнорує повідомлення. Що робити?",
+                options: [
+                    "Продовжувати писати йому в WhatsApp щодня",
+                    "Застосувати принцип 'Зміни голосу' — підключити керівника або колегу",
+                    "Закрити угоду з причиною 'Не виходить на зв'язок'",
+                    "Перевести в Delayed Demand"
+                ],
+                correct: 1,
+                explanation: "Якщо клієнт зависає понад 3 дні на критичних етапах (збір документів, оплата), застосовуємо принцип 'Зміни голосу' — підключаємо іншого спеціаліста для відновлення довіри."
+            },
+            {
+                id: 20,
+                category: "КЕЙС: Відкладений попит",
+                question: "Кейс 5: Агент каже: 'Супер пропозиція, але зараз не сезон, у мене група формується на серпень, через 2 місяці'. Ваші дії?",
+                options: [
+                    "Закрити угоду — немає готовності купувати зараз",
+                    "Перевести в Delayed Demand, поставити коментар про серпень, налаштувати фолоу-апи раз на 2 тижні",
+                    "Залишити в Offer Accepted і чекати",
+                    "Спробувати переконати купити зараз зі знижкою"
+                ],
+                correct: 1,
+                explanation: "Це класичний Delayed Demand. Переводимо в статус з коментарем про причину (група на серпень), налаштовуємо регулярні фолоу-апи раз на 2 тижні — новини, офери, підтримка зв'язку."
+            },
+            {
+                id: 21,
+                category: "КЕЙС: Проблема з оплатою",
+                question: "Кейс 6: Ви відправили лінк на оплату Stripe. Агент пише: 'Мій банк блокує платіж, каже що це скам'. Що робити?",
+                options: [
+                    "Сказати що це проблеми банку, нехай розбирається",
+                    "Пропрацювати страхи клієнта, надати альтернативні методи оплати, показати докази легітимності",
+                    "Закрити угоду — немає довіри",
+                    "Запропонувати оплату готівкою при зустрічі"
+                ],
+                correct: 1,
+                explanation: "На етапі Agent Invoice потрібно пропрацювати можливі страхи клієнта перед оплатою (попередження від банку про 'скам'). Надати альтернативні методи оплати, підтвердження легітимності."
+            },
+            {
+                id: 22,
+                category: "КЕЙС: Після передоплати",
+                question: "Кейс 7: Агент оплатив аванс 3 дні тому. Олена каже що документи будуть готові через тиждень. Що ви робите ЗАРАЗ?",
+                options: [
+                    "Чекаю тиждень, потім напишу клієнту",
+                    "Передаю документи Олені, заповнюю таблицю 'Світлофор', ставлю задачу на тиждень — інформувати клієнта, пропоную апсейл",
+                    "Пишу клієнту що все ок і чекаємо",
+                    "Передаю Олені і забуваю про клієнта до готовності документів"
+                ],
+                correct: 1,
+                explanation: "Після передоплати: 1) Передати документи Олені, 2) Заповнити таблицю 'Світлофор', 3) Поставити регулярну задачу раз на тиждень — інформувати агента, 4) Поставити задачу на апсейл."
+            },
+            {
+                id: 23,
+                category: "КЕЙС: Відмова доплачувати",
+                question: "Кейс 8: Документи готові, ви відправили заблюрені файли та інвойс. Агент каже: 'Я передумав, оригінали не потрібні'. Що робити?",
+                options: [
+                    "Спробувати переконати протягом тижня, потім закрити з причиною 'Відмова доплачувати'",
+                    "Одразу закрити угоду — клієнт передумав",
+                    "Запропонувати знижку на залишок",
+                    "Погрожувати судом за невиконання зобов'язань"
+                ],
+                correct: 0,
+                explanation: "Це причина закриття 'Відмова доплачувати'. Спочатку працюємо з запереченнями, з'ясовуємо причину. Якщо не вдається переконати — закриваємо з правильною причиною для аналітики."
+            },
+            {
+                id: 24,
+                category: "КЕЙС: Після успішного закриття",
+                question: "Кейс 9: Ви щойно отримали повну оплату і відправили оригінали. Що далі протягом найближчих 7 днів?",
+                options: [
+                    "Нічого, клієнт закритий, займаюсь новими лідами",
+                    "Зв'язуюсь з агентом, отримую зворотній зв'язок, прошу відгук, через тиждень пропоную новий оффер",
+                    "Одразу пропоную купити ще щось",
+                    "Додаю в список для розсилки новин раз на місяць"
+                ],
+                correct: 1,
+                explanation: "Після Success Closed: 1) Зв'язатись, отримати зворотній зв'язок, 2) Попросити відгук, 3) Через тиждень запропонувати новий оффер. Постійний партнер приносить у 5-7 разів більше!"
+            },
+            {
+                id: 25,
+                category: "КЕЙС: Кваліфікація",
+                question: "Кейс 10: Лід потрапив до вас, але під час розмови з'ясувалось що це окрема людина шукає роботу для себе (B2C), а не агенція. Що робити?",
+                options: [
+                    "Спробувати продати йому послугу",
+                    "Закрити угоду з причиною 'Не агент' — кваліфікатор помилився",
+                    "Перевести на колегу який працює з B2C",
+                    "Запропонувати стати нашим агентом"
+                ],
+                correct: 1,
+                explanation: "Це чітка причина закриття 'Не агент' — помилка кваліфікації. B2C не ваша цільова аудиторія як SM. Закриваємо для правильної аналітики помилок кваліфікатора."
+            },
+            {
+                id: 26,
+                category: "КЕЙС: SLA порушення",
+                question: "Кейс 11: У вас в воронці лід на етапі Go To Work вже 16 днів без жодної задачі. Що це порушує?",
+                options: [
+                    "Нічого не порушує, можна так тримати",
+                    "Порушує SLA (14 днів) та заборону 'Кладовища лідів'",
+                    "Порушує тільки SLA етапу",
+                    "Порушує правило синхронізації з CRM"
+                ],
+                correct: 1,
+                explanation: "Подвійне порушення: 1) SLA етапу Go To Work (14 днів), 2) Заборона 'Кладовища лідів' — картка в активному етапі без задачі понад SLA. Потрібно або зробити крок, або перевести в No Answer."
+            },
+            {
+                id: 27,
+                category: "КЕЙС: Синхронізація",
+                question: "Кейс 12: Ви весь день листувались з клієнтом в WhatsApp, обговорили важливі деталі по документам. Чи потрібно щось робити в CRM?",
+                options: [
+                    "Ні, листування залишається в WhatsApp",
+                    "Так, потрібно синхронізувати комунікацію з CRM — це обов'язкова вимога",
+                    "Тільки якщо це важлива інформація",
+                    "Скопіювати в Notes раз на тиждень"
+                ],
+                correct: 1,
+                explanation: "ВСІ комунікації у WhatsApp мають бути синхронізовані з CRM та відображатись в карточці клієнта — це обов'язкова вимога регламенту без винятків."
+            },
+            {
+                id: 28,
+                category: "КЕЙС: Delayed Demand тайминг",
+                question: "Кейс 13: Клієнт в Delayed Demand вже 3.5 місяця. Ви робили фолоу-апи, але зрушень немає. Що робити?",
+                options: [
+                    "Продовжувати фолоу-апи, раптом щось зміниться",
+                    "Закрити угоду — перевищено SLA Delayed Demand (3 місяці)",
+                    "Перевести назад в активну воронку",
+                    "Зменшити частоту фолоу-апів до раз на місяць"
+                ],
+                correct: 1,
+                explanation: "SLA для Delayed Demand — до 3 місяців. Якщо за 3 місяці немає зрушень — закриваємо угоду. Не варто тримати 'мертві' ліди в системі нескінченно."
+            },
+            {
+                id: 29,
+                category: "КЕЙС: Робота з запереченнями",
+                question: "Кейс 14: Агент каже: 'Дорого, у конкурентів дешевше на 20%'. Що робити?",
+                options: [
+                    "Одразу дати знижку 20%",
+                    "Закрити угоду з причиною 'Дорого'",
+                    "Провести аргументацію вартості та цінності (легальність, супровід), якщо не спрацює — закрити з причиною 'Дорого'",
+                    "Сказати що у конкурентів скам"
+                ],
+                correct: 2,
+                explanation: "На етапі Presentation потрібно провести аргументацію вартості та цінності. Якщо після цього клієнт все одно обирає дешевших конкурентів — закриваємо з причиною 'Дорого' для аналітики."
+            },
+            {
+                id: 30,
+                category: "КЕЙС: Комплексний",
+                question: "Кейс 15: Новий лід потрапив до вас о 16:00 в п'ятницю. Ви подивились — агенція невелика, в полі Number of People стоїть 3. Ваш робочий день закінчується о 18:00, наступний — понеділок. Що робити?",
+                options: [
+                    "Піти додому, в понеділок опрацюю — все одно невелика агенція",
+                    "До 17:00 (в робочий час, в межах SLA 1 год) зробити перший контакт — подзвонити або написати",
+                    "Відправити автоматичне повідомлення що зв'яжусь в понеділок",
+                    "Попросити колегу опрацювати в понеділок"
+                ],
+                correct: 1,
+                explanation: "SLA для New Lead — до 1 години В РОБОЧИЙ ЧАС. У вас є до 17:00 щоб зробити перший контакт. Розмір агенції не має значення — регламент однаковий для всіх лідів."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let score = 0;
+
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            const container = document.getElementById('questionsContainer');
+            
+            container.innerHTML = `
+                <div class="question-card">
+                    <div class="question-header">
+                        <div class="question-number">${currentQuestion + 1}</div>
+                        <div class="question-text">${q.question}</div>
+                    </div>
+                    <div class="question-category">${q.category}</div>
+                    <div class="options" id="options">
+                        ${q.options.map((opt, idx) => `
+                            <div class="option" onclick="selectAnswer(${idx})" data-index="${idx}">
+                                ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="explanation" id="explanation">
+                        <strong>Пояснення:</strong> ${q.explanation}
+                    </div>
+                </div>
+            `;
+            
+            if (userAnswers[currentQuestion] !== undefined) {
+                showPreviousAnswer();
+            }
+            
+            updateProgress();
+            updateButtons();
+        }
+
+        function selectAnswer(index) {
+            const options = document.querySelectorAll('.option');
+            const explanation = document.getElementById('explanation');
+            const q = questions[currentQuestion];
+            
+            options.forEach(opt => opt.classList.add('disabled'));
+            options[index].classList.add('selected');
+            
+            if (index === q.correct) {
+                options[index].classList.remove('selected');
+                options[index].classList.add('correct');
+                if (userAnswers[currentQuestion] === undefined) score++;
+            } else {
+                options[index].classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+            }
+            
+            userAnswers[currentQuestion] = index;
+            explanation.classList.add('show');
+            updateButtons();
+        }
+
+        function showPreviousAnswer() {
+            const options = document.querySelectorAll('.option');
+            const explanation = document.getElementById('explanation');
+            const q = questions[currentQuestion];
+            const userAnswer = userAnswers[currentQuestion];
+            
+            options.forEach(opt => opt.classList.add('disabled'));
+            
+            if (userAnswer === q.correct) {
+                options[userAnswer].classList.add('correct');
+            } else {
+                options[userAnswer].classList.add('selected', 'incorrect');
+                options[q.correct].classList.add('correct');
+            }
+            
+            explanation.classList.add('show');
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            
+            prevBtn.disabled = currentQuestion === 0;
+            
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.style.display = 'none';
+                finishBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                finishBtn.style.display = 'none';
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function finishTest() {
+            const totalQuestions = questions.length;
+            const correctCount = score;
+            const incorrectCount = totalQuestions - correctCount;
+            const percentage = Math.round((correctCount / totalQuestions) * 100);
+            
+            document.getElementById('questionsContainer').style.display = 'none';
+            document.getElementById('controlButtons').style.display = 'none';
+            document.getElementById('resultsCard').classList.add('show');
+            
+            const scoreCircle = document.getElementById('scoreCircle');
+            const resultsTitle = document.getElementById('resultsTitle');
+            const resultsSubtitle = document.getElementById('resultsSubtitle');
+            
+            scoreCircle.textContent = percentage + '%';
+            
+            if (percentage >= 90) {
+                scoreCircle.className = 'score-circle score-good';
+                resultsTitle.textContent = 'Відмінний результат!';
+                resultsSubtitle.textContent = 'Ви чудово знаєте регламент CRM';
+            } else if (percentage >= 70) {
+                scoreCircle.className = 'score-circle score-ok';
+                resultsTitle.textContent = 'Добрий результат';
+                resultsSubtitle.textContent = 'Є невеликі прогалини, але загалом непогано';
+            } else {
+                scoreCircle.className = 'score-circle score-bad';
+                resultsTitle.textContent = 'Потрібно підтягнути знання';
+                resultsSubtitle.textContent = 'Рекомендуємо перечитати регламент';
+            }
+            
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('correctAnswers').textContent = correctCount;
+            document.getElementById('incorrectAnswers').textContent = incorrectCount;
+        }
+
+        function restartTest() {
+            currentQuestion = 0;
+            userAnswers = [];
+            score = 0;
+            
+            document.getElementById('questionsContainer').style.display = 'block';
+            document.getElementById('controlButtons').style.display = 'flex';
+            document.getElementById('resultsCard').classList.remove('show');
+            
+            renderQuestion();
+        }
+
+        renderQuestion();
+    </script>
+</body>
+</html>
