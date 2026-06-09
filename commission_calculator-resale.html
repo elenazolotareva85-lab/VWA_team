@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор комиссии — Legion Real Estate</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#1a1a1a;color:#e8e0d0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;}
+header{background:#242424;border-bottom:1px solid #3a3a3a;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-size:18px;font-weight:700;color:#c9a961;letter-spacing:0.05em;}
+.logo span{color:#8a8070;font-size:12px;font-weight:400;margin-left:10px;letter-spacing:0.1em;text-transform:uppercase;}
+.tabs{display:flex;background:#242424;border-bottom:1px solid #3a3a3a;padding:0 32px;}
+.tab{padding:13px 24px;cursor:pointer;color:#8a8070;font-size:13px;font-weight:500;border:none;background:none;border-bottom:2px solid transparent;letter-spacing:0.04em;text-transform:uppercase;transition:color 0.15s;}
+.tab:hover{color:#e8e0d0;}
+.tab.on{color:#c9a961;border-bottom-color:#c9a961;}
+.page{display:none;padding:36px 32px;max-width:920px;margin:0 auto;}
+.page.on{display:block;}
+h1{font-size:24px;font-weight:600;color:#fff;margin-bottom:6px;}
+.subtitle{color:#8a8070;font-size:13px;margin-bottom:28px;}
+.sec-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:#c9a961;margin-bottom:12px;font-weight:500;}
+.principles{background:#2f2f2f;border:1px solid #3a3a3a;border-left:3px solid #c9a961;border-radius:8px;padding:18px 22px;margin-bottom:28px;}
+.principles ul{list-style:none;}
+.principles li{padding:7px 0 7px 16px;position:relative;border-bottom:1px solid #3a3a3a;font-size:14px;}
+.principles li:last-child{border-bottom:none;}
+.principles li::before{content:'◆';position:absolute;left:0;top:11px;font-size:7px;color:#a88940;}
+strong{color:#fff;}
+.levels-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px;}
+.lcard{background:#2f2f2f;border:1px solid #3a3a3a;border-radius:8px;padding:18px 20px;}
+.lbadge{display:inline-block;background:rgba(201,169,97,0.12);border:1px solid #a88940;color:#c9a961;font-size:20px;font-weight:700;padding:3px 14px;border-radius:5px;margin-bottom:10px;}
+.lcard h4{font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:#8a8070;margin-bottom:8px;font-weight:400;}
+.lbonus{font-size:13px;color:#e8e0d0;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #3a3a3a;}
+.fr{display:flex;justify-content:space-between;font-size:12px;padding:2px 0;}
+.fl{color:#8a8070;}
+.fv{color:#e8e0d0;font-family:monospace;}
+.note{background:rgba(107,158,210,0.08);border:1px solid rgba(107,158,210,0.2);border-radius:5px;padding:8px 12px;font-size:12px;color:#a0b8d0;margin-top:10px;line-height:1.5;}
+.sum-wrap{background:#2f2f2f;border:1px solid #3a3a3a;border-radius:8px;padding:16px 20px;}
+table.sum{width:100%;border-collapse:collapse;font-size:13px;}
+table.sum th{text-align:left;padding:8px 0;border-bottom:1px solid #3a3a3a;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#8a8070;font-weight:400;}
+table.sum td{padding:9px 0;border-bottom:1px solid #3a3a3a;color:#e8e0d0;}
+table.sum tr:last-child td{border-bottom:none;}
+td.pct{color:#c9a961;font-weight:600;}
+
+/* CALC */
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;}
+.cpanel{background:#2f2f2f;border:1px solid #3a3a3a;border-radius:8px;padding:22px;}
+.field{margin-bottom:18px;}
+.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:#8a8070;margin-bottom:7px;font-weight:400;}
+.field input[type=number]{width:100%;background:#1a1a1a;border:1px solid #3a3a3a;border-radius:6px;color:#fff;font-size:16px;padding:10px 14px;outline:none;-moz-appearance:textfield;font-family:inherit;transition:border-color 0.15s;}
+.field input[type=number]::-webkit-outer-spin-button,.field input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
+.field input[type=number]:focus{border-color:#a88940;}
+.hint{font-size:11px;color:#8a8070;margin-top:4px;}
+.lvl-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+.lvl-btn{background:#1a1a1a;border:1px solid #3a3a3a;border-radius:6px;color:#8a8070;font-size:16px;font-weight:600;padding:10px 0;cursor:pointer;text-align:center;transition:all 0.15s;width:100%;font-family:inherit;}
+.lvl-btn:hover{border-color:#a88940;color:#c9a961;}
+.lvl-btn.on{background:rgba(201,169,97,0.1);border:2px solid #c9a961;color:#c9a961;}
+.lvl-sub{font-size:10px;font-weight:400;display:block;opacity:0.6;margin-top:1px;}
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-top:1px solid #3a3a3a;margin-top:4px;}
+.tog-row .tl{font-size:13px;color:#e8e0d0;}
+.tog-row .ts{font-size:11px;color:#8a8070;}
+.tog{position:relative;width:44px;height:24px;flex-shrink:0;}
+.tog input{opacity:0;width:0;height:0;position:absolute;}
+.tog-sl{position:absolute;inset:0;background:#3a3a3a;border-radius:12px;cursor:pointer;transition:background 0.2s;}
+.tog-sl::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#8a8070;border-radius:50%;transition:all 0.2s;}
+.tog input:checked+.tog-sl{background:rgba(201,169,97,0.2);border:1px solid #a88940;}
+.tog input:checked+.tog-sl::before{transform:translateX(20px);background:#c9a961;}
+
+.deal-row{display:flex;justify-content:space-between;background:#242424;border-radius:6px;padding:10px 14px;margin-bottom:12px;font-size:13px;}
+.dl{color:#8a8070;}
+.dv{color:#e8e0d0;font-weight:600;}
+.rblock{background:#242424;border-radius:6px;padding:14px;margin-bottom:10px;border-left:3px solid #5a5a5a;}
+.rblock.rb-close{border-left-color:#c9a961;}
+.rblock.rb-refer{border-left-color:#6b9ed2;}
+.blbl{font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:#8a8070;margin-bottom:8px;}
+.rtotal{font-size:26px;font-weight:700;color:#e8e0d0;margin-bottom:8px;}
+.rtotal.tc{color:#c9a961;}
+.rtotal.tr{color:#6b9ed2;}
+.bdrow{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-top:1px solid #3a3a3a;margin-top:6px;}
+.bdrow+.bdrow{border-top:none;margin-top:0;padding-top:2px;}
+.bdl{color:#8a8070;}
+.bdv{color:#e8e0d0;font-family:monospace;}
+.fbox{background:#242424;border-radius:6px;padding:12px 14px;font-family:monospace;font-size:12px;color:#8a8070;line-height:1.8;margin-bottom:10px;}
+.fbox .fr{color:#c9a961;border-top:1px solid #3a3a3a;margin-top:6px;padding-top:6px;display:block;}
+.wbox{background:rgba(201,169,97,0.08);border:1px solid rgba(201,169,97,0.25);border-radius:6px;padding:10px 14px;font-size:12px;color:#c9b87a;line-height:1.5;}
+.empty{text-align:center;padding:40px 0;color:#8a8070;font-size:13px;}
+
+@media(max-width:680px){
+  .calc-grid{grid-template-columns:1fr;}
+  .levels-grid{grid-template-columns:1fr;}
+  .page{padding:24px 16px;}
+  header{padding:14px 16px;}
+  .tabs{padding:0 16px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">LEGION <span>Real Estate</span></div>
+  <div style="font-size:11px;color:#8a8070;letter-spacing:0.08em;text-transform:uppercase;">Комиссия · Перепродажи</div>
+</header>
+
+<div class="tabs">
+  <button class="tab on" onclick="goTab('rules',this)">Правила</button>
+  <button class="tab" onclick="goTab('calc',this)">Калькулятор</button>
+</div>
+
+<!-- RULES -->
+<div id="pg-rules" class="page on">
+  <h1>Структура распределения комиссии</h1>
+  <p class="subtitle">Базовые принципы и правила по уровням — перепродажи</p>
+
+  <div class="sec-title">Базовые принципы</div>
+  <div class="principles">
+    <ul>
+      <li>Есть <strong>общая комиссия сделки</strong> — устанавливается по договорённости (6%, 7%, 8% или 9%)</li>
+      <li>Есть <strong>бонусная часть</strong> — зависит от уровня общей комиссии сделки</li>
+      <li><strong>Базовая часть 6%</strong> — стандартный грейд закрывающего брокера. По умолчанию полностью получает закрывающий, но может быть разделена по договорённости с передающим</li>
+    </ul>
+  </div>
+
+  <div class="sec-title">Правила по уровням комиссии</div>
+  <div class="levels-grid">
+    <div class="lcard">
+      <div class="lbadge">6%</div>
+      <h4>Общая комиссия сделки</h4>
+      <div class="lbonus">Бонус: <strong>фикс $500</strong> передающему брокеру</div>
+      <div class="fr"><span class="fl">Закрывающий</span><span class="fv">Цена × 6% × Грейд</span></div>
+      <div class="fr"><span class="fl">Передающий</span><span class="fv">$500 (фиксировано)</span></div>
+      <div class="note"><strong>Пример</strong> (грейд 37%, объект $200k):<br>Закрывающий → $4 440 &nbsp;|&nbsp; Передающий → $500</div>
+    </div>
+    <div class="lcard">
+      <div class="lbadge">7%</div>
+      <h4>Общая комиссия сделки</h4>
+      <div class="lbonus">Бонус: <strong>0.5%</strong> делится 50/50, но <strong>не менее $500</strong> передающему</div>
+      <div class="fr"><span class="fl">Закрывающий</span><span class="fv">База + Цена×0.5%/2*</span></div>
+      <div class="fr"><span class="fl">Передающий</span><span class="fv">max($500, Цена×0.5%/2)</span></div>
+      <div class="note">* Если доля передающего &lt; $500, дельта вычитается из бонуса закрывающего</div>
+    </div>
+    <div class="lcard">
+      <div class="lbadge">8%</div>
+      <h4>Общая комиссия сделки</h4>
+      <div class="lbonus">Бонус: <strong>1%</strong> делится между брокерами <strong>50/50</strong></div>
+      <div class="fr"><span class="fl">Закрывающий</span><span class="fv">База + Цена×1%/2</span></div>
+      <div class="fr"><span class="fl">Передающий</span><span class="fv">Цена × 1% / 2</span></div>
+      <div class="note"><strong>Пример</strong> (грейд 37%, объект $200k):<br>Закрывающий → $5 440 &nbsp;|&nbsp; Передающий → $1 000</div>
+    </div>
+    <div class="lcard">
+      <div class="lbadge">9%</div>
+      <h4>Общая комиссия сделки</h4>
+      <div class="lbonus">Бонус: <strong>2%</strong> делится между брокерами <strong>50/50</strong></div>
+      <div class="fr"><span class="fl">Закрывающий</span><span class="fv">База + Цена×2%/2</span></div>
+      <div class="fr"><span class="fl">Передающий</span><span class="fv">Цена × 2% / 2</span></div>
+      <div class="note"><strong>Пример</strong> (грейд 37%, объект $200k):<br>Закрывающий → $6 440 &nbsp;|&nbsp; Передающий → $2 000</div>
+    </div>
+  </div>
+
+  <div class="sec-title">Сводная таблица</div>
+  <div class="sum-wrap">
+    <table class="sum">
+      <thead><tr><th>Комиссия</th><th>Бонус</th><th>Закрывающий брокер</th><th>Передающий брокер</th></tr></thead>
+      <tbody>
+        <tr><td class="pct">6%</td><td>— / фикс</td><td>Цена × 6% × Грейд</td><td>$500 фикс</td></tr>
+        <tr><td class="pct">7%</td><td>+0.5% (50/50)</td><td>База + 0.25%*</td><td>min($500, 0.25%)</td></tr>
+        <tr><td class="pct">8%</td><td>+1% (50/50)</td><td>База + 0.5%</td><td>0.5% от цены</td></tr>
+        <tr><td class="pct">9%</td><td>+2% (50/50)</td><td>База + 1%</td><td>1% от цены</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:#8a8070;margin-top:10px;">* При 7%: если расчётная доля передающего &lt; $500 — дельта вычитается из бонуса закрывающего</div>
+  </div>
+</div>
+
+<!-- CALC -->
+<div id="pg-calc" class="page">
+  <div class="calc-grid">
+    <div class="cpanel">
+      <div class="sec-title">Параметры сделки</div>
+
+      <div class="field">
+        <label>Стоимость объекта ($)</label>
+        <input type="number" id="c-price" placeholder="200000" min="0" step="10000" oninput="calc()">
+      </div>
+
+      <div class="field">
+        <label>Грейд закрывающего брокера (%)</label>
+        <input type="number" id="c-grade" placeholder="37" min="0" max="100" step="0.5" oninput="calc()">
+        <div class="hint">Стандартный диапазон: 30–50%</div>
+      </div>
+
+      <div class="field">
+        <label>Общая комиссия сделки</label>
+        <div class="lvl-grid">
+          <button class="lvl-btn" data-v="6" onclick="setLvl(this)">6%<span class="lvl-sub">базовая</span></button>
+          <button class="lvl-btn" data-v="7" onclick="setLvl(this)">7%<span class="lvl-sub">+0.5%</span></button>
+          <button class="lvl-btn" data-v="8" onclick="setLvl(this)">8%<span class="lvl-sub">+1%</span></button>
+          <button class="lvl-btn" data-v="9" onclick="setLvl(this)">9%<span class="lvl-sub">+2%</span></button>
+        </div>
+      </div>
+
+      <div class="tog-row">
+        <div>
+          <div class="tl">Сделка с передающим брокером</div>
+          <div class="ts">Включить расчёт обеих сторон</div>
+        </div>
+        <label class="tog">
+          <input type="checkbox" id="c-ref" checked onchange="calc()">
+          <span class="tog-sl"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="cpanel">
+      <div class="sec-title">Результат расчёта</div>
+      <div class="empty" id="r-empty">Заполните параметры слева,<br>чтобы увидеть расчёт</div>
+      <div id="r-content" style="display:none;">
+        <div class="deal-row">
+          <span class="dl">Объект</span><span class="dv" id="r-price">—</span>
+          <span class="dl">Комиссия</span><span class="dv" id="r-com">—</span>
+          <span class="dl">Грейд</span><span class="dv" id="r-grade">—</span>
+        </div>
+        <div class="rblock rb-close">
+          <div class="blbl">Закрывающий брокер</div>
+          <div class="rtotal tc" id="r-ctot">$0</div>
+          <div class="bdrow"><span class="bdl">База (6% × грейд)</span><span class="bdv" id="r-cbase">$0</span></div>
+          <div class="bdrow" id="r-cbon-row"><span class="bdl">Бонус</span><span class="bdv" id="r-cbon">—</span></div>
+        </div>
+        <div class="rblock rb-refer" id="r-refblock">
+          <div class="blbl">Передающий брокер</div>
+          <div class="rtotal tr" id="r-rtot">$0</div>
+          <div class="bdrow"><span class="bdl">Выплата</span><span class="bdv" id="r-rbon">$0</span></div>
+          <div class="bdrow" id="r-minrow" style="display:none;"><span class="bdl" style="color:#c9b87a;">Применён минимум $500</span><span class="bdv" id="r-delta" style="color:#c9b87a;">—</span></div>
+        </div>
+        <div class="fbox" id="r-formula"></div>
+        <div class="wbox" id="r-warn" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var sel = null;
+
+function goTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+  btn.classList.add('on');
+  document.getElementById('pg-' + id).classList.add('on');
+}
+
+function setLvl(btn) {
+  document.querySelectorAll('.lvl-btn').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  sel = parseInt(btn.getAttribute('data-v'));
+  calc();
+}
+
+function fmt(n) {
+  return '$' + Math.round(n).toLocaleString('en-US');
+}
+
+function calc() {
+  var price = parseFloat(document.getElementById('c-price').value);
+  var grade = parseFloat(document.getElementById('c-grade').value) / 100;
+  var hasRef = document.getElementById('c-ref').checked;
+  var level = sel;
+
+  if (!price || !grade || !level || price <= 0 || grade <= 0 || grade > 1) {
+    document.getElementById('r-empty').style.display = 'block';
+    document.getElementById('r-content').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('r-empty').style.display = 'none';
+  document.getElementById('r-content').style.display = 'block';
+
+  var baseClose = price * 0.06 * grade;
+  var bonusMap = {6:0, 7:0.005, 8:0.01, 9:0.02};
+  var bonusTot = price * bonusMap[level];
+  var closeBonus = 0, refPay = 0, minApplied = false, delta = 0;
+
+  if (level === 6) {
+    closeBonus = 0;
+    refPay = hasRef ? 500 : 0;
+  } else {
+    var half = bonusTot / 2;
+    if (hasRef) {
+      if (half < 500) {
+        minApplied = true;
+        delta = 500 - half;
+        refPay = 500;
+        closeBonus = half - delta;
+        if (closeBonus < 0) closeBonus = 0;
+      } else {
+        refPay = half;
+        closeBonus = half;
+      }
+    } else {
+      closeBonus = bonusTot;
+      refPay = 0;
+    }
+  }
+
+  var closeTotal = baseClose + closeBonus;
+
+  document.getElementById('r-price').textContent = fmt(price);
+  document.getElementById('r-com').textContent = level + '%';
+  document.getElementById('r-grade').textContent = (grade*100).toFixed(1) + '%';
+  document.getElementById('r-ctot').textContent = fmt(closeTotal);
+  document.getElementById('r-cbase').textContent = fmt(baseClose);
+  document.getElementById('r-cbon').textContent = closeBonus > 0 ? fmt(closeBonus) : '—';
+  document.getElementById('r-cbon-row').style.display = level > 6 ? 'flex' : 'none';
+  document.getElementById('r-refblock').style.display = hasRef ? 'block' : 'none';
+  document.getElementById('r-rtot').textContent = fmt(refPay);
+  document.getElementById('r-rbon').textContent = fmt(refPay);
+
+  var mr = document.getElementById('r-minrow');
+  if (minApplied) {
+    mr.style.display = 'flex';
+    document.getElementById('r-delta').textContent = '−' + fmt(delta) + ' от бонуса';
+  } else {
+    mr.style.display = 'none';
+  }
+
+  var lines = [];
+  lines.push('База = ' + fmt(price) + ' × 6% × ' + (grade*100).toFixed(1) + '% = ' + fmt(baseClose));
+  if (level > 6 && hasRef) {
+    lines.push('Бонус итого = ' + fmt(price) + ' × ' + (bonusMap[level]*100) + '% = ' + fmt(bonusTot));
+    if (minApplied) {
+      lines.push('Передающий мин = $500 | дельта = ' + fmt(delta));
+      lines.push('Бонус закрыв. = ' + fmt(bonusTot/2) + ' − ' + fmt(delta) + ' = ' + fmt(closeBonus));
+    } else {
+      lines.push('50/50 → каждому = ' + fmt(bonusTot/2));
+    }
+  } else if (level === 6 && hasRef) {
+    lines.push('Передающий = $500 (фикс)');
+  } else if (level > 6 && !hasRef) {
+    lines.push('Весь бонус закрывающему = ' + fmt(bonusTot));
+  }
+
+  var fhtml = lines.map(function(l){return '<div>'+l+'</div>';}).join('');
+  fhtml += '<span class="fr">Итого: закрывающий ' + fmt(closeTotal) + (hasRef ? ' | передающий ' + fmt(refPay) : '') + '</span>';
+  document.getElementById('r-formula').innerHTML = fhtml;
+
+  var wb = document.getElementById('r-warn');
+  if (minApplied) {
+    wb.style.display = 'block';
+    wb.textContent = '⚠ Расчётная доля передающего (' + fmt(bonusTot/2) + ') ниже минимума $500. Разница ' + fmt(delta) + ' вычтена из бонуса закрывающего.';
+  } else {
+    wb.style.display = 'none';
+  }
+}
+</script>
+</body>
+</html>
