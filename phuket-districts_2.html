@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Районы Пхукета — Legion Real Estate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  :root{
+    --gold:#8A6A3C;
+    --gold-light:#A57F4B;
+    --green:#1E4632;
+    --green-deep:#16321F;
+    --black:#1E1E1E;
+    --bg:#F5F1E9;
+    --bg-2:#EFE9DC;
+    --panel:#FFFFFF;
+    --line:rgba(138,106,60,.32);
+    --line-soft:rgba(138,106,60,.16);
+    --ink:#23211C;
+    --ink-mut:#6B6557;
+    --ink-faint:#9A9385;
+    --serif:'Fraunces', Georgia, serif;
+    --sans:'Montserrat', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);font-weight:400;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;overflow:hidden;padding:64px 0 40px;
+    background:
+      radial-gradient(120% 90% at 85% -10%, rgba(30,70,50,.10), transparent 60%),
+      linear-gradient(180deg,#FBF8F1 0%, var(--bg) 100%);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .hero::before{ /* diagonal-cut brand graphic */
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.7;
+    background-image:
+      linear-gradient(115deg, transparent 48%, var(--line-soft) 48.4%, var(--line-soft) 48.7%, transparent 49.1%),
+      linear-gradient(115deg, transparent 63%, var(--line-soft) 63.4%, var(--line-soft) 63.7%, transparent 64.1%),
+      linear-gradient(115deg, transparent 78%, var(--line-soft) 78.4%, var(--line-soft) 78.7%, transparent 79.1%);
+  }
+  .brandrow{display:flex;align-items:center;justify-content:space-between;gap:14px;position:relative;flex-wrap:wrap}
+  .lang-toggle{display:inline-flex;border:1px solid var(--line);border-radius:40px;overflow:hidden;flex:0 0 auto}
+  .lang-toggle button{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.08em;padding:6px 15px;background:transparent;color:var(--ink-mut);border:0;cursor:pointer;transition:.18s}
+  .lang-toggle button.on{background:var(--green);color:#fff}
+  .lang-toggle button:not(.on):hover{color:var(--ink)}
+  .mark{width:34px;height:34px;flex:0 0 auto}
+  .mark svg{display:block;width:100%;height:100%}
+  .brand-logo{display:block;height:46px;width:auto}
+  .brandname{font-family:var(--serif);font-weight:600;letter-spacing:.18em;
+    font-size:14px;text-transform:uppercase;color:var(--green)}
+  .brandname small{display:block;font-size:8.5px;letter-spacing:.42em;color:var(--gold);margin-top:1px}
+
+  .eyebrow{position:relative;margin-top:46px;font-size:11.5px;letter-spacing:.34em;
+    text-transform:uppercase;color:var(--gold);font-weight:600}
+  h1{position:relative;font-family:var(--serif);font-weight:500;
+    font-size:clamp(38px,6.5vw,76px);line-height:1.02;letter-spacing:-.01em;margin:14px 0 0;color:var(--green)}
+  h1 .it{font-style:italic;color:var(--gold)}
+  .lede{position:relative;max-width:600px;margin:22px 0 0;color:var(--ink-mut);font-size:16px}
+
+  .keyfacts{position:relative;display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+  .fact{flex:1 1 220px;min-width:200px;background:var(--panel);
+    border:1px solid var(--line-soft);border-radius:3px;padding:18px 20px;
+    box-shadow:0 8px 24px rgba(30,70,50,.05)}
+  .fact b{font-family:var(--serif);font-size:30px;font-weight:600;color:var(--gold);display:block;line-height:1}
+  .fact span{display:block;margin-top:8px;font-size:12.5px;color:var(--ink-mut);line-height:1.45}
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:58px 0}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:8px}
+  .sec-num{font-family:var(--serif);font-size:13px;color:var(--gold);font-style:italic}
+  h2{font-family:var(--serif);font-weight:500;font-size:clamp(26px,3.6vw,38px);
+    margin:0;letter-spacing:-.01em;color:var(--green)}
+  .sec-sub{color:var(--ink-mut);max-width:640px;margin:14px 0 0;font-size:15px}
+
+  /* ---------- MAP ---------- */
+  .map-shell{margin-top:30px;border:1px solid var(--line);border-radius:4px;overflow:hidden;
+    background:var(--bg-2)}
+  #map{height:520px;width:100%;background:#e9e4d8}
+  .leaflet-container{font-family:var(--sans)}
+  .pin{display:flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+    font-size:11px;font-weight:700;color:#FFF;
+    box-shadow:0 2px 8px rgba(0,0,0,.3);border:1.5px solid rgba(255,255,255,.7);
+    transition:transform .2s, opacity .2s}
+  .pin span{transform:rotate(45deg)}
+  .pin.west{background:var(--gold)}
+  .pin.east{background:var(--green)}
+  .pin.muted{background:#9A9385;color:#fff}
+  .pin.dim{opacity:.25}
+  .pin.active{transform:rotate(-45deg) scale(1.28);z-index:1000;
+    box-shadow:0 0 0 4px rgba(165,127,75,.4),0 4px 14px rgba(0,0,0,.45)}
+  .leaflet-popup-content-wrapper{background:#fff;color:var(--ink);border-radius:3px;
+    border:1px solid var(--line)}
+  .leaflet-popup-tip{background:#fff;border:1px solid var(--line)}
+  .leaflet-popup-content{margin:11px 14px;font-size:13px}
+  .pop-name{font-family:var(--serif);font-size:16px;color:var(--green);font-weight:600}
+  .pop-tag{color:var(--ink-mut);font-size:12px;margin-top:2px}
+  .pop-btn{display:inline-block;margin-top:9px;font-size:11px;letter-spacing:.06em;
+    color:var(--gold);text-transform:uppercase;cursor:pointer;border-bottom:1px solid var(--line)}
+
+  /* ---------- FILTER CHIPS ---------- */
+  .filters{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px}
+  .chip{font-family:var(--sans);font-size:12.5px;font-weight:500;letter-spacing:.01em;
+    color:var(--ink-mut);background:transparent;border:1px solid var(--line);
+    padding:8px 15px;border-radius:40px;cursor:pointer;transition:.18s;white-space:nowrap}
+  .chip:hover{border-color:var(--gold);color:var(--ink)}
+  .chip.on{background:var(--green);border-color:var(--green);color:#fff;font-weight:600}
+  .chip .ct{opacity:.7;font-weight:600;margin-left:5px}
+  .chip.on .ct{opacity:.9}
+
+  /* ---------- CARDS ---------- */
+  .legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:22px;font-size:11.5px;color:var(--ink-faint);letter-spacing:.02em}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:18px;margin-top:24px}
+  .card{position:relative;background:var(--panel);border:1px solid var(--line-soft);
+    border-radius:4px;padding:22px 22px 20px;transition:.22s;overflow:hidden;
+    box-shadow:0 6px 22px rgba(30,70,50,.05)}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold)}
+  .card.east::before{background:var(--green)}
+  .card.muted::before{background:#9A9385}
+  .card:hover{border-color:var(--line);transform:translateY(-2px);box-shadow:0 14px 34px rgba(30,70,50,.10)}
+  .card.flash{box-shadow:0 0 0 2px var(--gold),0 14px 34px rgba(30,70,50,.16)}
+  .card.hide{display:none}
+  .c-top{display:flex;align-items:flex-start;gap:12px}
+  .c-no{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--gold);flex:0 0 auto;
+    width:30px;height:30px;border:1px solid var(--line);border-radius:50%;display:flex;
+    align-items:center;justify-content:center;margin-top:2px}
+  .c-name{font-family:var(--serif);font-weight:600;font-size:22px;line-height:1.1;margin:0;color:var(--green)}
+  .c-coast{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);margin-top:4px}
+  .c-summary{color:var(--ink-mut);font-size:13.5px;margin:14px 0 0}
+  .c-meta{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px;margin:16px 0 0;
+    padding-top:14px;border-top:1px solid var(--line-soft)}
+  .c-meta div{font-size:12px}
+  .c-meta dt{color:var(--ink-faint);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:2px}
+  .c-meta dd{margin:0;color:var(--ink)}
+  .c-notes{margin:14px 0 0;padding:0;list-style:none;font-size:12.5px}
+  .c-notes li{position:relative;padding-left:18px;margin-bottom:5px;color:var(--ink-mut)}
+  .c-notes li::before{position:absolute;left:0;top:0}
+  .c-notes li.ok::before{content:"✓";color:#3f7a53;font-weight:700}
+  .c-notes li.no::before{content:"✕";color:#a85c4d;font-weight:700}
+  .c-notes li.info::before{content:"i";font-style:italic;color:var(--gold);font-family:var(--serif)}
+  .c-proj{margin-top:14px;font-size:11.5px;color:var(--ink-faint)}
+  .c-proj b{color:var(--gold);font-weight:600;letter-spacing:.04em}
+  .c-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+  .tag{font-size:10.5px;letter-spacing:.02em;color:var(--green);
+    background:rgba(30,70,50,.06);border:1px solid var(--line-soft);border-radius:30px;padding:3px 10px}
+
+  /* ---------- TABLE ---------- */
+  .tbl-wrap{margin-top:26px;overflow-x:auto;border:1px solid var(--line-soft);border-radius:4px;background:var(--panel)}
+  table{border-collapse:collapse;width:100%;min-width:620px;font-size:13px}
+  th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--line-soft)}
+  thead th{font-family:var(--sans);font-weight:600;font-size:10.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:#fff;background:var(--green)}
+  tbody tr:hover{background:rgba(138,106,60,.07)}
+  td:first-child{font-family:var(--serif);font-weight:600;color:var(--green);font-size:14px}
+  .dot{color:var(--gold)}
+
+  /* ---------- FOOTER ---------- */
+  footer{border-top:1px solid var(--line-soft);padding:40px 0 56px;margin-top:20px;color:var(--ink-faint)}
+  .foot-grid{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px}
+  .foot-grid .big{font-family:var(--serif);font-size:22px;color:var(--green)}
+  .foot-note{font-size:12px;max-width:420px;color:var(--ink-mut)}
+
+  @media (max-width:680px){
+    .hero{padding:44px 0 30px}
+    .keyfacts{flex-direction:column}
+    #map{height:420px}
+    .grid{grid-template-columns:1fr}
+    section{padding:44px 0}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brandrow">
+      <img class="brand-logo" src="data:image/png;base64,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" alt="Legion Real Estate" width="160" height="53">
+      <div class="lang-toggle" id="langToggle">
+        <button data-lang="ru" class="on">RU</button>
+        <button data-lang="en">EN</button>
+      </div>
+    </div>
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1 id="h1"></h1>
+    <p class="lede" id="lede"></p>
+    <div class="keyfacts" id="keyfacts"></div>
+  </div>
+</header>
+
+<section id="map-section">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">01</span><h2 id="sec1h"></h2></div>
+    <p class="sec-sub" id="sec1s"></p>
+    <div class="filters" id="filters"></div>
+    <div class="legend" id="legend"></div>
+    <div class="map-shell"><div id="map"></div></div>
+  </div>
+</section>
+
+<section id="districts" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">02</span><h2 id="sec2h"></h2></div>
+    <p class="sec-sub" id="sec2s"></p>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section id="table">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">03</span><h2 id="sec3h"></h2></div>
+    <p class="sec-sub" id="sec3s"></p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr id="thead-row"></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div>
+      <div class="big">Legion Real Estate</div>
+      <p class="foot-note" id="foot1"></p>
+    </div>
+    <div class="foot-note" id="foot2"></div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+let LANG = 'ru';
+
+const T = {
+  ru:{
+    docTitle:'Районы Пхукета — Legion Real Estate',
+    eyebrow:'Гид по острову · Таиланд',
+    h1:'Районы&nbsp;Пхукета<br>для&nbsp;<span class="it">инвестиций</span> и&nbsp;жизни',
+    lede:'Где покупать, кому подходит и под какую задачу. Карта острова, разбор по каждому району и подбор под клиента.',
+    facts:[
+      {b:'30 мин',s:'До моря с любой точки острова на байке. «Далеко от моря» — аргумент, который не работает.'},
+      {b:'70%',s:'Территории Пхукета — национальные парки. Строительство там запрещено законом.'},
+      {b:'15',s:'Районов в разборе: 8 на туристическом западном побережье и 7 на восточном.'}
+    ],
+    sec1h:'Карта острова',
+    sec1s:'Западное побережье — пляжи, отели и ликвидность. Восточное — жизнь, спорт и уединение без купабельных пляжей. Нажмите на метку, чтобы открыть район.',
+    sec2h:'Районы по порядку',
+    sec2s:'С севера на юг по западному побережью, затем — восточное. Каждый район с ценовым уровнем, оценкой под жизнь / аренду и ключевыми проектами.',
+    sec3h:'Сводная таблица',
+    sec3s:'Быстрое сравнение по цене, пригодности для жизни, аренде/инвестициям и инфраструктуре.',
+    legend:['Западное побережье','Восточное побережье','Не продаём'],
+    th:['Район','Цена','Для жизни','Аренда / инвест.','Инфраструктура'],
+    meta:['Цена','Для жизни','Аренда / инвест.','Инфраструктура'],
+    projects:'Проекты:',
+    openDistrict:'Открыть район →',
+    coast:{west:'Западное побережье',east:'Восточное побережье'},
+    coastShort:{west:'западное побережье',east:'восточное побережье'},
+    foot1:'Внутренний продуктовый материал по тайскому направлению. Проверяем объекты сами, считаем финмодель под запрос клиента и работаем напрямую от застройщика.',
+    foot2:'Следующие материалы: застройщики и конкретные проекты по районам.'
+  },
+  en:{
+    docTitle:'Phuket Districts — Legion Real Estate',
+    eyebrow:'Island guide · Thailand',
+    h1:'Phuket&nbsp;districts<br>for&nbsp;<span class="it">investment</span> &amp;&nbsp;living',
+    lede:'Where to buy, who it suits and for which goal. An island map, a breakdown of every district and matching to the client.',
+    facts:[
+      {b:'30 min',s:'From anywhere on the island to the sea by bike. "Too far from the sea" is an argument that does not hold.'},
+      {b:'70%',s:'of Phuket is national parks. Building there is banned by law.'},
+      {b:'15',s:'districts covered: 8 on the touristy west coast and 7 on the east.'}
+    ],
+    sec1h:'Island map',
+    sec1s:'West coast — beaches, hotels and liquidity. East coast — living, sport and seclusion, with no swimmable beaches. Tap a marker to open a district.',
+    sec2h:'Districts in order',
+    sec2s:'North to south along the west coast, then the east. Each district with its price tier, a living / rental rating and key projects.',
+    sec3h:'Summary table',
+    sec3s:'A quick comparison by price, suitability for living, rental/investment and infrastructure.',
+    legend:['West coast','East coast','Not for sale'],
+    th:['District','Price','Living','Rent / invest.','Infrastructure'],
+    meta:['Price','Living','Rent / invest.','Infrastructure'],
+    projects:'Projects:',
+    openDistrict:'Open district →',
+    coast:{west:'West coast',east:'East coast'},
+    coastShort:{west:'west coast',east:'east coast'},
+    foot1:'Internal product material for the Thailand direction. We vet listings ourselves, build a financial model per client request and work directly with developers.',
+    foot2:'Coming next: developers and specific projects by district.'
+  }
+};
+
+const PERSONAS = [
+  {id:'all',   label:{ru:'Все районы',en:'All districts'}},
+  {id:'invest',label:{ru:'Аренда и инвестиции',en:'Rent & investment'}},
+  {id:'family',label:{ru:'Семьи',en:'Families'}},
+  {id:'villa', label:{ru:'Виллы премиум',en:'Premium villas'}},
+  {id:'live',  label:{ru:'Жизнь без ставки на море',en:'Living away from the beach'}},
+  {id:'ru',    label:{ru:'Русскоязычные / номады',en:'Russian-speakers & nomads'}},
+  {id:'nature',label:{ru:'Природа и уединение',en:'Nature & seclusion'}},
+  {id:'yacht', label:{ru:'Яхтсмены',en:'Yachters'}},
+  {id:'dive',  label:{ru:'Спорт',en:'Sport'}}
+];
+
+const D = [
+  {n:1,coast:'west',lat:8.135,lng:98.298,personas:['nature'],
+   name:{ru:'Майкао',en:'Mai Khao'},
+   summary:{ru:'Север острова: аэропорт, пакетные отели и пляж протяжённостью 10 км.',en:'North of the island: the airport, package hotels and a 10 km beach.'},
+   price:{ru:'Доступная земля',en:'Affordable land'},live:{ru:'Не подходит',en:'Not suitable'},rent:{ru:'Туристы',en:'Tourists'},infra:{ru:'Почти нет',en:'Almost none'},
+   highlights:{ru:'Рядом нацпарк Сиринад и гольф-поля. Изюминка — наблюдение за самолётами с пляжа.',en:'Next to Sirinat National Park and golf courses. Signature: plane-spotting from the beach.'},
+   projects:{ru:[],en:[]},
+   notes:[['no',{ru:'Для постоянной жизни не подходит — инфраструктуры фактически нет',en:'Not suitable for permanent living — almost no infrastructure'}],['ok',{ru:'Интересен отдыхающим туристам',en:'Of interest to holiday tourists'}]]},
+
+  {n:2,coast:'west',lat:8.090,lng:98.288,personas:['family','invest'],
+   name:{ru:'Найтон + Наянг',en:'Nai Thon + Nai Yang'},
+   summary:{ru:'Тихий семейный район с хорошим пляжем и небольшими волнами даже в низкий сезон.',en:'A quiet family area with a good beach and gentle waves even in low season.'},
+   price:{ru:'−10–15% к Бангтао',en:'−10–15% vs Bang Tao'},live:{ru:'Средне',en:'Moderate'},rent:{ru:'Хорошо',en:'Good'},infra:{ru:'Развивается',en:'Developing'},
+   highlights:{ru:'Найтон граничит с Бангтао — 15 минут до всей инфраструктуры. По мере застройки цены подтянутся к Бангтао.',en:'Nai Thon borders Bang Tao — 15 minutes to all infrastructure. As it develops, prices will catch up to Bang Tao.'},
+   projects:{ru:['Zero','Sea Heaven','Title (Тайтл)'],en:['Zero','Sea Heaven','Title']},
+   notes:[['ok',{ru:'Бюджетная альтернатива Бангтао с потенциалом роста',en:'A budget alternative to Bang Tao with growth potential'}],['no',{ru:'Инфраструктура не в пешей доступности',en:'Infrastructure is not within walking distance'}]]},
+
+  {n:3,coast:'west',lat:7.992,lng:98.295,star:true,personas:['invest','family'],
+   name:{ru:'Бангтао + Лагуна',en:'Bang Tao + Laguna'},
+   summary:{ru:'Самый известный и развитый район: 6 км пляжа с развитой инфраструктурой и широкий променад.',en:'The most famous and developed area: 6 km of beach with developed infrastructure and a wide promenade.'},
+   price:{ru:'Высокая ⬆⬆⬆',en:'High ⬆⬆⬆'},live:{ru:'Отлично',en:'Excellent'},rent:{ru:'Отлично',en:'Excellent'},infra:{ru:'Лучшая на острове',en:'Best on the island'},
+   highlights:{ru:'Офисы зарубежных компаний, школы, детсады, Boat Avenue, Blue Tree. Подрайон Лагуна — «Роллс-Ройс» острова: тротуары для прогулок и бега и самая премиальная недвижимость.',en:'Offices of foreign companies, schools, kindergartens, Boat Avenue, Blue Tree. The Laguna sub-area is the island’s "Rolls-Royce": sidewalks for walking and running and the most premium real estate.'},
+   projects:{ru:[],en:[]},
+   notes:[['ok',{ru:'Центральное расположение, равноудалён от севера и юга',en:'Central location, equidistant from north and south'}],['ok',{ru:'Прогрессивное комьюнити экспатов и фрилансеров',en:'A progressive community of expats and freelancers'}]]},
+
+  {n:4,coast:'west',lat:7.975,lng:98.278,personas:['invest'],
+   name:{ru:'Сурин',en:'Surin'},
+   summary:{ru:'10 минут до Бангтао. Один из красивейших пляжей с чистым пологим входом в море.',en:'10 minutes to Bang Tao. One of the most beautiful beaches, with a clean, gentle entry into the sea.'},
+   price:{ru:'Чуть ниже',en:'Slightly lower'},live:{ru:'Хорошо',en:'Good'},rent:{ru:'Отлично',en:'Excellent'},infra:{ru:'Достаточно',en:'Sufficient'},
+   highlights:{ru:'Отели 5*, бутики, галереи, авторская кухня. Снесли незаконные постройки — идёт реконструкция.',en:'5-star hotels, boutiques, galleries, signature cuisine. Illegal buildings were demolished — reconstruction is underway.'},
+   projects:{ru:['Title'],en:['Title']},
+   notes:[['ok',{ru:'Рекомендован инвесторам как перспективный район',en:'Recommended to investors as an up-and-coming area'}]]},
+
+  {n:5,coast:'west',lat:7.953,lng:98.281,personas:['family','villa'],
+   name:{ru:'Камала',en:'Kamala'},
+   summary:{ru:'Семейный тихий район с горным рельефом, вечерними рынками, спа и йогой.',en:'A quiet family area with hilly terrain, evening markets, spa and yoga.'},
+   price:{ru:'Виллы 5–35 млн $ ⬆⬆⬆',en:'Villas $5–35M ⬆⬆⬆'},live:{ru:'Семейный',en:'Family'},rent:{ru:'Хорошо',en:'Good'},infra:{ru:'Активно развивается',en:'Developing'},
+   highlights:{ru:'«Золотая миля» / «Миля миллионеров» — самые дорогие виллы острова. Для большого бюджета на виллу — сразу сюда. Beach-club Del Mar.',en:'The "Golden Mile" / "Millionaires’ Mile" — the island’s most expensive villas. For a big villa budget, come straight here. Del Mar beach club.'},
+   projects:{ru:['Citygate','Title (Тайтл)'],en:['Citygate','Title']},
+   notes:[['info',{ru:'Много мусульман, есть мечети — сообщать клиентам',en:'Many Muslims and mosques — worth telling clients'}]]},
+
+  {n:6,coast:'west',lat:7.896,lng:98.296,personas:[],
+   name:{ru:'Патонг',en:'Patong'},
+   summary:{ru:'Ночная жизнь, клубы, пакетные туристы. ТЦ Jungceylon и Central Patong.',en:'Nightlife, clubs, package tourists. The Jungceylon and Central Patong malls.'},
+   price:{ru:'Средняя',en:'Mid-range'},live:{ru:'Плохо',en:'Poor'},rent:{ru:'Только отели',en:'Hotels only'},infra:{ru:'Туристическая',en:'Tourist-grade'},
+   highlights:{ru:'Самый переполненный пляж острова.',en:'The most crowded beach on the island.'},
+   projects:{ru:['Above'],en:['Above']},
+   notes:[['no',{ru:'Для жизни и долгосрочной аренды не подходит — очень шумно',en:'Not suitable for living or long-term rental — very noisy'}],['ok',{ru:'Единственный интересный проект — Above на тихой окраине',en:'The only interesting project — Above on the quiet outskirts'}]]},
+
+  {n:7,coast:'west',lat:7.846,lng:98.295,personas:['invest'],
+   name:{ru:'Карон',en:'Karon'},
+   summary:{ru:'Между Патонгом и Ката. Один из самых длинных пляжей острова: 7 км, кварцевый песок хрустит как снег. Спокойнее Патонга, одни из лучших закатов.',en:'Between Patong and Kata. One of the island’s longest beaches: 7 km, quartz sand that squeaks like snow. Calmer than Patong, with some of the best sunsets.'},
+   price:{ru:'Выше среднего ⬆⬆',en:'Above average ⬆⬆'},live:{ru:'Комфортно',en:'Comfortable'},rent:{ru:'Отлично',en:'Excellent'},infra:{ru:'Хорошая',en:'Good'},
+   highlights:{ru:'Магазины, кафе, меньше туристического шума. Первая береговая линия — туристы, вторая — постоянные жители.',en:'Shops, cafes, less tourist noise. First beachfront line — tourists; second line — permanent residents.'},
+   projects:{ru:['Hennessy','Vibe Карон (ESM)','отель Pullman'],en:['Hennessy','Vibe Karon (ESM)','Pullman hotel']},
+   notes:[['ok',{ru:'Сильный район для аренды и инвестиций',en:'A strong area for rental and investment'}],['ok',{ru:'Комфортно для проживания, тише, чем в Патонге',en:'Comfortable for living, quieter than Patong'}]]},
+
+  {n:8,coast:'west',lat:7.818,lng:98.298,personas:[],
+   name:{ru:'Ката + Ката Ной',en:'Kata + Kata Noi'},
+   summary:{ru:'Уютный пляж с волнами и серф-школами. Чисто туристический район.',en:'A cozy beach with waves and surf schools. A purely tourist area.'},
+   price:{ru:'Средняя',en:'Mid-range'},live:{ru:'Слабо',en:'Weak'},rent:{ru:'Ограниченно',en:'Limited'},infra:{ru:'Слабая',en:'Weak'},
+   highlights:{ru:'Красивые закаты, аренда досок в низкий сезон. Свободной земли почти нет — нового строится мало.',en:'Beautiful sunsets, board rental in low season. Almost no free land — little new is being built.'},
+   projects:{ru:['Soarijin Kata'],en:['Soarijin Kata']},
+   notes:[['no',{ru:'Некомфортно для постоянной жизни — большой поток туристов',en:'Uncomfortable for permanent living — heavy tourist flow'}]]},
+
+  {n:9,coast:'east',lat:7.773,lng:98.325,personas:['ru'],
+   name:{ru:'Раваи',en:'Rawai'},
+   summary:{ru:'Бюджетный район с максимумом русскоязычной инфраструктуры: детсады, школы, кафе.',en:'A budget area with the most Russian-speaking infrastructure: kindergartens, schools, cafes.'},
+   price:{ru:'Бюджет ⬇',en:'Budget ⬇'},live:{ru:'Замкнуто',en:'Self-contained'},rent:{ru:'Ограниченно',en:'Limited'},infra:{ru:'Локальная',en:'Local'},
+   highlights:{ru:'Пляжи Януи Бич и Най Харн рядом (в мировых рейтингах). Пирс на острова, коворкинги, спортклубы, школы тайского бокса. Сам пляж Равайи некупабельный — рыбный рынок.',en:'Yanui Beach and Nai Harn nearby (in world rankings). A pier to the islands, coworkings, sports clubs, Muay Thai gyms. Rawai’s own beach is not swimmable — a fish market.'},
+   projects:{ru:['Санимун','Валая Резиденс'],en:['Sanimoon','Valaya Residence']},
+   notes:[['ok',{ru:'Максимум русской инфраструктуры — для резидентов и номадов',en:'Maximum Russian infrastructure — for residents and nomads'}],['no',{ru:'Далеко до основной инфраструктуры острова',en:'Far from the island’s main infrastructure'}]]},
+
+  {n:10,coast:'east',lat:7.772,lng:98.302,personas:['nature','family'],
+   name:{ru:'Най Харн',en:'Nai Harn'},
+   summary:{ru:'Юг острова. Один из лучших пляжей Пхукета — постоянно в мировых рейтингах.',en:'South of the island. One of Phuket’s best beaches — consistently in world rankings.'},
+   price:{ru:'Тихий, доступнее',en:'Quiet, cheaper'},live:{ru:'Для семей',en:'For families'},rent:{ru:'Ограниченно',en:'Limited'},infra:{ru:'Минимальная',en:'Minimal'},
+   highlights:{ru:'Озеро с беговой дорожкой, парки, йога на пляже. Минимум транспорта и туристического шума.',en:'A lake with a running track, parks, beach yoga. Minimal traffic and tourist noise.'},
+   projects:{ru:[],en:[]},
+   notes:[['ok',{ru:'Для семей, туристов и интровертов — тишина и природа',en:'For families, tourists and introverts — quiet and nature'}]]},
+
+  {n:11,coast:'east',lat:7.846,lng:98.339,personas:['live','dive'],
+   name:{ru:'Чалонг',en:'Chalong'},
+   summary:{ru:'Развитая инфраструктура для жизни и много экспатов, но без выхода к морю.',en:'Developed infrastructure for living and lots of expats, but no sea access.'},
+   price:{ru:'Ниже (без моря) ⬇',en:'Lower (no beach) ⬇'},live:{ru:'Для экспатов',en:'For expats'},rent:{ru:'Мало',en:'Low'},infra:{ru:'Хорошая',en:'Good'},
+   highlights:{ru:'Пристань Чалонг — главный центр дайвинга. Рядом Big Buddha, школы тайского бокса и фитнес-лагеря.',en:'Chalong Pier — the island’s main diving hub. Big Buddha nearby, Muay Thai gyms and fitness camps.'},
+   projects:{ru:['Фантазия'],en:['Fantasia']},
+   notes:[['ok',{ru:'Удобно для постоянной жизни без ставки на море',en:'Convenient for permanent living away from the beach'}],['info',{ru:'Цены ниже из-за отсутствия пляжа',en:'Prices are lower due to the lack of a beach'}]]},
+
+  {n:12,coast:'east',lat:7.884,lng:98.388,personas:['live'],
+   name:{ru:'Пхукет Таун (Old Town)',en:'Phuket Town (Old Town)'},
+   summary:{ru:'Деловой центр тайцев: банки, больницы, миграционная служба. Удобен брокерам.',en:'The Thais’ business center: banks, hospitals, immigration. Convenient for brokers.'},
+   price:{ru:'Низкая ⬇',en:'Low ⬇'},live:{ru:'Специфично',en:'Specific'},rent:{ru:'Нет',en:'None'},infra:{ru:'Деловой центр',en:'Business hub'},
+   highlights:{ru:'Логистически равноудалён от всех точек острова. «Тай-стайл» застройка.',en:'Logistically equidistant from every point on the island. "Thai-style" development.'},
+   projects:{ru:[],en:[]},
+   notes:[['ok',{ru:'Логистически удобен для работы по всему острову',en:'Logistically convenient for working across the island'}],['no',{ru:'Экспаты выбирают редко — специфичная среда',en:'Expats rarely choose it — a specific environment'}]]},
+
+  {n:13,coast:'east',lat:7.808,lng:98.405,personas:['villa'],
+   name:{ru:'Панва',en:'Panwa'},
+   summary:{ru:'Юго-восток, шикарные смотровые виды. Пляжи без волн, отели и виллы, панорамные виды на море.',en:'Southeast, stunning viewpoints. Wave-free beaches, hotels and villas, panoramic sea views.'},
+   price:{ru:'Премиум ⬆⬆',en:'Premium ⬆⬆'},live:{ru:'Уединение',en:'Seclusion'},rent:{ru:'Только отели',en:'Hotels only'},infra:{ru:'Ограниченная',en:'Limited'},
+   highlights:{ru:'Музей морской биологии.',en:'A marine biology museum.'},
+   projects:{ru:[],en:[]},
+   notes:[['ok',{ru:'Для клиентов, ценящих уединение и элитарность',en:'For clients who value seclusion and exclusivity'}]]},
+
+  {n:14,coast:'east',lat:8.030,lng:98.418,personas:['yacht','villa'],
+   name:{ru:'Ао По',en:'Ao Po'},
+   summary:{ru:'Северо-восток. Яхт-клуб Ao Po Grand Marina, пирсы, морские экскурсии.',en:'Northeast. The Ao Po Grand Marina yacht club, piers, sea excursions.'},
+   price:{ru:'Яхтенный / премиум',en:'Yacht / premium'},live:{ru:'Приватно',en:'Private'},rent:{ru:'Специфично',en:'Specific'},infra:{ru:'Минимальная',en:'Minimal'},
+   highlights:{ru:'Закрытые комьюнити, приватность, уединённые виды на воду.',en:'Gated communities, privacy, secluded water views.'},
+   projects:{ru:[],en:[]},
+   notes:[['ok',{ru:'Для владельцев яхт и морского лайфстайла',en:'For yacht owners and a maritime lifestyle'}]]},
+
+  {n:15,coast:'east',lat:7.999,lng:98.400,muted:true,personas:[],
+   name:{ru:'Паклок',en:'Pa Khlok'},
+   summary:{ru:'Восток, рядом с нацпарками. Экозона: пышная зелень, горы, нет туристов.',en:'East, next to national parks. An eco-zone: lush greenery, mountains, no tourists.'},
+   price:{ru:'Низкая ⬇',en:'Low ⬇'},live:{ru:'Для природников',en:'Nature lovers'},rent:{ru:'Нет',en:'None'},infra:{ru:'Почти нет',en:'Almost none'},
+   highlights:{ru:'Нет толп, практически нет туристов.',en:'No crowds, almost no tourists.'},
+   projects:{ru:[],en:[]},
+   notes:[['no',{ru:'Не продаём — нет объектов для клиентов',en:'We don’t sell here — no listings for clients'}]]}
+];
+
+const tr = o => o[LANG];
+const t = () => T[LANG];
+const personaLabel = id => tr((PERSONAS.find(p=>p.id===id)||{label:{ru:id,en:id}}).label);
+
+/* ---------- MAP ---------- */
+const lmap = L.map('map',{scrollWheelZoom:false,zoomControl:true}).setView([7.95,98.34],11);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+  attribution:'© OpenStreetMap, © CARTO',subdomains:'abcd',maxZoom:19
+}).addTo(lmap);
+
+function popupHTML(d){
+  return `<div class="pop-name">${tr(d.name)}</div>`+
+    `<div class="pop-tag">${tr(d.price)} · ${d.coast==='west'?t().coastShort.west:t().coastShort.east}</div>`+
+    `<div class="pop-btn" onclick="goCard(${d.n})">${t().openDistrict}</div>`;
+}
+
+const markers = {};
+D.forEach(d=>{
+  const cls = d.muted ? 'muted' : d.coast;
+  const icon = L.divIcon({html:`<div class="pin ${cls}" data-n="${d.n}"><span>${d.n}</span></div>`,
+    className:'', iconSize:[26,26], iconAnchor:[13,26], popupAnchor:[0,-24]});
+  const mk = L.marker([d.lat,d.lng],{icon}).addTo(lmap);
+  mk.bindPopup(popupHTML(d));
+  mk.on('click',()=>flashCard(d.n,false));
+  markers[d.n]=mk;
+});
+function pinEl(n){ return document.querySelector('.pin[data-n="'+n+'"]'); }
+
+/* ---------- RENDER: STATIC ---------- */
+function renderStatic(){
+  const x = t();
+  document.documentElement.lang = LANG;
+  document.title = x.docTitle;
+  document.getElementById('eyebrow').textContent = x.eyebrow;
+  document.getElementById('h1').innerHTML = x.h1;
+  document.getElementById('lede').textContent = x.lede;
+  document.getElementById('keyfacts').innerHTML =
+    x.facts.map(f=>`<div class="fact"><b>${f.b}</b><span>${f.s}</span></div>`).join('');
+  document.getElementById('sec1h').textContent = x.sec1h;
+  document.getElementById('sec1s').textContent = x.sec1s;
+  document.getElementById('sec2h').textContent = x.sec2h;
+  document.getElementById('sec2s').textContent = x.sec2s;
+  document.getElementById('sec3h').textContent = x.sec3h;
+  document.getElementById('sec3s').textContent = x.sec3s;
+  const sw = ['#8A6A3C','#1E4632','#9A9385'];
+  document.getElementById('legend').innerHTML =
+    x.legend.map((lg,i)=>`<span><i style="background:${sw[i]}"></i>${lg}</span>`).join('');
+  document.getElementById('thead-row').innerHTML =
+    x.th.map(h=>`<th>${h}</th>`).join('');
+  document.getElementById('foot1').textContent = x.foot1;
+  document.getElementById('foot2').textContent = x.foot2;
+}
+
+/* ---------- RENDER: CARDS ---------- */
+function renderCards(){
+  const x = t();
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  D.forEach(d=>{
+    const el = document.createElement('article');
+    el.className = 'card '+(d.muted?'muted':d.coast);
+    el.id = 'card-'+d.n;
+    el.dataset.personas = d.personas.join(' ');
+    const proj = tr(d.projects);
+    el.innerHTML = `
+      <div class="c-top">
+        <div class="c-no">${d.n}</div>
+        <div>
+          <h3 class="c-name">${tr(d.name)}${d.star?' <span style="color:var(--gold)">★</span>':''}</h3>
+          <div class="c-coast">${d.coast==='west'?x.coast.west:x.coast.east}</div>
+        </div>
+      </div>
+      <p class="c-summary">${tr(d.summary)}</p>
+      <dl class="c-meta">
+        <div><dt>${x.meta[0]}</dt><dd>${tr(d.price)}</dd></div>
+        <div><dt>${x.meta[1]}</dt><dd>${tr(d.live)}</dd></div>
+        <div><dt>${x.meta[2]}</dt><dd>${tr(d.rent)}</dd></div>
+        <div><dt>${x.meta[3]}</dt><dd>${tr(d.infra)}</dd></div>
+      </dl>
+      <p class="c-summary" style="margin-top:14px">${tr(d.highlights)}</p>
+      <ul class="c-notes">${d.notes.map(no=>`<li class="${no[0]}">${tr(no[1])}</li>`).join('')}</ul>
+      ${proj.length?`<div class="c-proj">${x.projects} <b>${proj.join(' · ')}</b></div>`:''}
+      ${d.personas.length?`<div class="c-tags">${d.personas.map(pp=>`<span class="tag">${personaLabel(pp)}</span>`).join('')}</div>`:''}
+    `;
+    el.addEventListener('click',()=>{
+      lmap.flyTo([d.lat,d.lng],13,{duration:.6});
+      markers[d.n].openPopup();
+      setActivePin(d.n);
+      document.getElementById('map-section').scrollIntoView({behavior:'smooth'});
+    });
+    grid.appendChild(el);
+  });
+}
+
+/* ---------- RENDER: TABLE ---------- */
+function renderTable(){
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  D.forEach(d=>{
+    const row=document.createElement('tr');
+    row.innerHTML = `<td>${tr(d.name)}</td><td>${tr(d.price)}</td><td>${tr(d.live)}</td><td>${tr(d.rent)}</td><td>${tr(d.infra)}</td>`;
+    row.style.cursor='pointer';
+    row.addEventListener('click',()=>{
+      document.getElementById('map-section').scrollIntoView({behavior:'smooth'});
+      lmap.flyTo([d.lat,d.lng],13,{duration:.6});
+      markers[d.n].openPopup();
+      setActivePin(d.n);
+    });
+    tbody.appendChild(row);
+  });
+}
+
+/* ---------- RENDER: FILTERS ---------- */
+let active='all';
+function renderFilters(){
+  const fbar = document.getElementById('filters');
+  fbar.innerHTML='';
+  PERSONAS.forEach(p=>{
+    const count = p.id==='all'? D.length : D.filter(d=>d.personas.includes(p.id)).length;
+    const b=document.createElement('button');
+    b.className='chip'+(p.id===active?' on':'');
+    b.dataset.pid=p.id;
+    b.innerHTML = personaLabel(p.id) + (p.id==='all'?'':`<span class="ct">${count}</span>`);
+    b.addEventListener('click',()=>applyFilter(p.id));
+    fbar.appendChild(b);
+  });
+}
+function applyFilter(id){
+  active=id;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.pid===id));
+  D.forEach(d=>{
+    const match = id==='all' || d.personas.includes(id);
+    const card=document.getElementById('card-'+d.n);
+    if(card) card.classList.toggle('hide',!match);
+    const pe=pinEl(d.n); if(pe) pe.classList.toggle('dim',!match);
+  });
+}
+
+/* ---------- INTERACTIONS ---------- */
+function setActivePin(n){
+  document.querySelectorAll('.pin').forEach(p=>p.classList.remove('active'));
+  const pe=pinEl(n); if(pe) pe.classList.add('active');
+}
+function flashCard(n,scroll){
+  const c=document.getElementById('card-'+n); if(!c) return;
+  setActivePin(n);
+  if(scroll){ c.scrollIntoView({behavior:'smooth',block:'center'}); }
+  c.classList.add('flash'); setTimeout(()=>c.classList.remove('flash'),1400);
+}
+function goCard(n){
+  if(active!=='all'){ applyFilter('all'); }
+  document.getElementById('districts').scrollIntoView({behavior:'smooth'});
+  setTimeout(()=>flashCard(n,true),420);
+}
+window.goCard=goCard;
+
+/* ---------- LANGUAGE ---------- */
+function setLang(lang){
+  LANG = lang;
+  document.querySelectorAll('#langToggle button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+  renderStatic();
+  renderFilters();
+  renderCards();
+  renderTable();
+  Object.values(markers).forEach((mk)=>{});
+  D.forEach(d=>markers[d.n].setPopupContent(popupHTML(d)));
+  applyFilter(active);
+}
+document.querySelectorAll('#langToggle button').forEach(b=>{
+  b.addEventListener('click',()=>setLang(b.dataset.lang));
+});
+
+setLang('ru');
+</script>
+
+</body>
+</html>
