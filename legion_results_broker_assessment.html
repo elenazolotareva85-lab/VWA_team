@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legion Real Estate — Проверь себя: правила брокера</title>
+<style>
+  :root{
+    --bg:#1a1a1a; --card:#2f2f2f; --card2:#272727; --line:#3a3a3a;
+    --gold:#c9a961; --gold-dim:#9a8246;
+    --txt:#ececec; --muted:#9a9a9a;
+    --ok:#5cc88f; --ok-bg:#16321f; --bad:#e0635f; --bad-bg:#341818;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--gold)}
+  .brand b{letter-spacing:.14em;font-size:13px;color:var(--gold);text-transform:uppercase}
+  h1{font-size:23px;margin:14px 0 6px;font-weight:650}
+  .lead{color:var(--muted);font-size:14.5px;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:16px}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+  .pill{font-size:12.5px;color:var(--muted);background:var(--card2);border:1px solid var(--line);
+    border-radius:999px;padding:6px 12px}
+  .pill b{color:var(--gold);font-weight:600}
+  ul.method{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:14px}
+  ul.method li{margin:6px 0}
+  ul.method b{color:var(--txt)}
+  label.fld{display:block;font-size:13px;color:var(--muted);margin:16px 0 6px}
+  input[type=text]{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;
+    color:var(--txt);padding:12px 14px;font-size:15px;outline:none}
+  input[type=text]:focus{border-color:var(--gold-dim)}
+  .btn{appearance:none;border:none;cursor:pointer;font-size:15px;font-weight:600;
+    background:var(--gold);color:#1a1a1a;border-radius:10px;padding:13px 22px;transition:.15s}
+  .btn:hover{filter:brightness(1.06)}
+  .btn:disabled{opacity:.4;cursor:default}
+  .btn.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold-dim)}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+  .blocktag{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:600}
+  .counter{font-size:13px;color:var(--muted)}
+  .bar{height:5px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:22px}
+  .bar > i{display:block;height:100%;background:var(--gold);width:0;transition:width .3s}
+  .q{font-size:17px;font-weight:600;margin:0 0 18px}
+  .opt{display:block;width:100%;text-align:left;background:var(--card2);border:1px solid var(--line);
+    color:var(--txt);border-radius:11px;padding:14px 16px;margin:9px 0;font-size:15px;cursor:pointer;transition:.12s}
+  .opt:hover{border-color:var(--gold-dim)}
+  .opt.sel{border-color:var(--gold);background:#34301f}
+  .opt.correct{border-color:var(--ok);background:var(--ok-bg)}
+  .opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+  .opt .mk{font-weight:700;margin-right:8px;color:var(--gold)}
+  .opt.correct .mk{color:var(--ok)} .opt.wrong .mk{color:var(--bad)}
+  .opt[disabled]{cursor:default}
+  .explain{border-radius:11px;padding:14px 16px;margin:14px 0 4px;font-size:14.5px;display:none}
+  .explain.show{display:block}
+  .explain.r-ok{background:var(--ok-bg);border:1px solid #234a33}
+  .explain.r-bad{background:var(--bad-bg);border:1px solid #4a2424}
+  .explain .verdict{font-weight:700;margin-bottom:6px}
+  .explain.r-ok .verdict{color:var(--ok)} .explain.r-bad .verdict{color:var(--bad)}
+  .explain .ref{display:inline-block;margin-top:8px;font-size:12.5px;color:var(--gold);
+    background:#2a2616;border:1px solid var(--gold-dim);border-radius:7px;padding:3px 9px}
+  .nav{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+  .score{font-size:54px;font-weight:700;line-height:1;color:var(--gold)}
+  .verdict-big{font-size:18px;font-weight:700;margin-top:8px}
+  .pass{color:var(--ok)} .fail{color:var(--bad)}
+  .blockrow{margin:16px 0}
+  .blockrow .h{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px}
+  .blockrow .h span:last-child{color:var(--muted)}
+  .bbar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+  .bbar > i{display:block;height:100%;border-radius:99px}
+  .risk{background:var(--card2);border:1px solid var(--line);border-left:3px solid var(--bad);
+    border-radius:9px;padding:11px 14px;margin:9px 0;font-size:14px}
+  .risk .t{font-weight:600}
+  .risk .ref{font-size:12px;color:var(--gold);margin-top:3px}
+  .clean{background:var(--ok-bg);border:1px solid #234a33;border-radius:9px;padding:12px 14px;font-size:14px;color:var(--ok)}
+  .hide{display:none}
+  .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:30px}
+  .linkbtn{background:none;border:none;color:var(--gold);font-size:13.5px;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px}
+  .linkbtn:hover{color:var(--gold-dim)}
+  .statrow{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px}
+  table.log{width:100%;border-collapse:collapse;font-size:13.5px}
+  table.log th{text-align:left;color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;
+    letter-spacing:.04em;padding:8px 10px;border-bottom:1px solid var(--line)}
+  table.log td{padding:9px 10px;border-bottom:1px solid var(--line)}
+  table.log tr:last-child td{border-bottom:none}
+  table.log td.num{color:var(--muted);font-variant-numeric:tabular-nums}
+  table.log td.pct{font-weight:700;font-variant-numeric:tabular-nums}
+  .tag{display:inline-block;font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 10px}
+  .tag.pass{color:var(--ok);background:var(--ok-bg)}
+  .tag.fail{color:var(--bad);background:var(--bad-bg)}
+  .backrow{margin-bottom:14px}
+  table.log tr{cursor:pointer}
+  table.log tr:hover td{background:#333025}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:flex;
+    align-items:flex-start;justify-content:center;padding:24px 12px;overflow-y:auto}
+  .modal-overlay.hide{display:none}
+  .modal{background:var(--card);border:1px solid var(--line);border-radius:14px;max-width:680px;
+    width:100%;padding:22px;margin-top:10px}
+  .modal h2{font-size:17px;margin:0 0 4px}
+  .modal .sub{color:var(--muted);font-size:13px;margin:0 0 16px}
+  .qrow{border-top:1px solid var(--line);padding:12px 0;font-size:13.5px}
+  .qrow:first-child{border-top:none}
+  .qrow .qh{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px}
+  .qrow .qh .qn{color:var(--muted)}
+  .qtag{font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap}
+  .qtag.ok{color:var(--ok);background:var(--ok-bg)}
+  .qtag.wrong{color:var(--bad);background:var(--bad-bg)}
+  .qrow .ans{color:var(--muted);margin:2px 0}
+  .qrow .ans b{color:var(--txt);font-weight:600}
+  .qrow .ans.chosen-wrong b{color:var(--bad)}
+  .qrow .ans.correct-line b{color:var(--ok)}
+  .modal-close{position:sticky;top:0;text-align:right;margin-bottom:-8px}
+  table.qstat{width:100%;border-collapse:collapse;font-size:13px}
+  table.qstat th{text-align:left;color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;
+    padding:7px 8px;border-bottom:1px solid var(--line)}
+  table.qstat td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.qstat td.qtxt{max-width:340px}
+  table.qstat td.pctcell{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .miniprog{height:5px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:4px;width:100px}
+  .miniprog>i{display:block;height:100%;border-radius:99px}
+  .keyrow{border-top:1px solid var(--line);padding:14px 0;font-size:13.5px}
+  .keyrow:first-child{border-top:none}
+  .keyrow .kh{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px;align-items:baseline}
+  .keyrow .kh .kn{color:var(--muted);font-size:12px}
+  .keyrow .qtext{margin:0 0 8px;font-weight:600}
+  .keyrow .correct-answer{color:var(--ok);margin:0 0 8px}
+  .keyrow .correct-answer b{font-weight:600}
+  .keyrow .doclabel{font-size:11.5px;color:var(--gold);background:#2a2616;border:1px solid var(--gold-dim);
+    border-radius:7px;padding:3px 9px;display:inline-block;margin-bottom:6px}
+  .keyrow .quote{border-left:2px solid var(--gold-dim);padding-left:10px;color:var(--txt);font-style:italic;
+    font-size:13px;line-height:1.5}
+  .keyrow .noquote{color:var(--muted);font-size:12.5px;font-style:italic}
+  .filterrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .filterbtn{font-size:12.5px;background:var(--card2);border:1px solid var(--line);color:var(--muted);
+    border-radius:999px;padding:6px 12px;cursor:pointer}
+  .filterbtn.active{border-color:var(--gold);color:var(--gold)}
+  .whytoggle{margin-top:10px;font-size:12px;background:var(--card2);border:1px solid var(--line);
+    color:var(--gold);border-radius:999px;padding:5px 12px;cursor:pointer}
+  .whytoggle:hover{border-color:var(--gold-dim)}
+  .whybox{margin-top:10px;background:var(--card2);border:1px solid var(--line);border-radius:9px;
+    padding:11px 14px;font-size:13px;color:var(--txt);line-height:1.5}
+  .whybox.hide{display:none}
+  .keyrow.highlight{background:#34301f;border-radius:10px;box-shadow:0 0 0 1px var(--gold-dim);transition:background .3s}
+  table.qstat .doclink{white-space:normal;line-height:1.4}
+  @media(max-width:480px){h1{font-size:20px}.q{font-size:16px}.card{padding:18px}
+    table.log{font-size:12px}table.log th,table.log td{padding:7px 6px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <section id="intro">
+    <div class="brand"><span class="dot"></span><b>Legion Real Estate</b></div>
+    <h1>Проверь себя: правила, грейды, расчёты, NDA</h1>
+    <p class="lead">Короткая самопроверка по действующим правилам компании. Зачем это нужно: уверенно считать свои комиссии, не терять деньги на спорных сделках и точно знать, где в документах смотреть правило.</p>
+
+    <div class="card">
+      <div class="meta">
+        <span class="pill"><b>30</b> вопросов</span>
+        <span class="pill"><b>4</b> блока</span>
+        <span class="pill">Порог: <b>80%</b></span>
+        <span class="pill">~18–22 мин</span>
+      </div>
+      <ul class="method">
+        <li><b>Блок 1.</b> Должность и ЦКП</li>
+        <li><b>Блок 2.</b> Грейды и пороги по чеку</li>
+        <li><b>Блок 3.</b> NDA и конфиденциальность <span style="color:var(--gold)">(критичный блок)</span></li>
+        <li><b>Блок 4.</b> Расчёты и спорные кейсы — личный/рекомендация, перепродажи, межрыночные, партнёрские, бонусы застройщика</li>
+      </ul>
+      <p class="lead" style="margin:16px 0 0;font-size:13.5px">
+        Правильные ответы сразу не подсказываются: при ошибке вы видите, <b style="color:var(--txt)">в каком документе</b> искать верный ответ. В конце — итог по блокам и зоны на доучивание.
+      </p>
+
+      <div style="margin-top:6px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+        <button class="btn" id="start">Начать</button>
+        <button class="linkbtn" id="showLog">Результаты тестирования сотрудников →</button>
+      </div>
+    </div>
+    <p class="foot">Внутренний документ PT LEGION REAL ESTATE. Не для распространения.</p>
+  </section>
+
+  <section id="log" class="hide">
+    <div class="brand"><span class="dot"></span><b>Legion Real Estate</b></div>
+    <div class="backrow"><button class="linkbtn" id="backFromLog">← Назад</button></div>
+    <h1>Результаты тестирования сотрудников</h1>
+    <p class="lead">Рейтинг по всем прошедшим самопроверку «Правила, грейды, расчёты, NDA» — от лучшего результата к худшему. Порог прохождения — 80%.</p>
+
+    <div class="card">
+      <div class="statrow">
+        <span class="pill">Прошли тест: <b id="logCount">0</b></span>
+        <span class="pill">Средний балл: <b id="logAvg">0%</b></span>
+        <span class="pill">Порог пройден: <b id="logPassed">0</b></span>
+      </div>
+      <table class="log">
+        <thead>
+          <tr><th>Место</th><th>Email</th><th>Дата</th><th>Баллы</th><th>%</th><th>Статус</th></tr>
+        </thead>
+        <tbody id="logBody"></tbody>
+      </table>
+      <p class="lead" style="font-size:12.5px;margin:12px 0 0">Клик по строке — подробный разбор ответов этого сотрудника.</p>
+    </div>
+    <div class="backrow"><button class="linkbtn" id="showStats">Сводная по вопросам (где чаще всего ошибаются) →</button></div>
+    <div class="backrow"><button class="linkbtn" id="showKey">Разбор правильных ответов (со ссылкой на документ и цитатой) →</button></div>
+    <p class="foot">Данные — итоги прохождения формы «Проверь себя: правила, грейды, расчёты, NDA».</p>
+  </section>
+
+  <section id="answerkey" class="hide">
+    <div class="brand"><span class="dot"></span><b>Legion Real Estate</b></div>
+    <div class="backrow"><button class="linkbtn" id="backFromKey">← К результатам</button></div>
+    <h1>Разбор правильных ответов</h1>
+    <p class="lead">Все 30 вопросов: правильный ответ, документ и пункт, и цитата из первоисточника (там, где документ есть в базе проекта).</p>
+    <div class="filterrow">
+      <button class="filterbtn active" data-block="all">Все блоки</button>
+      <button class="filterbtn" data-block="0">Блок 1 · Должность</button>
+      <button class="filterbtn" data-block="1">Блок 2 · Грейды</button>
+      <button class="filterbtn" data-block="2">Блок 3 · NDA</button>
+      <button class="filterbtn" data-block="3">Блок 4 · Расчёты</button>
+    </div>
+    <div class="card">
+      <div id="keyBody"></div>
+    </div>
+  </section>
+
+  <section id="stats" class="hide">
+    <div class="brand"><span class="dot"></span><b>Legion Real Estate</b></div>
+    <div class="backrow"><button class="linkbtn" id="backFromStats">← К результатам</button></div>
+    <h1>Сводная по вопросам</h1>
+    <p class="lead">Доля верных ответов по каждому из 30 вопросов (16 прошедших). Внизу — самые проблемные темы.</p>
+    <div class="card">
+      <table class="qstat">
+        <thead><tr><th>Блок</th><th>Вопрос</th><th>% верно</th><th>Правильный ответ</th><th>Документ</th><th>Частая ошибка</th><th>Комментарий</th></tr></thead>
+        <tbody id="statsBody"></tbody>
+      </table>
+      <p class="lead" style="font-size:12.5px;margin:12px 0 0">Клик по документу — открыть подробный разбор именно этого вопроса.</p>
+    </div>
+  </section>
+
+  <div class="modal-overlay hide" id="detailModal">
+    <div class="modal">
+      <div class="modal-close"><button class="linkbtn" id="closeDetail">Закрыть ✕</button></div>
+      <h2 id="detailEmail"></h2>
+      <p class="sub" id="detailSub"></p>
+      <div id="detailBody"></div>
+    </div>
+  </div>
+
+  <section id="quiz" class="hide">
+    <div class="topbar">
+      <span class="blocktag" id="blocktag">Блок 1</span>
+      <span class="counter" id="counter">1 / 30</span>
+    </div>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="card">
+      <p class="q" id="qtext"></p>
+      <div id="opts"></div>
+      <div class="explain" id="explain">
+        <div class="verdict" id="verdict"></div>
+        <div id="why"></div>
+        <span class="ref" id="ref"></span>
+      </div>
+      <div class="nav">
+        <button class="btn ghost" id="check" disabled>Проверить</button>
+        <button class="btn hide" id="next">Далее</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="results" class="hide">
+    <div class="brand"><span class="dot"></span><b>Legion Real Estate</b></div>
+    <h1>Ваш результат</h1>
+    <div class="card">
+      <div id="who" class="lead" style="margin-bottom:14px"></div>
+      <div class="score" id="finalScore">0%</div>
+      <div class="verdict-big" id="finalVerdict"></div>
+      <div id="blocks" style="margin-top:22px"></div>
+    </div>
+    <div class="card">
+      <h1 style="font-size:17px;margin:0 0 6px">Зоны на доучивание</h1>
+      <p class="lead" style="font-size:13.5px;margin:0 0 12px">Темы с ошибками — с указанием пункта документа для повторения.</p>
+      <div id="risks"></div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn ghost" id="retry">Пройти заново</button>
+    </div>
+    <p class="foot">Дата прохождения: <span id="dateStamp"></span></p>
+  </section>
+
+</div>
+
+<script>
+const QUESTIONS = [
+  {b:0, q:"По итогам месяца у вас 40 проведённых встреч, 12 заявок в CRM и 3 подписанных договора — но деньги по этим договорам ещё не зашли на счёт компании. Что засчитается в вашу статистику должности?", o:["40 встреч","12 заявок","3 подписанных договора","Ничего — статистика считается по выручке, реально поступившей на счёт"], a:3, ref:"Должностная — ЦКП / Статистика должности", why:"Статистика и ЦКП — это выручка ПОЛУЧЕННАЯ, то есть деньги, поступившие на счёт. Встречи, заявки и даже подписанные, но неоплаченные договоры в неё не входят."},
+  {b:0, q:"Другой менеджер начал параллельно общаться с клиентом, который закреплён за вами. На какое полномочие вы вправе сослаться?", o:["Запретить клиенту менять менеджера","Вести своих клиентов самостоятельно, без вмешательства других менеджеров","Назначить себе процент выше грейда за конфликт","Передать клиента кому угодно без согласования"], a:1, ref:"Должностная — Полномочия", why:"Прямое полномочие — вести своих закреплённых клиентов без вмешательства других менеджеров. Запрещать клиенту что-либо или менять себе процент вы не вправе."},
+  {b:0, q:"Если свести вашу должность к одному результату, за который компания вам платит, — это:", o:["Количество закрытых сделок","Выручка, поступившая от закреплённых за вами клиентов","Конверсия из заявки во встречу","Объём подписанных договоров"], a:1, ref:"Должностная — ЦКП", why:"ЦКП — выручка, поступившая на счёт от закреплённых за вами клиентов. Не количество сделок и не объём договоров (которые могут быть без оплаты)."},
+  {b:0, q:"Что из перечисленного вы вправе делать ПО СВОЕМУ решению, без отдельного согласования?", o:["Самостоятельно менять размер своей комиссии","Давать клиенту спецпредложения и рычаги закрытия в пределах своей компетенции, актуальные в текущем периоде","Утвердить новый объект в зелёный список","Согласовать клиенту скидку выше лимита"], a:1, ref:"Должностная — Полномочия", why:"Спецпредложения и рычаги закрытия в пределах своей компетенции — ваше полномочие. Менять комиссию, зелёный список или давать скидку сверх лимита самостоятельно нельзя."},
+  {b:0, q:"Вы нашли нефокусный проект, который, на ваш взгляд, отлично продаётся. Что вы вправе сделать по должностной?", o:["Перевести его в фокусные самостоятельно","Внести предложение по оптимизации ассортимента; перевод в фокусные утверждают CCO/CEO при подтверждённой марже","Договориться с отделом продукта напрямую и закрепить","Это полностью вне ваших полномочий"], a:1, ref:"Должностная (Полномочия) + Грейды п. 3.1", why:"Вносить предложения по ассортименту — ваше полномочие. Но перевод нефокусного проекта в фокусный требует подтверждённой маржи и согласования CCO/CEO."},
+  {b:1, q:"К вам обратился клиент: покупает ОДИН нефокусный объект за $300 000, комиссия застройщика 6%. Вы — Middle. По какой ставке считается ваша комиссия?", o:["32% (чек попадает в коридор $250–500к)","27%","10% — порог по чеку для комиссии 6% ($375 000) не достигнут","60/40"], a:2, ref:"Грейды п. 3.3.2 (таблица порогов)", why:"Объект нефокусный, поэтому грейд сохраняется только при достижении порога по чеку. Для комиссии 6% порог — $375 000, а у вас $300 000 → фикс 10%."},
+  {b:1, q:"Тот же нефокусный объект, но цена $400 000, комиссия застройщика 6%. Ставка?", o:["10%","32% — порог $375 000 для комиссии 6% достигнут, применяется грейд по чеку","27%","37%"], a:1, ref:"Грейды п. 3.3.2", why:"$400 000 ≥ порога $375 000 (для комиссии 6%), поэтому сохраняется грейд по чеку: для $250–500к это 32%."},
+  {b:1, q:"За месяц вы закрыли 3 нефокусные сделки с ТРЕМЯ разными клиентами: $200к, $180к и $160к, итого оборот $540к. По какой ставке считается каждая сделка?", o:["37% — оборот выше $500к","32% — оборот в коридоре $250–500к","По 10% — каждая сделка с разным клиентом считается отдельно, порог не суммируется","Первая по грейду, остальные по 10%"], a:2, ref:"Грейды п. 3.3.2", why:"Порог по чеку считается в пределах одного клиента / одной сделки. Оборот разных клиентов не складывается. Каждая из трёх сделок < $375к → по 10%."},
+  {b:1, q:"Один ваш клиент в рамках одной сделки берёт сразу 2 нефокусных объекта, общий чек $420 000, комиссия 6%. Ставка?", o:["10% — объекты нефокусные","Стандартный грейд по чеку (32%) — один клиент с 2 объектами в одной сделке, порог достигнут","60/40","15%"], a:1, ref:"Грейды п. 3.3.2", why:"Один клиент с 2+ объектами в одной сделке (или периоде до 1,5 мес.) считается по стандартному грейду. Чек $420к ≥ порога $375к → 32%."},
+  {b:1, q:"Командный оборот за месяц $5 млн (командный бонус по шкале — $10 000). Вы лично продали на $500 000. Сколько вам из командного бонуса?", o:["$10 000","$1 000","$2 000","$500"], a:1, ref:"Грейды п. 3.5 (командный бонус)", why:"Командный бонус распределяется пропорционально личному вкладу: 500 000 / 5 000 000 × 10 000 = $1 000."},
+  {b:1, q:"За месяц вы закрыли сделки на $750 000, а ваш коллега — на $720 000. Получит ли бонус «Лучший продавец месяца» ВАШ КОЛЛЕГА?", o:["Нет — бонус достаётся только одному лучшему (вам)","Да — он превысил порог $700 000; бонус $1 000 получают все, кто его прошёл, а не только первый","Только если он станет первым в следующем месяце","Нет — ему нужно столько же, сколько у вас ($750 000)"], a:1, ref:"Грейды п. 3.5", why:"Бонус $1 000 не ограничен одним победителем — его получает каждый, кто закрыл от $700 000 за месяц. Коллега с $720 000 порог превысил, значит получит бонус наравне с вами."},
+  {b:2, q:"Вы выложили в свой блог обезличенную аналитику рынка, которую сами собрали из открытых источников, без данных компании. Это нарушение NDA?", o:["Да, любая аналитика по недвижимости — конфиденциальна","Нет — информация, самостоятельно и правомерно полученная из открытых источников без данных компании, не относится к конфиденциальной","Да, на любой публичный пост нужно согласие компании","Нарушение, но только после увольнения"], a:1, ref:"NDA — «К Конфиденциальной информации не относится»", why:"Не конфиденциальна общедоступная информация и данные, самостоятельно и правомерно полученные без использования информации компании (при наличии письменных доказательств)."},
+  {b:2, q:"Вы переслали другу-риелтору из другого агентства скриншот нашей CRM с карточками двух клиентов. Чем это грозит?", o:["Устным предупреждением","$10 000 за каждый выявленный факт разглашения, плюс возмещение убытков компании","Штрафом $1 000 разово","Ничем, если друг этим не воспользуется"], a:1, ref:"NDA п. 6.1 / 6.2", why:"Штраф — $10 000 за каждый выявленный факт (оплата в течение 10 календарных дней с письменного уведомления), плюс возмещение всех убытков, включая репутационные."},
+  {b:2, q:"Ваши друзья из другого агентства недвижимости на рынке Бали предлагают вам взять в работу 20 их лидов. Как правильно поступить?", o:["Взять — грех отказываться от бесплатных лидов","Нельзя брать напрямую: работа с лидами другого агентства — это деятельность с конкурентом и конфликт интересов; легально они могут зайти только официально через компанию с её письменного согласия","Взять и вести их как своих личных клиентов (60/40)","Взять и самому оформить их как партнёрских"], a:1, ref:"NDA п. 4.11", why:"По NDA в период сотрудничества запрещена деятельность с другими агентствами, способная вызвать конфликт интересов, без письменного согласия компании. Брать чужие лиды «в обход» нельзя — только через официальный процесс компании."},
+  {b:2, q:"На созвоне с приятелем вы устно рассказали наши условия комиссии с застройщиком X. Это разглашение?", o:["Нет — устно сказанное не считается","Да — информация конфиденциальна вне зависимости от формы (в т.ч. устно), если компания прямо не указала обратное","Нет, если не передавали документов","Только если разговор записали"], a:1, ref:"NDA п. 3.4 / 3.7", why:"Конфиденциальность не зависит от формы передачи: устно, в мессенджере, письменно — всё защищено, если прямо не указано иное."},
+  {b:2, q:"Подрядчик просит дать ему доступ к папке с нашими бизнес-процессами, чтобы помочь вам с задачей. Ваши действия?", o:["Дать доступ — он же помогает по работе","Только с предварительного письменного согласия компании; третье лицо нужно письменно уведомить о конфиденциальности","Сделать копию папки и передать ему","Дать доступ, а соглашение подписать потом"], a:1, ref:"NDA п. 4.2 / 4.2.1 / 4.3", why:"Раскрытие третьим лицам — только с предварительного письменного согласия компании, с письменным уведомлением их о конфиденциальности. Копировать папки для передачи третьим лицам прямо запрещено."},
+  {b:3, q:"Вы сами, без маркетинга и партнёрки, привели клиента и закрыли сделку. Фактическая комиссия компании по ней оказалась 8%. От чего считаются ваши 60%?", o:["От базовых 6%","От фактически полученной комиссии компании по сделке (здесь — 8%): 60% вам, 40% компании","От цены объекта","По вашему грейду 37%"], a:1, ref:"Грейды п. 3.3.3", why:"По личному клиенту 60% считаются от ФАКТИЧЕСКОЙ комиссии компании по сделке, а не от условных 6%. Фактический процент раскрывается после закрытия и поступления оплаты."},
+  {b:3, q:"Вы закрыли сделку. Довольный клиент привёл своего друга — и друг тоже купил у вас. Квалификатор участвовал. По какой ставке считается сделка с другом?", o:["60/40 — это теперь ваш личный клиент","Стандартный грейд по чеку — это «рекомендация», вы не выступаете партнёром клиента","Грейд +3% сверху","Фиксированные 10%"], a:1, ref:"Грейды п. 3.3.7 (!Важно!) / 3.3.3", why:"Частая ошибка. Рекомендация — это НЕ личный клиент: вы не являетесь партнёром клиента, поэтому ставка стандартная по грейду. К личным сделкам тег «рекомендация» прямо не относится."},
+  {b:3, q:"Вы напрямую договорились с застройщиком из зелёного списка о доп. бонусе $2 000 лично вам. Ни продукт, ни партнёрка в этом не участвовали. Что с бонусом?", o:["Это личные чаевые — оставляете $2 000 себе","Делится 50/50 с компанией (вам $1 000); должен быть задокументирован и подтверждён РОПом/CCO до расчёта","Уходит целиком компании","Прибавляется к вашей комиссии полностью"], a:1, ref:"Грейды п. 3.4 («Индивидуальные бонусы брокера»)", why:"Индивидуальные бонусы от застройщика/банка/партнёра — часть сделки и делятся с компанией 50/50, с документированием и подтверждением РОПа/CCO до расчёта. Это самый частый конфликт по выплатам."},
+  {b:3, q:"Тот же доп. бонус от застройщика, но по сделке с вашим ЛИЧНЫМ клиентом, которого вы привели сами, без рекламных и маркетинговых ресурсов компании. Делится ли бонус?", o:["Да, всё равно 50/50","Нет — для личного клиента, привлечённого самостоятельно без ресурсов компании, правило 50/50 не применяется, бонус ваш","Уходит целиком компании","Делится 60/40"], a:1, ref:"Грейды п. 3.4 (исключение)", why:"Исключение: распределение бонуса 50/50 не действует для личных клиентов, привлечённых брокером самостоятельно, без использования ресурсов компании. Здесь $2 000 остаются у вас."},
+  {b:3, q:"Ваш друг, который работает у застройщика из зелёного списка Legion, порекомендовал вас своему знакомому как сильного эксперта по недвижимости. В процессе работы выясняется, что этот клиент не хочет покупать на Бали — его интересует Кипр. Вы нашли партнёра на Кипре и передали ему клиента. Сделка успешно закрыта партнёром на Кипре. Как считается ваша комиссия?", o:["Я получаю проценты напрямую от партнёра на Кипре. Это не клиент Legion и рынок не Бали — значит, с компанией я не делюсь","Legion получает комиссию как партнёр (обычно 30%), и уже эти 30% делятся между вами и компанией в зависимости от вашего грейда","Это моя личная сделка — 60% мне, 40% компании","Фиксированные 10% от суммы сделки"], a:1, ref:"Грейды п. 3.3.7 (партнёрские продажи)", why:"Даже если рынок не Бали и клиент пришёл по рекомендации, сделка идёт через Legion как партнёра принимающего агентства. Legion получает партнёрскую комиссию (как правило, 30%), и уже она распределяется между вами и компанией по вашему грейду. Брать деньги напрямую от партнёра «мимо» компании нельзя."},
+  {b:3, q:"Партнёрский отдел передал вам (вы Senior, грейд 37%) лид. Квалификатор по сделке тоже участвовал. Какой эффективный грейд применяется?", o:["37% — грейд не меняется","33% — при участии партнёрского отдела грейд Middle/Senior уменьшается на 4%","40% (+3%)","27%"], a:1, ref:"Грейды п. 3.3.7 (методология с 01.05.2026)", why:"При участии партнёрского отдела грейд Middle/Senior уменьшается на 4%: 37% − 4% = 33%."},
+  {b:3, q:"Тот же партнёрский лид от партнёрского отдела (вы Senior, 37%), но квалификатор НЕ участвовал — вы квалифицировали лид сами. Какой эффективный грейд?", o:["37% — ничего не меняется","36% — минус 4% за партнёрский отдел и плюс 3% за самостоятельную квалификацию: 37 − 4 + 3","33% — только минус 4%","40% — только плюс 3%"], a:1, ref:"Грейды п. 3.3.7", why:"Применяются обе корректировки: −4% за участие партнёрского отдела и +3% за самостоятельную квалификацию (без квалификатора). Итог: 37 − 4 + 3 = 36%."},
+  {b:3, q:"РАСЧЁТ (совокупный доход). Вам передали клиента. Перепродажа: объект $200 000, общая комиссия сделки 8%, ваш грейд 37%. Ваш СОВОКУПНЫЙ доход как закрывающего брокера?", o:["$4 440 — только базовая часть, без бонуса","$5 440 — база $4 440 плюс бонусная часть $1 000","$6 440","$1 000 — только бонус"], a:1, ref:"Грейды п. 3.3.5 (перепродажи)", why:"База = $200 000 × 6% × 37% = $4 440. Бонус при 8%: $200 000 × 1% = $2 000, делится 50/50 → вам $1 000. Совокупно: $4 440 + $1 000 = $5 440. (Передающему — $1 000.)"},
+  {b:3, q:"РАСЧЁТ (совокупный доход + минимум $500). Вам передали клиента. Перепродажа: объект $180 000, комиссия 7%, ваш грейд 37%. Ваш СОВОКУПНЫЙ доход как закрывающего?", o:["$4 446 — база $3 996 плюс полные $450 бонуса","$4 396 — база $3 996 плюс урезанный бонус $400 (передающему доплатили до минимума $500)","$3 996 — только база","$4 896"], a:1, ref:"Грейды п. 3.3.5.4", why:"База = $180 000 × 6% × 37% = $3 996. Бонус 7%: $180 000 × 0,5% = $900 → по $450. Но $450 < $500, поэтому передающему доплачивают до $500, а ваш бонус уменьшается на дельту $50: $450 − $50 = $400. Совокупно: $3 996 + $400 = $4 396."},
+  {b:3, q:"Фокусный проект (Бали), объект $450 000 → грейд 32% (диапазон $250–500к). Комиссия АН 6% = $27 000. Дью-дил клиента $3 000 (вычитается из базы). Квалификатор НЕ участвовал (+3%). Сколько заработает брокер?", o:["$9 450 — 35% от $27 000","$8 640 — 32% от $27 000","$8 400 — 35% от $24 000"], a:2, ref:"Грейды п. 3.3.7 / 3.4 (дью-дил вычитается из базы, +3% без квалификатора)", why:"Из базы вычитается дью-дил: $27 000 − $3 000 = $24 000. Грейд 32% + 3% за отсутствие квалификатора = 35%. 35% × $24 000 = $8 400."},
+  {b:3, q:"Повторная покупка того же клиента через 25 дней после оплаты первой сделки. Фокусный проект, объект $180 000 → грейд 27%, комиссия АН 6% = $10 800. Квалификатор участвовал на первой сделке. Сколько заработает брокер?", o:["$3 240 — 30%","$2 916 — 27%","$1 080 — 10%"], a:1, ref:"Грейды п. 3.4 (% Квалификатора — правило 30 дней)", why:"Фокусный проект → применяется стандартный грейд 27% (грейд не зависит от участия квалификатора). А если бы речь шла об удержании % квалификатора при повторной покупке — по п. 3.4 «% Квалификатора» после 30 дней с момента захода денег по первой сделке процент квалификатора не отнимаем. 27% × $10 800 = $2 916, а не 10%."},
+  {b:3, q:"Три сделки за месяц с тремя разными клиентами (каждая считается отдельно), итоговый оборот $750 000 → грейд 37%. Сделка 1: фокусный, АН $12 000, без квалификатора. Сделка 2: нефокусный 5%, объект $350 000, АН $17 500, с квалификатором. Сделка 3: фокусный + партнёр $1 500, АН $9 000, без квалификатора. Сколько всего заработает брокер?", o:["$13 250 — 40% со всех","$15 000 — 40% от $37 000","$9 550 — 40% с 1 и 3, 10% со 2"], a:2, ref:"Грейды п. 3.3.2 / 3.3.7 (комбинированный расчёт)", why:"Сделка 1: (37%+3%) × $12 000 = $4 800. Сделка 2: нефокус 5%, чек $350к < порога $450к → 10% × $17 500 = $1 750. Сделка 3: партнёр −$1 500, (37%+3%) × ($9 000 − $1 500) = 40% × $7 500 = $3 000. Итого: $4 800 + $1 750 + $3 000 = $9 550."},
+  {b:3, q:"Личный клиент (зафиксирован в CRM). Фокусный проект, объект $300 000, комиссия АН 6% = $18 000. Сколько заработает брокер?", o:["$4 860 — 27%","$6 660 — 37%","$10 800 — 60%"], a:2, ref:"Грейды п. 3.3.3 (личные клиенты)", why:"По личному клиенту брокер получает 60% от полной фактической комиссии компании: 60% × $18 000 = $10 800 (а не по грейду 27/37%)."},
+  {b:3, q:"Фокусный проект, партнёрская сделка. Объект $150 000 → грейд 27% (диапазон $0–250к), комиссия АН 6% = $9 000. Партнёр берёт 1% от стоимости = $1 500. Квалификатор участвовал. Сколько заработает брокер?", o:["$2 430 — 27% от $9 000","$2 025 — 27% от $7 500","$750 — 10%"], a:1, ref:"Грейды п. 3.3.7 (партнёрские затраты вычитаются из базы)", why:"Партнёрские затраты вычитаются из базы: $9 000 − $1 500 = $7 500. Квалификатор участвовал, поэтому +3% не даётся. 27% × $7 500 = $2 025."}
+];const BLOCKS = ["Блок 1 · Должность и ЦКП","Блок 2 · Грейды и пороги","Блок 3 · NDA","Блок 4 · Расчёты и кейсы"];
+const LETTERS = ["А","Б","В","Г"];
+const CALC_TAGS = ["объект $200 000","объект $180 000","$250 000"];
+
+let idx=0, selected=null, answered=false;
+const answers = new Array(QUESTIONS.length).fill(null);
+const REVEAL_AT=6; let attempt=1; const revealMode=()=>attempt>=REVEAL_AT;
+const $=id=>document.getElementById(id);
+
+const TEST_RESULTS = [
+  {email:"krisss2204@gmail.com", date:"03.07.2026 06:19", score:19, pct:63.33},
+  {email:"Iralisa1709@gmail.com", date:"03.07.2026 06:25", score:22, pct:73.33},
+  {email:"letuchiilegion@gmail.com", date:"03.07.2026 07:15", score:23, pct:76.67},
+  {email:"mail2boyko@gmail.com", date:"03.07.2026 09:03", score:29, pct:96.67},
+  {email:"a.lishtva.bali@gmail.com", date:"03.07.2026 09:10", score:21, pct:70.00},
+  {email:"tina.bondarenko13@gmail.com", date:"06.07.2026 10:09", score:26, pct:86.67},
+  {email:"alex013p@gmail.com", date:"06.07.2026 10:10", score:22, pct:73.33},
+  {email:"296arbat@gmail.com", date:"07.07.2026 08:38", score:24, pct:80.00},
+  {email:"derevyanko808@gmail.com", date:"07.07.2026 13:30", score:23, pct:76.67},
+  {email:"grif74fin@gmail.com", date:"07.07.2026 14:47", score:22, pct:73.33},
+  {email:"ana_sales@glv-consulting.com", date:"10.07.2026 06:43", score:18, pct:60.00},
+  {email:"viktoriyabagaziy@gmail.com", date:"10.07.2026 06:58", score:23, pct:76.67},
+  {email:"tulinkovae@gmail.com", date:"13.07.2026 11:16", score:20, pct:66.67},
+  {email:"renata97804@gmail.com", date:"13.07.2026 22:48", score:27, pct:90.00},
+  {email:"anastasiastarhouse@ukr.net", date:"15.07.2026 17:46", score:26, pct:86.67},
+  {email:"elena_bob@mail.ru", date:"24.07.2026 02:53", score:23, pct:76.67}
+];
+
+const ANSWER_KEY = [
+  {doc:"Должностная инструкция: Менеджер по продажам", quote:"«Статистика должности: Выручка, полученная от клиентов, которые закреплены за менеджером» — «Полученная — деньги, поступившие на счет компании»"},
+  {doc:"Должностная инструкция: Менеджер по продажам", quote:"«Полномочия: … Вести своих клиентов самостоятельно без вмешательств других менеджеров»"},
+  {doc:"Должностная инструкция: Менеджер по продажам", quote:"«Ценный конечный продукт: Выручка, полученная от клиентов, которые закреплены за менеджером»"},
+  {doc:"Должностная инструкция: Менеджер по продажам", quote:"«Полномочия: … Давать спецпредложения и использовать рычаги закрытия клиента актуальные в соответствующем отчетном периоде в пределах своей компетенции»"},
+  {doc:"Должностная инструкция: Менеджер по продажам", quote:"«Полномочия: … Вносить конструктивные предложения по оптимизации ассортимента объектов компании, маркетинговой стратегии»; Грейды п. 3.1: «У брокера есть возможность перевести нефокусные проекты в фокусные, если будет подтверждена положительная маржа и согласование от CCO/CEO»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.3.2, таблица порогов: «6% | $375 000» — «Если порог не выполнен, выплата производится по фиксированной ставке 10% от комиссии агентства»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.3.2, таблица порогов: «6% | $375 000» — порог достигнут, применяется грейд по чеку"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.3.2: «Если сделки совершаются с разными клиентами (даже если общий оборот по ним превышает 450 000$), каждая сделка рассматривается отдельно, и вознаграждение рассчитывается по фиксированной ставке 10%, независимо от стандартного грейда брокера»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.3.2: «Если сделки совершаются с одним клиентом, который покупает два и более объектов в рамках одной сделки (или одного периода — до 1,5 месяца), — тогда применяется стандартная грейдовая система, как для фокусных проектов»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.5: «Командный бонус распределяется пропорционально личному вкладу каждого сотрудника в общий оборот команды за отчетный месяц» (пример расчёта: 500 000/5 000 000 × 10 000 = 1 000$)"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.5: «Бонус выплачивается каждому сотруднику, который превысил порог 700 000 USD за месяц» — «Бонус не ограничен одним победителем — все, кто выполнил условие, получают вознаграждение»"},
+  {doc:"NDA (Соглашение о неразглашении) Legion Real Estate", quote:"«К Конфиденциальной информации не относится: — информация, являющаяся общедоступной; — информация, самостоятельно правомерно полученная Получающей Стороной без использования конфиденциальной информации, раскрытой Раскрывающей Стороной, что подтверждается соответствующими письменными доказательствами»"},
+  {doc:"NDA (Соглашение о неразглашении) Legion Real Estate", quote:"п. 6.1: «За каждый выявленный факт такого нарушения Принимающая сторона обязуется оплатить штраф Раскрывающей стороне в размере 10 000 (десяти тысяч) долларов США в течение 10 (десяти) календарных дней с момента направления... письменного уведомления»; п. 6.2: «Принимающая сторона возмещает Раскрывающей стороне все понесенные убытки, в том числе репутационные издержки»"},
+  {doc:"NDA (Соглашение о неразглашении) Legion Real Estate", quote:"п. 4.11: «В период сотрудничества с Раскрывающей стороной Получающая Сторона обязуется не осуществлять деятельность с другими агентствами недвижимости и застройщиками, которая может привести к конфликту интересов... кроме случаев, когда такая деятельность разрешена письменным соглашением, заключенным с Раскрывающей Стороной»"},
+  {doc:"NDA (Соглашение о неразглашении) Legion Real Estate", quote:"п. 3.4: «Информация, переданная Раскрывающей стороной Получающей стороне, является конфиденциальной независимо от формы и способа передачи такой информации, если Раскрывающая сторона прямо не указала Получающей стороне на то, что передаваемая информация не является конфиденциальной»"},
+  {doc:"NDA (Соглашение о неразглашении) Legion Real Estate", quote:"п. 4.2: «Получающая сторона не вправе раскрывать ни одному третьему лицу Конфиденциальную информацию... без предварительного письменного согласия Раскрывающей стороны»; п. 4.3: «Получающая сторона не вправе самостоятельно предоставлять третьим лицам доступ к папкам и (или) файлам, содержащим Конфиденциальную информацию»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.3.3: «Вознаграждение брокера рассчитывается в размере 60% от полной фактически полученной комиссионной выплаты компании по конкретной сделке, а не от стандартной базовой комиссии»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.3.3: «!Важно! к личным сделкам не относятся сделки с тегом рекомендация»; п. 3.3.7: «Если клиент рекомендует другого клиента и он тоже покупает, то комиссия для брокера стандартная, согласно грейдам (так как не он выступает партнером клиента)»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.4 «Индивидуальные бонусы брокера»: «Данные выплаты считаются частью общей сделки и подлежат распределению с компанией в пропорции 50/50. Факт наличия и размер бонуса должны быть задокументированы и подтверждены руководителем (РОПом или CCO) до момента расчёта комиссии»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.4, исключение: «Положения о распределении индивидуального бонуса брокера в пропорции 50%/50% не применяются к сделкам с личными клиентами брокера, привлеченными им самостоятельно, без участия и без использования рекламных, маркетинговых или иных ресурсов PT LEGION REAL ESTATE»"},
+  {doc:"Регламент разделения комиссии при передаче клиента на другой рынок", quote:"«Передающий — передает клиента между рынками (НЕ Бали↔Пхукет) и не участвует в дальнейшем процессе» — «Передающий: 0–20% × Комиссия агентства … Оборот и грейд не учитывается (Грейд идет от др. сделок месяца)»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"«Методология расчета комиссии брокера при участии партнера — обновление с 01.05.2026»: «В сделках с Middle и Senior брокером: грейд брокера уменьшается на 4%»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"«Методология … с 01.05.2026»: «Если в сделке с партнером или партнерским отделом квалификатор НЕ участвует, брокер получает бонус +3% за самостоятельную квалификацию лида»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.3.5.2.2, пример A: «Закрывающий: $200 000 × 6% × 37% + $200 000 × 1% / 2 = $4 440 + $1 000 = $5 440»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.3.5.4: «Если расчётная доля передающего брокера (Цена × 0.5% / 2) составляет менее $500, передающий всё равно получает $500. Разница вычитается из бонуса закрывающего брокера»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.4: «Стоимость дью-дилов и согласованных скидок вычитается из комиссии агентства, в распределении которой участвует брокер» — «Если квалификатор не участвует по этим сделкам, то +3% менеджеру»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.4, «% Квалификатора»: «Если квалификатор не участвует по этим сделкам, то +3% менеджеру» — «Если вторая и следующие покупки того же клиента (от квалификатора) происходят через 30 дней после захода денег по первой сделке не отнимаем процент квалификатора»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.3.2, таблица порогов (индивидуально по каждой сделке / каждому клиенту) в сочетании с п. 3.3.7 (партнёрские затраты вычитаются из базы)"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.3.3: «Вознаграждение брокера рассчитывается в размере 60% от полной фактически полученной комиссионной выплаты компании по конкретной сделке»"},
+  {doc:"Стандарт: Грейды SM Legion", quote:"п. 3.3.7: «Партнерские затраты распределяются пропорционально структуре комиссии» — «Доля партнерских затрат на брокерскую часть = (6 / общая комиссия %)»"},
+];
+const PERSON_ANSWERS = {
+  "krisss2204@gmail.com": [null, null, null, null, null, null, "27%", "32% — оборот в коридоре $250–500к", "10% — объекты нефокусные", "$500", "Нет — бонус достаётся только одному лучшему (вам)", null, "Устным предупреждением", "Взять и самому оформить их как партнёрских", null, null, null, null, "Прибавляется к вашей комиссии полностью", null, "Это моя личная сделка — 60% мне, 40% компании", "37% — грейд не меняется", "40% — только плюс 3%", null, null, null, null, null, null, null],
+  "Iralisa1709@gmail.com": [null, null, null, null, null, null, "10%", null, "15%", null, "Нет — бонус достаётся только одному лучшему (вам)", null, null, null, null, null, null, null, null, null, null, null, "33% — только минус 4%", "$4 440 — только базовая часть, без бонуса", "$3 996 — только база", null, "$3 240 — 30%", null, null, "$2 430 — 27% от $9 000"],
+  "letuchiilegion@gmail.com": [null, null, null, null, null, null, null, null, null, null, "Нет — бонус достаётся только одному лучшему (вам)", null, null, null, null, null, "От базовых 6%", "Грейд +3% сверху", null, "Да, всё равно 50/50", null, "27%", "37% — ничего не меняется", null, null, null, null, "$13 250 — 40% со всех", null, null],
+  "mail2boyko@gmail.com": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "$3 240 — 30%", null, null, null],
+  "a.lishtva.bali@gmail.com": [null, null, null, null, null, "32% (чек попадает в коридор $250–500к)", null, "37% — оборот выше $500к", null, null, null, null, null, null, null, null, null, null, null, "Да, всё равно 50/50", null, "37% — грейд не меняется", "40% — только плюс 3%", "$4 440 — только базовая часть, без бонуса", "$4 896", null, "$3 240 — 30%", "$15 000 — 40% от $37 000", null, null],
+  "tina.bondarenko13@gmail.com": [null, null, null, null, null, null, null, "37% — оборот выше $500к", null, null, null, null, null, null, null, null, null, "Грейд +3% сверху", null, null, null, "37% — грейд не меняется", "40% — только плюс 3%", null, null, null, null, null, null, null],
+  "alex013p@gmail.com": [null, null, null, null, "Договориться с отделом продукта напрямую и закрепить", null, null, null, "10% — объекты нефокусные", null, null, null, null, null, null, null, null, null, null, "Да, всё равно 50/50", "Это моя личная сделка — 60% мне, 40% компании", "27%", "33% — только минус 4%", "$4 440 — только базовая часть, без бонуса", "$3 996 — только база", null, null, null, null, null],
+  "296arbat@gmail.com": ["3 подписанных договора", null, "Количество закрытых сделок", null, null, null, "10%", null, null, null, null, null, null, null, null, null, null, null, "Прибавляется к вашей комиссии полностью", null, null, "37% — грейд не меняется", "40% — только плюс 3%", null, null, null, null, null, null, null],
+  "derevyanko808@gmail.com": [null, null, null, null, null, null, "10%", null, "10% — объекты нефокусные", null, null, null, null, "Взять и самому оформить их как партнёрских", null, null, null, "60/40 — это теперь ваш личный клиент", "Это личные чаевые — оставляете $2 000 себе", null, null, "27%", "40% — только плюс 3%", null, null, null, null, null, null, null],
+  "grif74fin@gmail.com": ["12 заявок", null, "Количество закрытых сделок", null, null, null, "10%", null, "10% — объекты нефокусные", null, null, null, null, null, null, null, null, "Грейд +3% сверху", null, null, null, "37% — грейд не меняется", "40% — только плюс 3%", null, null, null, "$3 240 — 30%", null, null, null],
+  "ana_sales@glv-consulting.com": ["3 подписанных договора", null, null, null, null, "27%", null, "32% — оборот в коридоре $250–500к", null, null, "Только если он станет первым в следующем месяце", null, null, null, null, null, null, null, "Это личные чаевые — оставляете $2 000 себе", null, "Это моя личная сделка — 60% мне, 40% компании", "37% — грейд не меняется", "40% — только плюс 3%", "$4 440 — только базовая часть, без бонуса", "$3 996 — только база", "$9 450 — 35% от $27 000", "$3 240 — 30%", null, null, null],
+  "viktoriyabagaziy@gmail.com": [null, null, null, null, null, null, null, null, null, "$500", null, null, null, null, null, null, null, null, null, "Да, всё равно 50/50", null, "37% — грейд не меняется", "40% — только плюс 3%", "$4 440 — только базовая часть, без бонуса", "$3 996 — только база", "$8 640 — 32% от $27 000", null, null, null, null],
+  "tulinkovae@gmail.com": ["3 подписанных договора", null, null, null, null, "32% (чек попадает в коридор $250–500к)", null, "37% — оборот выше $500к", null, null, null, null, null, null, null, null, null, null, null, "Да, всё равно 50/50", null, "37% — грейд не меняется", "40% — только плюс 3%", "$4 440 — только базовая часть, без бонуса", "$3 996 — только база", null, "$3 240 — 30%", null, null, null],
+  "renata97804@gmail.com": ["12 заявок", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "37% — грейд не меняется", "40% — только плюс 3%", null, null, null, null, null, null, null],
+  "anastasiastarhouse@ukr.net": [null, null, "Количество закрытых сделок", null, null, null, null, null, null, null, null, null, null, null, null, null, "От базовых 6%", null, null, "Да, всё равно 50/50", null, null, "40% — только плюс 3%", null, null, null, null, null, null, null],
+  "elena_bob@mail.ru": ["40 встреч", null, null, null, null, "32% (чек попадает в коридор $250–500к)", null, "37% — оборот выше $500к", null, null, "Нет — бонус достаётся только одному лучшему (вам)", null, null, null, null, null, null, null, null, null, null, "37% — грейд не меняется", "40% — только плюс 3%", null, null, null, "$1 080 — 10%", null, null, null],
+};
+
+const QUESTION_STATS = [
+  {k:0, ok:10, wrong:6, pct:62.5, topWrong:"3 подписанных договора", topWrongCount:3},
+  {k:1, ok:16, wrong:0, pct:100.0, topWrong:null, topWrongCount:0},
+  {k:2, ok:13, wrong:3, pct:81.2, topWrong:"Количество закрытых сделок", topWrongCount:3},
+  {k:3, ok:16, wrong:0, pct:100.0, topWrong:null, topWrongCount:0},
+  {k:4, ok:15, wrong:1, pct:93.8, topWrong:"Договориться с отделом продукта напрямую и закрепить", topWrongCount:1},
+  {k:5, ok:12, wrong:4, pct:75.0, topWrong:"32% (чек попадает в коридор $250–500к)", topWrongCount:3},
+  {k:6, ok:11, wrong:5, pct:68.8, topWrong:"10%", topWrongCount:4},
+  {k:7, ok:10, wrong:6, pct:62.5, topWrong:"37% — оборот выше $500к", topWrongCount:4},
+  {k:8, ok:11, wrong:5, pct:68.8, topWrong:"10% — объекты нефокусные", topWrongCount:4},
+  {k:9, ok:14, wrong:2, pct:87.5, topWrong:"$500", topWrongCount:2},
+  {k:10, ok:11, wrong:5, pct:68.8, topWrong:"Нет — бонус достаётся только одному лучшему (вам)", topWrongCount:4},
+  {k:11, ok:16, wrong:0, pct:100.0, topWrong:null, topWrongCount:0},
+  {k:12, ok:15, wrong:1, pct:93.8, topWrong:"Устным предупреждением", topWrongCount:1},
+  {k:13, ok:14, wrong:2, pct:87.5, topWrong:"Взять и самому оформить их как партнёрских", topWrongCount:2},
+  {k:14, ok:16, wrong:0, pct:100.0, topWrong:null, topWrongCount:0},
+  {k:15, ok:16, wrong:0, pct:100.0, topWrong:null, topWrongCount:0},
+  {k:16, ok:14, wrong:2, pct:87.5, topWrong:"От базовых 6%", topWrongCount:2},
+  {k:17, ok:12, wrong:4, pct:75.0, topWrong:"Грейд +3% сверху", topWrongCount:3},
+  {k:18, ok:12, wrong:4, pct:75.0, topWrong:"Прибавляется к вашей комиссии полностью", topWrongCount:2},
+  {k:19, ok:10, wrong:6, pct:62.5, topWrong:"Да, всё равно 50/50", topWrongCount:6},
+  {k:20, ok:12, wrong:4, pct:75.0, topWrong:"Это моя личная сделка — 60% мне, 40% компании", topWrongCount:3},
+  {k:21, ok:3, wrong:13, pct:18.8, topWrong:"37% — грейд не меняется", topWrongCount:10},
+  {k:22, ok:1, wrong:15, pct:6.2, topWrong:"40% — только плюс 3%", topWrongCount:12},
+  {k:23, ok:10, wrong:6, pct:62.5, topWrong:"$4 440 — только базовая часть, без бонуса", topWrongCount:6},
+  {k:24, ok:10, wrong:6, pct:62.5, topWrong:"$3 996 — только база", topWrongCount:5},
+  {k:25, ok:14, wrong:2, pct:87.5, topWrong:"$9 450 — 35% от $27 000", topWrongCount:1},
+  {k:26, ok:9, wrong:7, pct:56.2, topWrong:"$3 240 — 30%", topWrongCount:6},
+  {k:27, ok:14, wrong:2, pct:87.5, topWrong:"$13 250 — 40% со всех", topWrongCount:1},
+  {k:28, ok:16, wrong:0, pct:100.0, topWrong:null, topWrongCount:0},
+  {k:29, ok:15, wrong:1, pct:93.8, topWrong:"$2 430 — 27% от $9 000", topWrongCount:1},
+];
+function renderLog(){
+  const tb=$("logBody"); tb.innerHTML="";
+  let passed=0, sum=0;
+  const ranked = [...TEST_RESULTS].sort((a,b)=>b.pct-a.pct);
+  ranked.forEach((r,i)=>{
+    sum+=r.pct;
+    const ok = r.pct>=80;
+    if(ok) passed++;
+    const col = r.pct>=80?"var(--ok)":(r.pct>=60?"var(--gold)":"var(--bad)");
+    const medal = i===0?"🥇 ":i===1?"🥈 ":i===2?"🥉 ":"";
+    tb.insertAdjacentHTML("beforeend",
+      `<tr data-email="${r.email}">
+        <td class="num">${medal}${i+1}</td>
+        <td>${r.email}</td>
+        <td class="num">${r.date}</td>
+        <td class="num">${r.score}/30</td>
+        <td class="pct" style="color:${col}">${r.pct.toFixed(2).replace(/\.00$/,"")}%</td>
+        <td><span class="tag ${ok?"pass":"fail"}">${ok?"Пройден":"Не пройден"}</span></td>
+      </tr>`);
+  });
+  $("logCount").textContent=TEST_RESULTS.length;
+  $("logAvg").textContent=(sum/TEST_RESULTS.length).toFixed(1)+"%";
+  $("logPassed").textContent=`${passed} из ${TEST_RESULTS.length}`;
+  [...tb.querySelectorAll("tr")].forEach(tr=>{
+    tr.onclick=()=>openDetail(tr.dataset.email);
+  });
+}
+
+function openDetail(email){
+  const answers = PERSON_ANSWERS[email];
+  if(!answers) return;
+  const info = TEST_RESULTS.find(r=>r.email===email);
+  $("detailEmail").textContent = email;
+  $("detailSub").textContent = `${info.date} · ${info.score}/30 · ${info.pct.toFixed(2).replace(/\.00$/,"")}%`;
+  const body = $("detailBody"); body.innerHTML="";
+  QUESTIONS.forEach((q,i)=>{
+    const wrongChoice = answers[i];
+    const isOk = wrongChoice===null;
+    body.insertAdjacentHTML("beforeend",
+      `<div class="qrow">
+        <div class="qh">
+          <span class="qn">Вопрос ${i+1} · ${BLOCKS[q.b].split(" · ")[1]||BLOCKS[q.b]}</span>
+          <span class="qtag ${isOk?"ok":"wrong"}">${isOk?"Верно":"Неверно"}</span>
+        </div>
+        <div style="margin-bottom:4px">${q.q}</div>
+        ${isOk
+          ? `<div class="ans correct-line">Ответ: <b>${q.o[q.a]}</b></div>`
+          : `<div class="ans chosen-wrong">Выбрано: <b>${wrongChoice}</b></div>
+             <div class="ans correct-line">Верный ответ: <b>${q.o[q.a]}</b></div>`
+        }
+        <span class="ref">📄 ${q.ref}</span>
+      </div>`);
+  });
+  $("detailModal").classList.remove("hide");
+}
+$("closeDetail").onclick=()=>$("detailModal").classList.add("hide");
+$("detailModal").onclick=(e)=>{ if(e.target.id==="detailModal") $("detailModal").classList.add("hide"); };
+
+function renderStats(){
+  const tb=$("statsBody"); tb.innerHTML="";
+  const sorted = [...QUESTION_STATS].sort((a,b)=>a.pct-b.pct);
+  sorted.forEach(s=>{
+    const q = QUESTIONS[s.k];
+    const entry = ANSWER_KEY[s.k];
+    const col = s.pct>=80?"var(--ok)":(s.pct>=50?"var(--gold)":"var(--bad)");
+    tb.insertAdjacentHTML("beforeend",
+      `<tr>
+        <td>${BLOCKS[q.b].split(" · ")[0]}</td>
+        <td class="qtxt">${q.q}</td>
+        <td class="pctcell" style="color:${col}">${s.pct}%<div class="miniprog"><i style="width:${s.pct}%;background:${col}"></i></div></td>
+        <td class="qtxt"><b>${q.o[q.a]}</b></td>
+        <td><button class="linkbtn doclink" data-k="${s.k}" style="font-size:12px;text-align:left">📄 ${entry.doc}<br><span style="color:var(--muted);font-weight:400">${q.ref}</span></button></td>
+        <td>${s.topWrong ? s.topWrong : "—"}</td>
+        <td><button class="whytoggle" data-idx="${s.k}">💬</button></td>
+      </tr>
+      <tr class="whyrow hide" id="statwhy-${s.k}"><td colspan="7"><div class="whybox" style="display:block">${q.why}</div></td></tr>`);
+  });
+  [...tb.querySelectorAll(".doclink")].forEach(btn=>{
+    btn.onclick=()=>openKeyAt(parseInt(btn.dataset.k));
+  });
+  [...tb.querySelectorAll(".whytoggle")].forEach(btn=>{
+    btn.onclick=()=>{
+      document.getElementById("statwhy-"+btn.dataset.idx).classList.toggle("hide");
+    };
+  });
+}
+function openKeyAt(k){
+  const q = QUESTIONS[k];
+  keyFilter = "all";
+  [...document.querySelectorAll(".filterbtn")].forEach(b=>b.classList.remove("active"));
+  document.querySelector('.filterbtn[data-block="all"]').classList.add("active");
+  renderKey();
+  $("stats").classList.add("hide");
+  $("answerkey").classList.remove("hide");
+  const target = document.getElementById("keyrow-"+k);
+  if(target){
+    window.scrollTo(0,0);
+    setTimeout(()=>{
+      target.scrollIntoView({behavior:"smooth", block:"center"});
+      target.classList.add("highlight");
+      setTimeout(()=>target.classList.remove("highlight"), 1600);
+    }, 50);
+  }
+}
+$("showStats").onclick=()=>{
+  renderStats();
+  $("log").classList.add("hide");
+  $("stats").classList.remove("hide");
+  window.scrollTo(0,0);
+};
+$("backFromStats").onclick=()=>{
+  $("stats").classList.add("hide");
+  $("log").classList.remove("hide");
+  window.scrollTo(0,0);
+};
+
+let keyFilter = "all";
+function renderKey(){
+  const body = $("keyBody"); body.innerHTML="";
+  QUESTIONS.forEach((q,i)=>{
+    if(keyFilter!=="all" && String(q.b)!==keyFilter) return;
+    const entry = ANSWER_KEY[i];
+    body.insertAdjacentHTML("beforeend",
+      `<div class="keyrow" id="keyrow-${i}">
+        <div class="kh"><span class="kn">Вопрос ${i+1} · ${BLOCKS[q.b]}</span></div>
+        <p class="qtext">${q.q}</p>
+        <p class="correct-answer">Правильный ответ: <b>${q.o[q.a]}</b></p>
+        ${entry.doc
+          ? `<span class="doclabel">📄 ${entry.doc} — ${q.ref}</span><div class="quote">${entry.quote}</div>`
+          : `<span class="doclabel">📄 ${q.ref}</span><div class="noquote">Первоисточник (NDA) не входит в базу проекта — цитата недоступна, приведено только объяснение правила: ${q.why}</div>`
+        }
+        <button class="whytoggle" data-idx="${i}">💬 Комментарий</button>
+        <div class="whybox hide" id="whybox-${i}">${q.why}</div>
+      </div>`);
+  });
+  [...body.querySelectorAll(".whytoggle")].forEach(btn=>{
+    btn.onclick=()=>{
+      const box = document.getElementById("whybox-"+btn.dataset.idx);
+      const isHidden = box.classList.contains("hide");
+      box.classList.toggle("hide");
+      btn.textContent = isHidden ? "💬 Скрыть комментарий" : "💬 Комментарий";
+    };
+  });
+}
+$("showKey").onclick=()=>{
+  renderKey();
+  $("log").classList.add("hide");
+  $("answerkey").classList.remove("hide");
+  window.scrollTo(0,0);
+};
+$("backFromKey").onclick=()=>{
+  $("answerkey").classList.add("hide");
+  $("log").classList.remove("hide");
+  window.scrollTo(0,0);
+};
+[...document.querySelectorAll(".filterbtn")].forEach(btn=>{
+  btn.onclick=()=>{
+    keyFilter = btn.dataset.block;
+    [...document.querySelectorAll(".filterbtn")].forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    renderKey();
+  };
+});
+
+$("showLog").onclick=()=>{
+  renderLog();
+  $("intro").classList.add("hide");
+  $("log").classList.remove("hide");
+  window.scrollTo(0,0);
+};
+$("backFromLog").onclick=()=>{
+  $("log").classList.add("hide");
+  $("intro").classList.remove("hide");
+  window.scrollTo(0,0);
+};
+
+$("start").onclick=()=>{
+  $("intro").classList.add("hide");
+  $("quiz").classList.remove("hide");
+  render(); window.scrollTo(0,0);
+};
+
+function render(){
+  const item=QUESTIONS[idx];
+  const isDone = answers[idx]!==null;
+  $("blocktag").textContent=BLOCKS[item.b];
+  $("counter").textContent=`${idx+1} / ${QUESTIONS.length} · попытка ${attempt}`;
+  $("prog").style.width=`${(idx)/QUESTIONS.length*100}%`;
+  $("qtext").textContent=item.q;
+
+  const opts=$("opts"); opts.innerHTML="";
+  item.o.forEach((text,i)=>{
+    const b=document.createElement("button");
+    b.className="opt"; b.innerHTML=`<span class="mk">${LETTERS[i]}</span>${text}`;
+    if(isDone){
+      b.disabled=true;
+      if(i===answers[idx]) b.classList.add(answers[idx]===item.a?"correct":"wrong");
+      else if(revealMode() && i===item.a) b.classList.add("correct");
+    } else {
+      b.onclick=()=>{
+        if(answered) return;
+        selected=i;
+        [...opts.children].forEach(c=>c.classList.remove("sel"));
+        b.classList.add("sel"); $("check").disabled=false;
+      };
+    }
+    opts.appendChild(b);
+  });
+
+  const ex=$("explain");
+  if(isDone){ showExplain(answers[idx]===item.a, item); $("check").classList.add("hide"); $("next").classList.remove("hide"); }
+  else { ex.className="explain"; $("check").classList.remove("hide"); $("check").disabled=true; $("next").classList.add("hide"); }
+  $("next").textContent = (idx===QUESTIONS.length-1) ? "Показать результат" : "Далее";
+  answered=isDone;
+}
+
+function showExplain(correct,item){
+  const ex=$("explain");
+  ex.className="explain show "+(correct?"r-ok":"r-bad");
+  $("verdict").textContent = correct ? "Верно" : "Неверно";
+  let why="", ref="";
+  if(revealMode()){ why=item.why; ref="📄 "+item.ref; }
+  else if(!correct){ why="Найдите верный ответ сами — он в этом документе:"; ref="📄 "+item.ref; }
+  $("why").textContent=why;
+  $("ref").textContent=ref;
+  $("ref").style.display = ref ? "inline-block" : "none";
+}
+
+$("check").onclick=()=>{
+  if(selected===null) return;
+  answers[idx]=selected; answered=true;
+  const item=QUESTIONS[idx];
+  [...$("opts").children].forEach((c,i)=>{
+    c.disabled=true; c.classList.remove("sel");
+    if(i===selected) c.classList.add(selected===item.a?"correct":"wrong");
+    else if(revealMode() && i===item.a) c.classList.add("correct");
+  });
+  showExplain(selected===item.a,item);
+  $("check").classList.add("hide"); $("next").classList.remove("hide");
+};
+
+$("next").onclick=()=>{
+  if(idx===QUESTIONS.length-1){ finish(); return; }
+  idx++; answered=false; selected=null;
+  render(); window.scrollTo(0,0);
+};
+
+function finish(){
+  $("quiz").classList.add("hide");
+  $("results").classList.remove("hide");
+  window.scrollTo(0,0);
+
+  const total=QUESTIONS.length;
+  let correct=0;
+  const perBlock=[[0,0],[0,0],[0,0],[0,0]];
+  const wrong=[];
+  QUESTIONS.forEach((it,i)=>{
+    perBlock[it.b][1]++;
+    if(answers[i]===it.a){ correct++; perBlock[it.b][0]++; }
+    else wrong.push(it);
+  });
+  const pct=Math.round(correct/total*100);
+
+  $("who").textContent = `${correct} из ${total} правильных`;
+  $("finalScore").textContent=pct+"%";
+
+  const ndaErrors = perBlock[2][1]-perBlock[2][0];
+  const calcErr = CALC_TAGS.some(tag=>QUESTIONS.some((it,i)=>it.q.includes(tag)&&answers[i]!==it.a));
+  const pass = pct>=80 && ndaErrors<=1;
+  const fv=$("finalVerdict");
+  if(pass){ fv.textContent="✓ Отлично — правила усвоены"; fv.className="verdict-big pass"; }
+  else { fv.textContent="✗ Стоит повторить и пройти ещё раз"; fv.className="verdict-big fail"; }
+
+  const bc=$("blocks"); bc.innerHTML="";
+  perBlock.forEach((p,bi)=>{
+    const bp=Math.round(p[0]/p[1]*100);
+    const col = bp>=80?"var(--ok)":(bp>=50?"var(--gold)":"var(--bad)");
+    const flag = (bi===2 && ndaErrors>1) ? ' <span style="color:var(--bad)">⚠ критично</span>' : '';
+    bc.insertAdjacentHTML("beforeend",
+      `<div class="blockrow">
+         <div class="h"><span>${BLOCKS[bi]}${flag}</span><span>${p[0]}/${p[1]} · ${bp}%</span></div>
+         <div class="bbar"><i style="width:${bp}%;background:${col}"></i></div>
+       </div>`);
+  });
+
+  const rc=$("risks"); rc.innerHTML="";
+  if(wrong.length>0 && !revealMode()){
+    rc.insertAdjacentHTML("beforeend",
+      `<div class="risk" style="border-left-color:var(--gold)"><div class="t">Верные ответы пока скрыты</div>Смотрите, где ошиблись, и ищите верный ответ в указанном документе.</div>`);
+  }
+  if(wrong.length===0){
+    rc.innerHTML='<div class="clean">Ошибок нет. Все темы усвоены — отдельное доучивание не требуется.</div>';
+  } else {
+    if(ndaErrors>1) rc.insertAdjacentHTML("beforeend",
+      `<div class="risk"><div class="t">⚠ NDA — критичный блок</div>Более одной ошибки в конфиденциальности. Этот блок стоит обязательно повторить перед самостоятельными сделками.</div>`);
+    if(calcErr) rc.insertAdjacentHTML("beforeend",
+      `<div class="risk"><div class="t">⚠ Расчёты комиссии</div>Ошибка в числовом кейсе — главный источник споров по выплатам. Повторить разделы 3.3.5 (перепродажи) и регламент межрыночной передачи.</div>`);
+    wrong.forEach(it=>{
+      rc.insertAdjacentHTML("beforeend",
+        `<div class="risk"><div class="t">${it.q}</div><div class="ref">📄 ${it.ref}</div></div>`);
+    });
+  }
+
+  const d=new Date();
+  $("dateStamp").textContent=d.toLocaleDateString("ru-RU")+" "+d.toLocaleTimeString("ru-RU",{hour:'2-digit',minute:'2-digit'});
+}
+
+$("retry").onclick=()=>{
+  attempt++;
+  idx=0; selected=null; answered=false;
+  for(let i=0;i<answers.length;i++) answers[i]=null;
+  $("results").classList.add("hide");
+  $("intro").classList.remove("hide");
+  window.scrollTo(0,0);
+};
+</script>
+</body>
+</html>
