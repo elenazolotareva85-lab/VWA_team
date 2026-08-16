@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Алгоритм изучения проекта - шаблон</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#1a1a1a;
+    --card:#2f2f2f;
+    --gold:#c9a961;
+    --gold-dim:#9c7d51;
+    --text:#eee7d8;
+    --text-dim:#a89f8f;
+    --green:#7fae7a;
+    --amber:#c9a15a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:'Inter',sans-serif;min-height:100vh;padding:32px 16px 80px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+  header{margin-bottom:28px;}
+  .eyebrow{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-dim);margin-bottom:6px;}
+  h1{font-family:'Playfair Display',serif;font-weight:700;font-size:30px;color:var(--gold);margin:0 0 10px;}
+
+  .editable{
+    border-bottom:1px dashed var(--gold-dim);cursor:text;outline:none;
+    transition:background 0.15s;padding:1px 2px;border-radius:3px;
+  }
+  .editable:hover{background:#252220;}
+  .editable:focus{background:#2f2a1f;border-bottom-style:solid;}
+  .editable:empty::before{content:attr(data-placeholder);color:var(--text-dim);opacity:0.7;}
+  h1.editable{border-bottom:1px dashed var(--gold-dim);}
+
+  .status-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px;}
+  .status-select{
+    font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px;
+    background:rgba(201,169,97,0.12);color:var(--amber);border:1px solid rgba(201,169,97,0.4);
+    cursor:pointer;
+  }
+  .meta-line{color:var(--text-dim);font-size:13px;line-height:1.6;}
+
+  .progress-bar-wrap{background:#252525;border-radius:20px;height:8px;margin:20px 0 6px;overflow:hidden;}
+  .progress-bar-fill{background:linear-gradient(90deg,var(--gold-dim),var(--gold));height:100%;width:0%;transition:width 0.3s ease;}
+  .progress-text{font-size:12px;color:var(--text-dim);text-align:right;}
+
+  section{margin-bottom:28px;}
+  .section-title{
+    font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--gold);
+    margin-bottom:14px;display:flex;align-items:center;gap:10px;
+  }
+  .step-num{
+    width:24px;height:24px;border-radius:50%;border:1px solid var(--gold-dim);
+    display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--gold-dim);flex-shrink:0;
+  }
+  .section-hint{font-size:12px;color:var(--text-dim);margin:-8px 0 14px;line-height:1.5;}
+
+  .card{background:var(--card);border:1px solid #3d3d3d;border-radius:14px;padding:20px 22px;}
+
+  .task{
+    display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #3a3a3a;
+  }
+  .task:last-child{border-bottom:none;}
+  .checkbox{
+    width:20px;height:20px;border-radius:6px;border:1.5px solid var(--gold-dim);flex-shrink:0;margin-top:2px;
+    display:flex;align-items:center;justify-content:center;transition:all 0.2s;cursor:pointer;
+  }
+  .checkbox.checked{background:var(--gold);border-color:var(--gold);}
+  .checkbox.checked::after{content:"✓";color:#1a1a1a;font-size:13px;font-weight:700;}
+  .task-body{flex:1;min-width:0;}
+  .task-text{font-size:14px;line-height:1.5;}
+  .task-text.checked{color:var(--text-dim);text-decoration:line-through;text-decoration-color:#5a5a5a;}
+  .task-note{font-size:12px;color:var(--text-dim);margin-top:4px;line-height:1.5;min-height:16px;}
+
+  .doc-status{
+    font-size:10px;padding:2px 8px;border-radius:10px;margin-left:8px;cursor:pointer;user-select:none;
+    display:inline-block;border:1px solid;
+  }
+  .doc-status[data-state="missing"]{color:var(--text-dim);border-color:#4a4a4a;}
+  .doc-status[data-state="progress"]{color:var(--amber);border-color:var(--amber);}
+  .doc-status[data-state="ready"]{color:var(--green);border-color:var(--green);}
+
+  .utp-list{display:flex;flex-direction:column;gap:10px;}
+  .utp-item{display:flex;gap:10px;align-items:flex-start;}
+  .utp-num{
+    width:22px;height:22px;border-radius:50%;background:var(--gold);color:#1a1a1a;
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;
+  }
+  .utp-text{flex:1;min-height:20px;font-size:14px;line-height:1.5;}
+
+  .links-grid{display:flex;flex-direction:column;gap:8px;}
+  .link-item{
+    background:#252525;border:1px solid #3d3d3d;border-radius:10px;padding:12px 14px;
+  }
+  .link-row{display:flex;align-items:center;gap:10px;}
+  .link-icon{flex-shrink:0;}
+  .link-label{font-size:13px;font-weight:500;flex:1;}
+  .link-open{
+    font-size:11px;color:var(--gold);border:1px solid var(--gold-dim);border-radius:6px;
+    padding:3px 8px;cursor:pointer;background:transparent;white-space:nowrap;
+  }
+  .link-open:hover{background:#2f2a1f;}
+  .link-url{font-size:11px;color:var(--text-dim);margin-top:6px;word-break:break-all;}
+
+  .result-card{background:#221f16;border-left:3px solid var(--gold);border-radius:0 12px 12px 0;padding:20px 22px;}
+  .result-title{font-family:'Playfair Display',serif;color:var(--gold);font-size:16px;margin-bottom:12px;font-weight:600;}
+
+  .footer-note{text-align:center;color:var(--text-dim);font-size:12px;margin-top:20px;line-height:1.6;}
+  .reset-btn{
+    display:block;margin:24px auto 0;background:transparent;border:1px solid #4a4a4a;color:var(--text-dim);
+    padding:8px 18px;border-radius:8px;cursor:pointer;font-size:12px;
+  }
+  .reset-btn:hover{border-color:var(--gold-dim);color:var(--gold-dim);}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Алгоритм изучения проекта - шаблон</div>
+    <h1 class="editable" contenteditable="true" data-key="title" data-placeholder="[Название проекта]"></h1>
+    <div class="status-row">
+      <span class="status-select" id="statusPill" data-key="status" data-state="unset">Светофор: не указан ▾</span>
+      <span class="editable meta-line" contenteditable="true" data-key="meta" data-placeholder="[Комиссия] · [Цена от] · [Вердикт светофора]"></span>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">0 из 0 выполнено</div>
+  </header>
+
+  <section>
+    <div class="section-title"><span class="step-num">0</span>Светофор</div>
+    <div class="card">
+      <div class="task">
+        <div class="checkbox" data-id="step0-1" onclick="toggleCheckbox(this)"></div>
+        <div class="task-body">
+          <div class="task-text">Проверить статус проекта в светофоре, прежде чем тратить время на остальное</div>
+          <div class="task-note editable" contenteditable="true" data-key="note-step0" data-placeholder="Заметка: почему такой статус, что смущает или подтверждает"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title"><span class="step-num">1</span>Материалы до встречи / изучения</div>
+    <div class="section-hint">Если документа нет на этом этапе - помечайте его «в процессе», а не пропускайте молча. Кликните по статусу справа, чтобы переключить.</div>
+    <div class="card">
+      <div class="task">
+        <div class="checkbox" data-id="doc-1" onclick="toggleCheckbox(this)"></div>
+        <div class="task-body">
+          <div class="task-text">Презентация проекта и актуальный мастер-план <span class="doc-status" data-id="docstatus-1" data-state="missing" onclick="cycleDocStatus(this)">нет</span></div>
+        </div>
+      </div>
+      <div class="task">
+        <div class="checkbox" data-id="doc-2" onclick="toggleCheckbox(this)"></div>
+        <div class="task-body">
+          <div class="task-text">Документ на землю / разрешение на застройку - титул, лизхолд-контракт, цвет земли, срок лизхолда <span class="doc-status" data-id="docstatus-2" data-state="missing" onclick="cycleDocStatus(this)">нет</span></div>
+        </div>
+      </div>
+      <div class="task">
+        <div class="checkbox" data-id="doc-3" onclick="toggleCheckbox(this)"></div>
+        <div class="task-body">
+          <div class="task-text">Наличие документов PPG, SLF (если применимо к проекту) <span class="doc-status" data-id="docstatus-3" data-state="missing" onclick="cycleDocStatus(this)">нет</span></div>
+        </div>
+      </div>
+      <div class="task">
+        <div class="checkbox" data-id="doc-4" onclick="toggleCheckbox(this)"></div>
+        <div class="task-body">
+          <div class="task-text">Наличие due diligence по проекту <span class="doc-status" data-id="docstatus-4" data-state="missing" onclick="cycleDocStatus(this)">нет</span></div>
+        </div>
+      </div>
+      <div class="task">
+        <div class="checkbox" data-id="doc-5" onclick="toggleCheckbox(this)"></div>
+        <div class="task-body">
+          <div class="task-text">Финансовая модель с указанием источника - застройщик / отельный оператор / независимый отчёт <span class="doc-status" data-id="docstatus-5" data-state="missing" onclick="cycleDocStatus(this)">нет</span></div>
+        </div>
+      </div>
+      <div class="task">
+        <div class="checkbox" data-id="doc-6" onclick="toggleCheckbox(this)"></div>
+        <div class="task-body">
+          <div class="task-text">Статус соглашения с отельным оператором или управляющей компанией <span class="doc-status" data-id="docstatus-6" data-state="missing" onclick="cycleDocStatus(this)">нет</span></div>
+        </div>
+      </div>
+      <div class="task">
+        <div class="checkbox" data-id="doc-7" onclick="toggleCheckbox(this)"></div>
+        <div class="task-body">
+          <div class="task-text">Условия оплаты, рассрочки, скидок <span class="doc-status" data-id="docstatus-7" data-state="missing" onclick="cycleDocStatus(this)">нет</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title"><span class="step-num">2</span>База объектов</div>
+    <div class="card">
+      <div class="task">
+        <div class="checkbox" data-id="step2-1" onclick="toggleCheckbox(this)"></div>
+        <div class="task-body">
+          <div class="task-text">Пройтись по всем типам юнитов и ценам - не «от», а по каждой позиции отдельно</div>
+          <div class="task-note editable" contenteditable="true" data-key="note-step2-1" data-placeholder="Типы юнитов, метраж и цена по каждому - впишите сюда"></div>
+        </div>
+      </div>
+      <div class="task">
+        <div class="checkbox" data-id="step2-2" onclick="toggleCheckbox(this)"></div>
+        <div class="task-body">
+          <div class="task-text">Зафиксировать условия: взнос, платёж/график, срок сдачи, застройщик</div>
+          <div class="task-note editable" contenteditable="true" data-key="note-step2-2" data-placeholder="Взнос, срок сдачи, застройщик - впишите сюда"></div>
+        </div>
+      </div>
+      <div class="task">
+        <div class="checkbox" data-id="step2-3" onclick="toggleCheckbox(this)"></div>
+        <div class="task-body">
+          <div class="task-text">Проверить титул и юридическую часть - нет ли стоп-факторов для ваших клиентов</div>
+          <div class="task-note editable" contenteditable="true" data-key="note-step2-3" data-placeholder="Титул, гражданство подписанта, нюансы - впишите сюда"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title"><span class="step-num">3</span>Обучение от застройщика</div>
+    <div class="card">
+      <div class="task">
+        <div class="checkbox" data-id="step3-1" onclick="toggleCheckbox(this)"></div>
+        <div class="task-body">
+          <div class="task-text">Посмотреть запись обучения и/или переписку в группе с застройщиком - не за цифрами, а за контекстом и живыми аргументами</div>
+          <div class="task-note editable" contenteditable="true" data-key="note-step3-1" data-placeholder="Живые аргументы, которых нет в сухой карточке - впишите сюда"></div>
+        </div>
+      </div>
+      <div class="task">
+        <div class="checkbox" data-id="step3-2" onclick="toggleCheckbox(this)"></div>
+        <div class="task-body">
+          <div class="task-text">Отметить слабые места, не закрытые чётко на встрече - клиент может задать тот же вопрос</div>
+          <div class="task-note editable" contenteditable="true" data-key="note-step3-2" data-placeholder="Что осталось неясным - впишите сюда"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title">💎 Sales Point / УТП</div>
+    <div class="section-hint">Обязательный блок по методичке аттестации (проходной балл 90%+). Конкурентные преимущества относительно аналогов в этой локации, цена за юнит по каждому типу, условия рассрочки и скидок, точки притяжения локации - своими словами, не общими фразами.</div>
+    <div class="card">
+      <div class="utp-list">
+        <div class="utp-item">
+          <div class="utp-num">1</div>
+          <div class="utp-text editable" contenteditable="true" data-key="utp-1" data-placeholder="Первое конкурентное преимущество проекта"></div>
+        </div>
+        <div class="utp-item">
+          <div class="utp-num">2</div>
+          <div class="utp-text editable" contenteditable="true" data-key="utp-2" data-placeholder="Второе конкурентное преимущество проекта"></div>
+        </div>
+        <div class="utp-item">
+          <div class="utp-num">3</div>
+          <div class="utp-text editable" contenteditable="true" data-key="utp-3" data-placeholder="Третье конкурентное преимущество проекта"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title"><span class="step-num">4</span>Проверка знаний</div>
+    <div class="card">
+      <div class="task">
+        <div class="checkbox" data-id="step4-1" onclick="toggleCheckbox(this)"></div>
+        <div class="task-body">
+          <div class="task-text">Пройти тест-аттестацию, проходной балл 90%+</div>
+          <div class="task-note editable" contenteditable="true" data-key="note-step4-1" data-placeholder="Срок прохождения теста - обычно до 7 дней с момента обучения"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title">📎 Материалы</div>
+    <div class="links-grid" id="linksGrid">
+      <!-- ссылки генерируются JS, чтобы легко добавлять/удалять -->
+    </div>
+    <button class="reset-btn" onclick="addLink()" style="margin-top:12px;">+ добавить ссылку</button>
+  </section>
+
+  <section>
+    <div class="result-card">
+      <div class="result-title">Ожидаемый результат</div>
+      <div class="task"><div class="checkbox" data-id="res-1" onclick="toggleCheckbox(this)"></div><div class="task-text">Знаю статус проекта в светофоре и понимаю, почему именно такой</div></div>
+      <div class="task"><div class="checkbox" data-id="res-2" onclick="toggleCheckbox(this)"></div><div class="task-text">Называю цену и площадь по каждому типу юнита без запинки, не диапазоном «от»</div></div>
+      <div class="task"><div class="checkbox" data-id="res-3" onclick="toggleCheckbox(this)"></div><div class="task-text">Знаю титул, срок лизхолда/владения и условия продления или переоформления</div></div>
+      <div class="task"><div class="checkbox" data-id="res-4" onclick="toggleCheckbox(this)"></div><div class="task-text">Могу назвать 3+ живых аргумента (Sales Point / УТП) своими словами, а не по бумажке</div></div>
+      <div class="task"><div class="checkbox" data-id="res-5" onclick="toggleCheckbox(this)"></div><div class="task-text">Знаю слабые места проекта и готов(а) ответ на них, а не теряюсь</div></div>
+      <div class="task"><div class="checkbox" data-id="res-6" onclick="toggleCheckbox(this)"></div><div class="task-text">Тест пройден на 90%+</div></div>
+    </div>
+  </section>
+
+  <div class="footer-note">Все поля с пунктирным подчёркиванием - редактируемые, кликните и печатайте прямо здесь. Прогресс и текст сохраняются в этом браузере автоматически. Один файл = один проект; для нового проекта скопируйте файл и заполните заново.</div>
+  <button class="reset-btn" onclick="resetAll()">Сбросить весь прогресс и текст</button>
+</div>
+
+<script>
+const STATUS_OPTIONS = [
+  { key: "unset", label: "Светофор: не указан ▾", color: "var(--text-dim)" },
+  { key: "green", label: "🟢 Зелёный список ▾", color: "var(--green)" },
+  { key: "amber", label: "🟡 Жёлтый список ▾", color: "var(--amber)" },
+  { key: "red", label: "🔴 Красный список ▾", color: "#c98a61" }
+];
+const DOC_STATES = ["missing", "progress", "ready"];
+const DOC_LABELS = { missing: "нет", progress: "в процессе", ready: "готово" };
+
+function getProjectKey(){
+  const title = document.querySelector('[data-key="title"]').textContent.trim();
+  return "study_algo_" + (title || "untitled");
+}
+function loadState(){
+  try { return JSON.parse(localStorage.getItem(getProjectKey()) || "{}"); } catch(e){ return {}; }
+}
+function saveState(state){
+  try { localStorage.setItem(getProjectKey(), JSON.stringify(state)); } catch(e){}
+}
+
+function toggleCheckbox(el){
+  const id = el.getAttribute('data-id');
+  const state = loadState();
+  state.checks = state.checks || {};
+  state.checks[id] = !state.checks[id];
+  saveState(state);
+  applyCheckbox(el, state.checks[id]);
+  updateProgress();
+}
+function applyCheckbox(el, checked){
+  el.classList.toggle('checked', !!checked);
+  const textEl = el.parentElement.querySelector('.task-text');
+  if (textEl) textEl.classList.toggle('checked', !!checked);
+}
+
+function cycleDocStatus(el){
+  const id = el.getAttribute('data-id');
+  const state = loadState();
+  state.docStatus = state.docStatus || {};
+  const current = state.docStatus[id] || "missing";
+  const next = DOC_STATES[(DOC_STATES.indexOf(current) + 1) % DOC_STATES.length];
+  state.docStatus[id] = next;
+  saveState(state);
+  applyDocStatus(el, next);
+}
+function applyDocStatus(el, stateVal){
+  el.setAttribute('data-state', stateVal);
+  el.textContent = DOC_LABELS[stateVal];
+}
+
+function cycleStatusPill(){
+  const state = loadState();
+  const current = state.statusPill || "unset";
+  const idx = STATUS_OPTIONS.findIndex(s => s.key === current);
+  const next = STATUS_OPTIONS[(idx + 1) % STATUS_OPTIONS.length];
+  state.statusPill = next.key;
+  saveState(state);
+  applyStatusPill(next.key);
+}
+function applyStatusPill(key){
+  const opt = STATUS_OPTIONS.find(s => s.key === key) || STATUS_OPTIONS[0];
+  const pill = document.getElementById('statusPill');
+  pill.textContent = opt.label;
+  pill.style.color = opt.color;
+  pill.style.borderColor = opt.color;
+}
+
+function updateProgress(){
+  const boxes = document.querySelectorAll('.checkbox');
+  const state = loadState();
+  const checks = state.checks || {};
+  let done = 0;
+  boxes.forEach(el => { if (checks[el.getAttribute('data-id')]) done++; });
+  const pct = boxes.length ? Math.round((done / boxes.length) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${done} из ${boxes.length} выполнено`;
+}
+
+function setupEditableSaving(){
+  document.querySelectorAll('.editable').forEach(el => {
+    const key = el.getAttribute('data-key');
+    el.addEventListener('input', () => {
+      const state = loadState();
+      state.fields = state.fields || {};
+      state.fields[key] = el.innerHTML;
+      saveState(state);
+    });
+  });
+}
+function restoreEditableFields(){
+  const state = loadState();
+  const fields = state.fields || {};
+  document.querySelectorAll('.editable').forEach(el => {
+    const key = el.getAttribute('data-key');
+    if (fields[key] !== undefined) el.innerHTML = fields[key];
+  });
+}
+
+let linkCounter = 0;
+function renderLink(link){
+  const id = "link-" + (linkCounter++);
+  const wrap = document.createElement('div');
+  wrap.className = 'link-item';
+  wrap.setAttribute('data-link-id', id);
+  wrap.innerHTML = `
+    <div class="link-row">
+      <span class="link-icon">🔗</span>
+      <span class="link-label editable" contenteditable="true" data-linkfield="label" data-placeholder="Название материала (например: Мастер-план)">${link.label || ''}</span>
+      <button class="link-open" onclick="openLink(this)">Открыть ↗</button>
+      <button class="link-open" onclick="removeLink(this)" style="border-color:#5a3a3a;color:#c98a8a;">✕</button>
+    </div>
+    <div class="link-url editable" contenteditable="true" data-linkfield="url" data-placeholder="Вставьте сюда ссылку">${link.url || ''}</div>
+  `;
+  document.getElementById('linksGrid').appendChild(wrap);
+
+  wrap.querySelectorAll('.editable').forEach(el => {
+    el.addEventListener('input', saveLinks);
+  });
+}
+function openLink(btn){
+  const wrap = btn.closest('.link-item');
+  const url = wrap.querySelector('[data-linkfield="url"]').textContent.trim();
+  if (url) window.open(url.startsWith('http') ? url : 'https://' + url, '_blank');
+}
+function removeLink(btn){
+  btn.closest('.link-item').remove();
+  saveLinks();
+}
+function addLink(){
+  renderLink({ label: '', url: '' });
+  saveLinks();
+}
+function saveLinks(){
+  const links = [];
+  document.querySelectorAll('.link-item').forEach(item => {
+    links.push({
+      label: item.querySelector('[data-linkfield="label"]').textContent,
+      url: item.querySelector('[data-linkfield="url"]').textContent
+    });
+  });
+  const state = loadState();
+  state.links = links;
+  saveState(state);
+}
+function restoreLinks(){
+  const state = loadState();
+  const links = state.links;
+  document.getElementById('linksGrid').innerHTML = '';
+  if (links && links.length){
+    links.forEach(renderLink);
+  } else {
+    const defaults = [
+      { label: "Комиссии + Светофор (Google Таблица)", url: "https://docs.google.com/spreadsheets/d/1PThqVUqxQPTZcrmIPdOhSI2FKdT6wV_8I8mZSMEJ8K4/edit?gid=1783957394#gid=1783957394" },
+      { label: "База объектов (Google Таблица)", url: "https://docs.google.com/spreadsheets/d/14sl8gtnrfld2r7ZNzefOgyyeDU_T9IZUKb4IbYOp3uw/edit?gid=1198367853#gid=1198367853" },
+      { label: "Группа с застройщиком (Telegram/WhatsApp)", url: "" }
+    ];
+    defaults.forEach(renderLink);
+  }
+}
+
+function resetAll(){
+  if (!confirm("Сбросить весь прогресс, текст и ссылки для этого проекта? Это нельзя отменить.")) return;
+  localStorage.removeItem(getProjectKey());
+  location.reload();
+}
+
+function init(){
+  const state = loadState();
+
+  document.querySelectorAll('.checkbox').forEach(el => {
+    applyCheckbox(el, (state.checks || {})[el.getAttribute('data-id')]);
+  });
+
+  document.querySelectorAll('.doc-status').forEach(el => {
+    const id = el.getAttribute('data-id');
+    const val = (state.docStatus || {})[id] || "missing";
+    applyDocStatus(el, val);
+  });
+
+  applyStatusPill(state.statusPill || "unset");
+  document.getElementById('statusPill').addEventListener('click', cycleStatusPill);
+
+  restoreEditableFields();
+  setupEditableSaving();
+  restoreLinks();
+  updateProgress();
+}
+
+init();
+</script>
+
+</body>
+</html>
