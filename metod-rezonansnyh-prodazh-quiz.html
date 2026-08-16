@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Метод резонансных продаж — проверка кейсами</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#1a1a1a;
+    --card:#2f2f2f;
+    --gold:#c9a961;
+    --gold-dim:#9c7d51;
+    --text:#eee7d8;
+    --text-dim:#a89f8f;
+    --wrong:#8a4a4a;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding:32px 16px 80px;
+  }
+
+  .wrap{max-width:680px;margin:0 auto;}
+
+  header{text-align:center;margin-bottom:36px;}
+
+  h1{
+    font-family:'Playfair Display',serif;
+    font-weight:700;
+    font-size:28px;
+    color:var(--gold);
+    margin:0 0 8px;
+    letter-spacing:0.3px;
+  }
+
+  .subtitle{color:var(--text-dim);font-size:14px;line-height:1.6;max-width:480px;margin:0 auto;}
+
+  .progress-wrap{
+    display:flex;
+    gap:6px;
+    justify-content:center;
+    margin:24px 0 8px;
+  }
+
+  .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:#3d3d3d;
+    transition:background 0.3s;
+  }
+  .dot.done{background:var(--gold-dim);}
+  .dot.active{background:var(--gold);}
+
+  .progress-label{text-align:center;color:var(--text-dim);font-size:12px;margin-bottom:28px;letter-spacing:0.5px;text-transform:uppercase;}
+
+  .card{
+    background:var(--card);
+    border:1px solid #3d3d3d;
+    border-radius:14px;
+    padding:28px 24px;
+    margin-bottom:20px;
+    display:none;
+    animation:fadeIn 0.4s ease;
+  }
+  .card.active{display:block;}
+
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .case-label{
+    display:inline-block;
+    font-size:11px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--gold-dim);
+    border:1px solid var(--gold-dim);
+    border-radius:20px;
+    padding:3px 12px;
+    margin-bottom:16px;
+  }
+
+  .case-text{
+    font-size:15px;
+    line-height:1.7;
+    color:var(--text);
+    margin-bottom:22px;
+  }
+
+  .case-text .quote{
+    color:var(--gold);
+    font-style:italic;
+  }
+
+  .question{
+    font-family:'Playfair Display',serif;
+    font-size:17px;
+    color:var(--text);
+    margin-bottom:16px;
+    font-weight:600;
+  }
+
+  .options{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+
+  .option{
+    background:#252525;
+    border:1px solid #3d3d3d;
+    border-radius:10px;
+    padding:14px 16px;
+    font-size:14px;
+    line-height:1.5;
+    cursor:pointer;
+    transition:border-color 0.2s, background 0.2s;
+  }
+  .option:hover{border-color:var(--gold-dim);}
+  .option.selected{border-color:var(--gold);background:#2f2a1f;}
+
+  .options.locked .option{cursor:default;pointer-events:none;}
+  .option.correct-reveal{border-color:var(--gold);background:#2f2a1f;}
+  .option.wrong-reveal{border-color:var(--wrong);opacity:0.7;}
+
+  .check-btn{
+    width:100%;
+    background:var(--gold);
+    color:#1a1a1a;
+    border:none;
+    border-radius:10px;
+    padding:13px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    letter-spacing:0.3px;
+    transition:background 0.2s;
+  }
+  .check-btn:hover{background:#d9bb7a;}
+  .check-btn:disabled{background:#4a4a4a;color:#8a8a8a;cursor:not-allowed;}
+
+  .explanation{
+    display:none;
+    margin-top:18px;
+    padding:16px 18px;
+    background:#221f16;
+    border-left:3px solid var(--gold);
+    border-radius:0 8px 8px 0;
+    font-size:14px;
+    line-height:1.6;
+    color:var(--text-dim);
+  }
+  .explanation.show{display:block;animation:fadeIn 0.3s ease;}
+  .explanation b{color:var(--gold);}
+
+  .nav-btn{
+    display:none;
+    margin-top:16px;
+    width:100%;
+    background:transparent;
+    color:var(--gold);
+    border:1px solid var(--gold-dim);
+    border-radius:10px;
+    padding:12px;
+    font-size:14px;
+    font-weight:500;
+    cursor:pointer;
+  }
+  .nav-btn.show{display:block;}
+  .nav-btn:hover{background:#2f2a1f;}
+
+  .result-card{
+    display:none;
+    text-align:center;
+    padding:40px 24px;
+  }
+  .result-card.active{display:block;}
+  .result-score{
+    font-family:'Playfair Display',serif;
+    font-size:42px;
+    color:var(--gold);
+    margin:12px 0;
+  }
+  .result-text{color:var(--text-dim);font-size:14px;line-height:1.7;max-width:420px;margin:0 auto 24px;}
+  .restart-btn{
+    background:transparent;
+    border:1px solid var(--gold-dim);
+    color:var(--gold);
+    padding:12px 28px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:14px;
+  }
+  .restart-btn:hover{background:#2f2a1f;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Метод резонансных продаж</h1>
+    <div class="subtitle">Проверка на реальных кейсах из книги. Читайте ситуацию как звонок с клиентом и выбирайте, что сказать дальше.</div>
+  </header>
+
+  <div class="progress-wrap" id="progressDots"></div>
+  <div class="progress-label" id="progressLabel">Кейс 1 из 6</div>
+
+  <div id="cardsContainer"></div>
+
+  <div class="result-card" id="resultCard">
+    <div class="case-label">Результат</div>
+    <div class="result-score" id="resultScore">0 / 6</div>
+    <div class="result-text" id="resultText"></div>
+    <button class="restart-btn" onclick="restart()">Пройти ещё раз</button>
+  </div>
+</div>
+
+<script>
+const cases = [
+  {
+    label: "Кейс 1 · Первая встреча",
+    text: 'Вы на первой встрече с клиентом. Он говорит: <span class="quote">«Мне нужна квартира побольше, у нас скоро прибавление в семье»</span>. Что вы скажете дальше?',
+    question: "Как отреагировать по методу резонансных продаж?",
+    options: [
+      { text: "«Отлично, у нас есть отличные варианты 3-комнатных квартир, показать?»", correct: false },
+      { text: "«Поздравляю! То есть вам важно, чтобы у каждого в семье было своё пространство и всем было комфортно?»", correct: true },
+      { text: "«Сколько у вас бюджет на новую квартиру?»", correct: false },
+      { text: "«А сколько квадратных метров рассматриваете?»", correct: false }
+    ],
+    explanation: "Это <b>воспроизведение</b> — не повтор слов клиента, а отражение смысла и чувства за ними. Клиент говорит про метраж, но на деле - про будущий комфорт семьи. Задача не в том, чтобы сразу продавать метры, а в том, чтобы клиент почувствовал: его услышали правильно."
+  },
+  {
+    label: "Кейс 2 · Язык доверия",
+    text: 'Клиент - инженер, спрашивает про юридическую чистоту объекта сложными вопросами. Вы можете ответить профессиональным языком со всеми терминами эскроу-счетов и обременений, а можете - просто.',
+    question: "Что сработает лучше по методу?",
+    options: [
+      { text: "Использовать профессиональные термины - клиент инженер, оценит компетентность", correct: false },
+      { text: "Говорить простым языком без жаргона и явно согласиться с важностью его вопроса", correct: true },
+      { text: "Отправить клиенту документы, чтобы он разобрался сам", correct: false },
+      { text: "Сказать, что это стандартная процедура и беспокоиться не о чем", correct: false }
+    ],
+    explanation: "Решение о доверии клиент принимает не разумом, а ощущением расслабления рядом с продавцом. Простой язык без жаргона плюс явное согласие с важностью его тревоги («вы правы, что уточняете - это серьёзный вопрос») снимает напряжение сильнее, чем демонстрация компетентности терминами."
+  },
+  {
+    label: "Кейс 3 · Реальность клиента",
+    text: 'Клиент говорит: <span class="quote">«Мы с женой ничего не решаем без одобрения её отца, он у нас в семье главный по деньгам»</span>. Вам кажется это странным и мешающим сделке.',
+    question: "Как правильно ответить?",
+    options: [
+      { text: "«Но решение всё же принимаете вы с женой, а не отец»", correct: false },
+      { text: "«Понимаю, семейные решения такого масштаба - это правильно, что вы советуетесь. Что для него будет важно увидеть в этом объекте?»", correct: true },
+      { text: "Промолчать и перейти к следующему вопросу", correct: false },
+      { text: "Предложить скидку, чтобы отец жены точно одобрил", correct: false }
+    ],
+    explanation: "Главный закон метода: нельзя спорить с реальностью другого человека - спор рождает сопротивление, согласие - открытость. Признать право клиента на его картину мира и работать с ней - это не поддакивание, а профессиональная позиция."
+  },
+  {
+    label: "Кейс 4 · Формальный запрос",
+    text: 'Клиент просит: <span class="quote">«Хочу объект с хорошей ликвидностью для инвестиций»</span>. Формально всё понятно, можно сразу подбирать варианты по доходности.',
+    question: "Что сделать, чтобы попасть точно в потребность?",
+    options: [
+      { text: "Сразу выслать подборку объектов с лучшей доходностью", correct: false },
+      { text: "Спросить: «А зачем вам именно ликвидность - хотите иметь возможность быстро выйти в деньги, или это про подушку безопасности?»", correct: true },
+      { text: "Уточнить только бюджет и сроки", correct: false },
+      { text: "Объяснить, что ликвидность - относительное понятие на рынке недвижимости", correct: false }
+    ],
+    explanation: "«Хочу ликвидный объект» - это симптом, а не истинная причина. Лестница «Зачем?» ведёт к настоящему мотиву: свобода распоряжаться деньгами, страх перед нестабильностью, желание финансовой подушки. От ответа зависит, какой объект на самом деле нужно предлагать."
+  },
+  {
+    label: "Кейс 5 · Возражение",
+    text: 'После подробной презентации клиент говорит: <span class="quote">«Это звучит слишком хорошо, чтобы быть правдой»</span>.',
+    question: "Как реагировать по методу?",
+    options: [
+      { text: "Начать переубеждать: «Нет, что вы, всё абсолютно реально, вот документы»", correct: false },
+      { text: "Согласиться с его настороженностью и предложить поговорить напрямую с текущими клиентами компании", correct: true },
+      { text: "Обидеться и напомнить о репутации компании", correct: false },
+      { text: "Сменить тему на другой объект", correct: false }
+    ],
+    explanation: "Возражение - не атака, а запрос на безопасность: «я почти готов, но мой страх пока сильнее». Модель: Признание («да, на рынке хватает пустых обещаний, и это разумная настороженность») → Решение, которое снимает именно этот страх - живые примеры, а не новые аргументы."
+  },
+  {
+    label: "Кейс 6 · Момент закрытия",
+    text: 'Клиент за последние 10 минут дважды спросил, как будет проходить процесс оплаты после подписания, и заметно расслабился в разговоре.',
+    question: "Что делать?",
+    options: [
+      { text: "Использовать технику «сейчас или никогда» - предложение действует только сегодня", correct: false },
+      { text: "Спокойно зафиксировать: «Мы всё обсудили, предлагаю оформить результат» - без давления", correct: true },
+      { text: "Продолжать презентацию, чтобы клиент точно был уверен", correct: false },
+      { text: "Дождаться, пока клиент сам скажет «давайте оформлять», ничего не предлагая", correct: false }
+    ],
+    explanation: "Вопросы о будущем и расслабленная поза - маркеры готовности. Если предыдущие этапы пройдены честно, закрытие - естественный шаг клиента, а не «дожим» продавца. Манипулятивные техники давления оставляют «выжженную землю» вместо доверия."
+  },
+  {
+    label: "Вопрос 7 · На знание текста",
+    text: "",
+    question: "По какой метафоре автор объясняет, что клиент на самом деле покупает не продукт?",
+    options: [
+      { text: "«Не дрель, а дырку в стене - а точнее, чувство дома»", correct: true },
+      { text: "«Не машину, а статус в глазах соседей»", correct: false },
+      { text: "«Не квартиру, а инвестицию»", correct: false },
+      { text: "«Не услугу, а сервис»", correct: false }
+    ],
+    explanation: "Метафора из главы 6: люди покупают не дрель, а дырку в стене; не дырку, а картину; не картину, а чувство дома. Клиенты почти никогда не приходят с истинной проблемой - только с симптомами, и задача продавца - докопаться до настоящего мотива."
+  },
+  {
+    label: "Вопрос 8 · На знание текста",
+    text: "",
+    question: "Какое слово-маркер в речи клиента, по методу, указывает на желание что-то кому-то доказать?",
+    options: [
+      { text: "«Наконец-то»", correct: false },
+      { text: "«Свобода / независимость»", correct: false },
+      { text: "«Признание / статус»", correct: true },
+      { text: "«Безопасность / стабильность»", correct: false }
+    ],
+    explanation: "Слова-маркеры из главы 6: «наконец-то» - избавление от боли; «свобода/независимость» - желание сбросить оковы; «безопасность/стабильность» - страх перед будущим; «признание/статус» - желание что-то доказать."
+  },
+  {
+    label: "Вопрос 9 · На знание текста",
+    text: "",
+    question: "Какой девиз метода приведён в предисловии книги?",
+    options: [
+      { text: "«Продавай не продукт, а результат»", correct: false },
+      { text: "«Не убеждать, а входить в резонанс с сутью клиента»", correct: true },
+      { text: "«Клиент всегда прав»", correct: false },
+      { text: "«Слушай больше, чем говоришь»", correct: false }
+    ],
+    explanation: "Дословный девиз метода (стр. 3): «Не убеждать, а входить в резонанс с сутью клиента»."
+  },
+  {
+    label: "Вопрос 10 · На знание текста",
+    text: "",
+    question: "Сколько уровней слушания выделяет автор в главе 2?",
+    options: [
+      { text: "Два", correct: false },
+      { text: "Три", correct: true },
+      { text: "Четыре", correct: false },
+      { text: "Пять", correct: false }
+    ],
+    explanation: "Три уровня: 1) буквальное повторение слов, 2) интерпретация, 3) резонанс - слышать смысл и ценность за словами. Метод учит всегда стремиться к третьему."
+  },
+  {
+    label: "Вопрос 11 · На знание текста",
+    text: "",
+    question: "Как называется техника серии уточняющих вопросов «а зачем вам это?», которая ведёт к истинному мотиву клиента?",
+    options: [
+      { text: "Воронка потребностей", correct: false },
+      { text: "Лестница «Зачем?»", correct: true },
+      { text: "Пирамида мотивов", correct: false },
+      { text: "Мост причин", correct: false }
+    ],
+    explanation: "Лестница «Зачем?» - серия уточнений, которая ведёт от формального запроса (например, CRM) к истинному мотиву (спокойный сон, финансовая подушка и так далее)."
+  },
+  {
+    label: "Вопрос 12 · На знание текста",
+    text: "",
+    question: "Из скольких этапов состоит сводная таблица инструментов метода в конце книги?",
+    options: [
+      { text: "5", correct: false },
+      { text: "6", correct: false },
+      { text: "8", correct: true },
+      { text: "10", correct: false }
+    ],
+    explanation: "Восемь этапов: контакт, доверие, реальность клиента, поиск смысла, диагностика, презентация, возражения, закрытие - у каждого свой инструмент."
+  },
+  {
+    label: "Вопрос 13 · На знание текста",
+    text: "",
+    question: "Какая фраза клиента, по методу, служит критерием, что воспроизведение выполнено верно?",
+    options: [
+      { text: "«Интересно, продолжайте»", correct: false },
+      { text: "«Да, именно это я имел в виду»", correct: true },
+      { text: "«Хорошо, я подумаю»", correct: false },
+      { text: "«Вы правы, давайте к делу»", correct: false }
+    ],
+    explanation: "Именно эта фраза - подтверждение, что продавец отразил не слова, а истинный смысл сказанного клиентом."
+  },
+  {
+    label: "Вопрос 14 · На знание текста",
+    text: "",
+    question: "Какая трёхшаговая формула используется, когда клиент описывает свою нестандартную реальность (например, «советуюсь со старшими» или «верю в советы предков»)?",
+    options: [
+      { text: "Вопрос → Ответ → Решение", correct: false },
+      { text: "Признание → Мост → Решение", correct: true },
+      { text: "Слушать → Спорить → Убеждать", correct: false },
+      { text: "Согласие → Аргумент → Закрытие", correct: false }
+    ],
+    explanation: "Формула из главы 4: Признание → Мост → Решение. Нельзя спорить с реальностью другого человека - спор рождает сопротивление."
+  },
+  {
+    label: "Вопрос 15 · На знание текста",
+    text: "",
+    question: "Как называется цикл «Вопрос → Ответ клиента → Воспроизведение → Подтверждение клиента» из главы 5?",
+    options: [
+      { text: "Круг доверия", correct: false },
+      { text: "Петля резонанса", correct: true },
+      { text: "Спираль смысла", correct: false },
+      { text: "Цикл вовлечения", correct: false }
+    ],
+    explanation: "Петля резонанса повторяется на всё более глубоком уровне после каждого подтверждения клиента «да, именно так!»."
+  },
+  {
+    label: "Вопрос 16 · На знание текста",
+    text: "",
+    question: "Как называется анонсированная в эпилоге книга 2 - продолжение метода?",
+    options: [
+      { text: "«Мастер резонанса: рабочая тетрадь»", correct: false },
+      { text: "«Практикум Резонанса: от знания к мастерству»", correct: true },
+      { text: "«Резонансные продажи 2.0»", correct: false },
+      { text: "«Школа резонанса»", correct: false }
+    ],
+    explanation: "Книга 2 анонсирована в эпилоге под названием «Практикум Резонанса: от знания к мастерству» (стр. 73, 75), вместе с рабочей тетрадью «Мастер резонанса» и онлайн-курсом."
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = [];
+
+function render(){
+  const container = document.getElementById('cardsContainer');
+  container.innerHTML = '';
+  cases.forEach((c, i) => {
+    const card = document.createElement('div');
+    card.className = 'card' + (i === current ? ' active' : '');
+    card.id = 'card-' + i;
+
+    let optionsHtml = c.options.map((opt, oi) =>
+      `<div class="option" data-idx="${oi}" onclick="selectOption(${i}, ${oi})">${opt.text}</div>`
+    ).join('');
+
+    card.innerHTML = `
+      <div class="case-label">${c.label}</div>
+      ${c.text ? `<div class="case-text">${c.text}</div>` : ''}
+      <div class="question">${c.question}</div>
+      <div class="options" id="options-${i}">${optionsHtml}</div>
+      <button class="check-btn" id="check-${i}" onclick="checkAnswer(${i})" disabled>Проверить ответ</button>
+      <div class="explanation" id="explanation-${i}"></div>
+      <button class="nav-btn" id="nav-${i}" onclick="nextCase()">${i === cases.length - 1 ? 'Показать результат' : 'Следующий кейс →'}</button>
+    `;
+    container.appendChild(card);
+  });
+  renderProgress();
+}
+
+function renderProgress(){
+  const dotsWrap = document.getElementById('progressDots');
+  dotsWrap.innerHTML = cases.map((_, i) => {
+    let cls = 'dot';
+    if (i < current) cls += ' done';
+    if (i === current) cls += ' active';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+  document.getElementById('progressLabel').textContent = `Кейс ${current + 1} из ${cases.length}`;
+}
+
+let selected = {};
+
+function selectOption(cardIdx, optIdx){
+  if (answered[cardIdx]) return;
+  selected[cardIdx] = optIdx;
+  document.querySelectorAll(`#options-${cardIdx} .option`).forEach((el, i) => {
+    el.classList.toggle('selected', i === optIdx);
+  });
+  document.getElementById(`check-${cardIdx}`).disabled = false;
+}
+
+function checkAnswer(cardIdx){
+  if (selected[cardIdx] === undefined || answered[cardIdx]) return;
+  answered[cardIdx] = true;
+  const c = cases[cardIdx];
+  const optsEl = document.getElementById(`options-${cardIdx}`);
+  optsEl.classList.add('locked');
+
+  const chosenCorrect = c.options[selected[cardIdx]].correct;
+  if (chosenCorrect) score++;
+
+  document.getElementById(`explanation-${cardIdx}`).innerHTML = c.explanation;
+  document.getElementById(`explanation-${cardIdx}`).classList.add('show');
+  document.getElementById(`check-${cardIdx}`).style.display = 'none';
+  document.getElementById(`nav-${cardIdx}`).classList.add('show');
+}
+
+function nextCase(){
+  if (current < cases.length - 1){
+    document.getElementById(`card-${current}`).classList.remove('active');
+    current++;
+    document.getElementById(`card-${current}`).classList.add('active');
+    renderProgress();
+  } else {
+    showResult();
+  }
+}
+
+function showResult(){
+  document.getElementById('cardsContainer').style.display = 'none';
+  document.getElementById('progressDots').style.display = 'none';
+  document.getElementById('progressLabel').style.display = 'none';
+  const resultCard = document.getElementById('resultCard');
+  resultCard.classList.add('active');
+  document.getElementById('resultScore').textContent = `${score} / ${cases.length}`;
+
+  let text = '';
+  if (score === cases.length){
+    text = 'Полное попадание. Вы не просто прочитали метод - вы видите логику за каждой ситуацией. Пробуйте на реальных звонках уже сейчас.';
+  } else if (score >= cases.length - 2){
+    text = 'Хороший результат. Основную логику вы понимаете - вернитесь к пропущенным кейсам и перечитайте объяснение, там ключевая мысль главы.';
+  } else {
+    text = 'Стоит перечитать метод ещё раз, особенно главы про воспроизведение и работу с реальностью клиента. Дело не в зазубривании, а в том, чтобы поймать саму логику - тогда кейсы решаются сами.';
+  }
+  document.getElementById('resultText').textContent = text;
+}
+
+function restart(){
+  current = 0;
+  score = 0;
+  answered = [];
+  selected = {};
+  document.getElementById('cardsContainer').style.display = 'block';
+  document.getElementById('progressDots').style.display = 'flex';
+  document.getElementById('progressLabel').style.display = 'block';
+  document.getElementById('resultCard').classList.remove('active');
+  render();
+}
+
+render();
+</script>
+
+</body>
+</html>
