@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Аттестация: проект Биом (Нуану)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#1a1a1a;
+    --card:#2f2f2f;
+    --gold:#c9a961;
+    --gold-dim:#9c7d51;
+    --text:#eee7d8;
+    --text-dim:#a89f8f;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:'Inter',sans-serif;min-height:100vh;padding:32px 16px 80px;
+  }
+  .wrap{max-width:680px;margin:0 auto;}
+  header{text-align:center;margin-bottom:28px;}
+  h1{font-family:'Playfair Display',serif;font-weight:700;font-size:26px;color:var(--gold);margin:0 0 8px;}
+  .subtitle{color:var(--text-dim);font-size:14px;line-height:1.6;max-width:480px;margin:0 auto;}
+  .badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px;}
+  .badge{font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:var(--gold-dim);border:1px solid var(--gold-dim);border-radius:20px;padding:3px 10px;}
+
+  .progress-wrap{display:flex;gap:6px;justify-content:center;margin:24px 0 8px;flex-wrap:wrap;}
+  .dot{width:8px;height:8px;border-radius:50%;background:#3d3d3d;transition:background 0.3s;}
+  .dot.done{background:var(--gold-dim);}
+  .dot.active{background:var(--gold);}
+  .progress-label{text-align:center;color:var(--text-dim);font-size:12px;margin-bottom:28px;letter-spacing:0.5px;text-transform:uppercase;}
+
+  .card{background:var(--card);border:1px solid #3d3d3d;border-radius:14px;padding:28px 24px;margin-bottom:20px;display:none;animation:fadeIn 0.4s ease;}
+  .card.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .case-label{display:inline-block;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--gold-dim);border:1px solid var(--gold-dim);border-radius:20px;padding:3px 12px;margin-bottom:16px;}
+
+  .question{font-family:'Playfair Display',serif;font-size:17px;color:var(--text);margin-bottom:16px;font-weight:600;line-height:1.4;}
+
+  .options{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+  .option{background:#252525;border:1px solid #3d3d3d;border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.5;cursor:pointer;transition:border-color 0.2s, background 0.2s;}
+  .option:hover{border-color:var(--gold-dim);}
+  .option.selected{border-color:var(--gold);background:#2f2a1f;}
+  .options.locked .option{cursor:default;pointer-events:none;}
+  .option.correct-reveal{border-color:var(--gold);background:#2f2a1f;}
+  .option.wrong-reveal{border-color:#8a4a4a;opacity:0.7;}
+
+  textarea{
+    width:100%;min-height:120px;background:#252525;border:1px solid #3d3d3d;border-radius:10px;
+    color:var(--text);padding:14px 16px;font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;
+    resize:vertical;margin-bottom:20px;
+  }
+  textarea:focus{outline:none;border-color:var(--gold-dim);}
+
+  .check-btn{width:100%;background:var(--gold);color:#1a1a1a;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:0.3px;transition:background 0.2s;}
+  .check-btn:hover{background:#d9bb7a;}
+  .check-btn:disabled{background:#4a4a4a;color:#8a8a8a;cursor:not-allowed;}
+
+  .explanation{display:none;margin-top:18px;padding:16px 18px;background:#221f16;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;font-size:14px;line-height:1.6;color:var(--text-dim);}
+  .explanation.show{display:block;animation:fadeIn 0.3s ease;}
+  .explanation b{color:var(--gold);}
+
+  .nav-btn{display:none;margin-top:16px;width:100%;background:transparent;color:var(--gold);border:1px solid var(--gold-dim);border-radius:10px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;}
+  .nav-btn.show{display:block;}
+  .nav-btn:hover{background:#2f2a1f;}
+
+  .result-card{display:none;text-align:center;padding:40px 24px;}
+  .result-card.active{display:block;}
+  .result-score{font-family:'Playfair Display',serif;font-size:42px;color:var(--gold);margin:12px 0;}
+  .result-status{font-size:15px;font-weight:600;margin-bottom:6px;}
+  .result-status.pass{color:var(--gold);}
+  .result-status.fail{color:#c98a61;}
+  .result-text{color:var(--text-dim);font-size:14px;line-height:1.7;max-width:440px;margin:0 auto 24px;}
+  .open-answer-box{
+    text-align:left;background:#221f16;border-left:3px solid var(--gold-dim);border-radius:0 8px 8px 0;
+    padding:14px 18px;margin:0 auto 24px;max-width:480px;font-size:13px;color:var(--text-dim);line-height:1.6;
+  }
+  .open-answer-box b{color:var(--gold);display:block;margin-bottom:6px;}
+  .restart-btn{background:transparent;border:1px solid var(--gold-dim);color:var(--gold);padding:12px 28px;border-radius:10px;cursor:pointer;font-size:14px;}
+  .restart-btn:hover{background:#2f2a1f;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Аттестация: проект Биом (Нуану)</h1>
+    <div class="subtitle">12 вопросов по материалу обучения + 1 открытый на Sales Point / УТП. Проходной балл — 75%.</div>
+    <div class="badges">
+      <span class="badge">Цена и рассрочка</span>
+      <span class="badge">Локация</span>
+      <span class="badge">Sales Point / УТП</span>
+    </div>
+    <div class="badges" style="margin-top:8px;">
+      <span class="badge" id="attemptBadge">Попытка 1</span>
+    </div>
+  </header>
+
+  <div class="progress-wrap" id="progressDots"></div>
+  <div class="progress-label" id="progressLabel">Вопрос 1 из 13</div>
+
+  <div id="cardsContainer"></div>
+
+  <div class="result-card" id="resultCard">
+    <div class="case-label">Результат</div>
+    <div class="result-score" id="resultScore">0 / 12</div>
+    <div class="result-status" id="resultStatus"></div>
+    <div class="result-text" id="resultText"></div>
+    <div class="open-answer-box" id="openAnswerBox" style="display:none;">
+      <b>Ваш ответ на открытый вопрос (Sales Point / УТП):</b>
+      <span id="openAnswerText"></span>
+    </div>
+    <button class="restart-btn" onclick="restart()">Пройти ещё раз</button>
+  </div>
+</div>
+
+<script>
+const items = [
+  {
+    type: "mcq",
+    label: "Локация",
+    question: "На каком расстоянии от пляжа Пантай-Ниянг находится комплекс Биом?",
+    options: [
+      { text: "400 метров, около 5 минут пешком", correct: true },
+      { text: "1,5 км, нужен транспорт", correct: false },
+      { text: "Комплекс находится прямо на первой линии", correct: false },
+      { text: "800 метров", correct: false }
+    ],
+    explanation: "На встрече назвали 400 метров по удобному тротуару от комплекса до пляжа с чёрным вулканическим песком - около 5 минут пешком."
+  },
+  {
+    type: "mcq",
+    label: "Локация",
+    question: "К какому году застройщик планирует довести туристический трафик Нуану до 3 миллионов человек в год?",
+    options: [
+      { text: "2025", correct: true },
+      { text: "2027", correct: false },
+      { text: "2030", correct: false },
+      { text: "Точный срок не называли", correct: false }
+    ],
+    explanation: "Андрей назвал цель 3 миллиона туристов в год к 2025 году - при текущей проходимости около 50 тысяч в месяц. На встрече агент отдельно усомнилась в реалистичности этого срока - будьте готовы, что клиент может задать тот же вопрос."
+  },
+  {
+    type: "mcq",
+    label: "Локация",
+    question: "Сколько застройщиков, помимо Биом, работает на территории Нуану?",
+    options: [
+      { text: "Ни одного, Биом - эксклюзивный застройщик", correct: false },
+      { text: "Один - Origins, с ценой около $6000/м²", correct: true },
+      { text: "Три", correct: false },
+      { text: "Информация не прозвучала", correct: false }
+    ],
+    explanation: "Внутри Нуану есть ещё один застройщик - Origins, работающий в другом ценовом сегменте (около $6000 за м²) с 20-30 объектами."
+  },
+  {
+    type: "mcq",
+    label: "О компании",
+    question: "Как называется головная компания-владелец земли Нуану, дочерним юрлицом которой является Biom Development Group?",
+    options: [
+      { text: "Atom Group", correct: false },
+      { text: "Wooden Fish Village", correct: true },
+      { text: "Nuanu Marketing Company", correct: false },
+      { text: "JJAC", correct: false }
+    ],
+    explanation: "Biom Development Group - дочернее юрлицо головной компании Wooden Fish Village, владельца Нуану. Это ключевой аргумент для клиента: Биом не внешний застройщик, а часть самого Нуану."
+  },
+  {
+    type: "mcq",
+    label: "О компании",
+    question: "Кто отвечает за дизайн-концепцию проекта?",
+    options: [
+      { text: "Lexand Architects", correct: false },
+      { text: "Atom Group (архитектор Рустам Керимов)", correct: true },
+      { text: "Quality Control Group", correct: false },
+      { text: "JJAC", correct: false }
+    ],
+    explanation: "Atom Group Рустама Керимова разработала дизайн-концепцию. Lexand Architects (Джакарта) - локальное бюро, адаптирующее проект под индонезийские нормы. JJAC - строительный подрядчик. Quality Control Group - независимый технадзор."
+  },
+  {
+    type: "mcq",
+    label: "Продукт",
+    question: "Сколько типов объектов по форме владения (титулу) представлено в проекте?",
+    options: [
+      { text: "Один - только leasehold", correct: false },
+      { text: "Два - leasehold и freehold", correct: true },
+      { text: "Три", correct: false },
+      { text: "Форма владения одинакова для всех объектов", correct: false }
+    ],
+    explanation: "На leasehold - таунхаусы, виллы, студии, апартаменты. На freehold - всего 3 премиальные виллы от $800 тысяч."
+  },
+  {
+    type: "mcq",
+    label: "Цена и рассрочка",
+    question: "Какая стартовая цена на апартаменты?",
+    options: [
+      { text: "От 100 тысяч долларов", correct: false },
+      { text: "От 145 тысяч долларов", correct: true },
+      { text: "От 250 тысяч долларов", correct: false },
+      { text: "От 800 тысяч долларов", correct: false }
+    ],
+    explanation: "Апартаменты стартуют от $145 тысяч (первый этаж) и доходят до $160 тысяч в зависимости от этажа и видовых характеристик."
+  },
+  {
+    type: "mcq",
+    label: "Цена и рассрочка",
+    question: "Какая доходность заявлена для апартаментов после вычета расходов управляющей компании?",
+    options: [
+      { text: "5-8% годовых", correct: false },
+      { text: "12-16% годовых", correct: true },
+      { text: "20-25% годовых", correct: false },
+      { text: "Доходность не гарантируется и не озвучивалась", correct: false }
+    ],
+    explanation: "12-16% годовых - после вычета расходов управляющей компании (20% - mainten­ance/utilities, 20% - комиссия управляющей компании, 60% остаётся инвестору), но до вычета персональных налогов инвестора."
+  },
+  {
+    type: "mcq",
+    label: "Цена и рассрочка",
+    question: "Какой размер депозита нужен, чтобы забронировать юнит и занять место в очереди?",
+    options: [
+      { text: "1000 долларов", correct: false },
+      { text: "5000 долларов", correct: true },
+      { text: "10% от стоимости объекта", correct: false },
+      { text: "Депозит не требуется", correct: false }
+    ],
+    explanation: "Депозит $5000 фиксирует место в очереди на конкретный юнит. В день продаж (22 марта) инвесторы заключают сделку по своему месту в очереди."
+  },
+  {
+    type: "mcq",
+    label: "Юридическая часть",
+    question: "На сколько лет гарантированно можно продлить лизхолд после истечения текущего срока?",
+    options: [
+      { text: "На 10 лет", correct: false },
+      { text: "На 20 лет, по рыночной цене на дату продления", correct: true },
+      { text: "На 25 лет бесплатно", correct: false },
+      { text: "Продление не гарантировано", correct: false }
+    ],
+    explanation: "Гарантированное право продления на 20 лет по рыночной стоимости на дату продления - подтверждено независимым аудитом. Заявить о продлении нужно не позднее чем за 3 года до окончания текущего срока лизхолда."
+  },
+  {
+    type: "mcq",
+    label: "Юридическая часть",
+    question: "Сколько лет лизхолда на землю останется на момент плановой сдачи объекта (2 квартал 2027)?",
+    options: [
+      { text: "Около 10-12 лет", correct: false },
+      { text: "Около 25-25,5 лет", correct: true },
+      { text: "Полные 30 лет", correct: false },
+      { text: "Информация не прозвучала", correct: false }
+    ],
+    explanation: "Сейчас выкуплено 28+ лет, на момент сдачи объекта останется около 25-25,5 лет плюс возможность продления ещё на 20 лет."
+  },
+  {
+    type: "mcq",
+    label: "Юридическая часть",
+    question: "Гражданином какой страны является подписант (генеральный директор) со стороны застройщика в контракте?",
+    options: [
+      { text: "Индонезии", correct: false },
+      { text: "России - других вариантов подписанта нет", correct: true },
+      { text: "Украины", correct: false },
+      { text: "Сингапура", correct: false }
+    ],
+    explanation: "Важный момент для работы с клиентами: подписант - гражданин РФ, других вариантов нет. Для части англоязычных и осторожных к этому вопросу клиентов это может стать стоп-фактором - будьте готовы к вопросу заранее, а не в моменте сделки."
+  },
+  {
+    type: "open",
+    label: "Sales Point / УТП",
+    question: "Сформулируйте своими словами три конкурентных преимущества (Sales Point / УТП) проекта Биом, которые вы будете использовать в разговоре с клиентом. Опирайтесь на то, что реально прозвучало на встрече, а не на общие фразы.",
+    placeholder: "Например: наличие генплана как гарантия от нежелательной застройки рядом; статус внутренней, а не внешней компании Нуану; двойная система технадзора (западная + локальная команда)…"
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = [];
+let selected = {};
+let openAnswer = "";
+let openAnswerScore = null;
+let openAnswerFeedback = "";
+const mcqCount = items.filter(i => i.type === "mcq").length;
+
+const ATTEMPT_KEY = "biom_quiz_attempts";
+function getAttemptCount(){
+  try {
+    return parseInt(localStorage.getItem(ATTEMPT_KEY) || "0", 10);
+  } catch(e){
+    return 0;
+  }
+}
+function incrementAttemptCount(){
+  try {
+    const n = getAttemptCount() + 1;
+    localStorage.setItem(ATTEMPT_KEY, n);
+    return n;
+  } catch(e){
+    return getAttemptCount() + 1;
+  }
+}
+let attemptNumber = getAttemptCount() + 1;
+function revealAnswers(){ return attemptNumber >= 3; }
+
+const USP_RUBRIC = `
+Правильные, фактически подтверждённые на встрече аргументы (Sales Point / УТП) проекта Биом:
+1. Наличие генплана Нуану - гарантия, что рядом не появится нежелательная застройка, всё будет выглядеть так, как обещано.
+2. Полностью электрический город без двигателей внутреннего сгорания, застройка не более 30% территории - экологичность, отсутствие шума и загрязнения.
+3. Biom - не внешний застройщик, а часть самого Нуану: общий бэк-офис с головной компанией Wooden Fish Village, сделка идёт через головную структуру.
+4. Двойная система контроля: западная архитектура (Atom Group) и технадзор (Quality Control Group) поверх локального исполнения (Lexand Architects, JJAC) - подтягивает стройку до западных стандартов.
+5. Растущая инфраструктура Нуану уже работает и приносит трафик (пляж-клуб, спа, школа, множество арт- и ивент-объектов) - инвестор становится бенефициаром этого трафика, а не покупает "стройку в чистом поле".
+6. Опытный подрядчик JJAC (строил Национальный стадион Индонезии) и независимый аудит условий лизхолда третьей стороной.
+7. Локационное преимущество - 400 метров до океана, видовые характеристики у большинства юнитов.
+
+Неправильные / не подтверждённые на встрече аргументы (не должны звучать как факт):
+- Гарантированная доходность выше 12-16% без оговорок
+- Обещание точных сроков сдачи без риска задержки (застройщик сам сказал, что закладывает запас)
+- Любые придуманные цифры или факты, не прозвучавшие в материале
+`;
+
+async function checkOpenAnswer(cardIdx){
+  const text = document.getElementById(`open-${cardIdx}`).value.trim();
+  if (!text){
+    alert("Сначала напишите ответ.");
+    return;
+  }
+  openAnswer = text;
+  const btn = document.getElementById(`check-${cardIdx}`);
+  btn.disabled = true;
+  btn.textContent = "Проверяю…";
+
+  try {
+    const response = await fetch("https://biom-quiz-proxy.legionrealestate95.workers.dev", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [
+          {
+            role: "user",
+            content: `Ты проверяешь ответ брокера на открытый вопрос аттестации по проекту недвижимости "Биом" (Нуану, Бали).
+
+${USP_RUBRIC}
+
+Ответ брокера:
+"""
+${text}
+"""
+
+Оцени, сколько реальных, фактически верных аргументов из списка правильных (не из списка неправильных и не выдуманных) брокер назвал. Верни ТОЛЬКО JSON без markdown-разметки и без преамбулы, в формате:
+{"score": число от 0 до 3, "passed": true или false (true если score >= 2), "feedback": "короткий комментарий на русском 2-3 предложения - что засчитано, чего не хватает или что неточно"}`
+          }
+        ]
+      })
+    });
+    const data = await response.json();
+    if (!response.ok || data.type === "error"){
+      const msg = data.error && data.error.message ? data.error.message : `HTTP ${response.status}`;
+      throw new Error(msg);
+    }
+    const textBlock = data.content.find(b => b.type === "text");
+    const cleaned = textBlock.text.replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(cleaned);
+    openAnswerScore = parsed.score;
+    openAnswerFeedback = parsed.feedback;
+
+    const expl = document.getElementById(`explanation-${cardIdx}`);
+    expl.innerHTML = `<b>Оценка AI: ${parsed.score}/3</b><br>${parsed.feedback}`;
+    expl.classList.add('show');
+    btn.style.display = 'none';
+    document.getElementById(`nav-${cardIdx}`).classList.add('show');
+  } catch(err){
+    console.error("AI check error:", err);
+    const expl = document.getElementById(`explanation-${cardIdx}`);
+    expl.innerHTML = `Не получилось проверить автоматически - ответ сохранён, посмотрите его вручную в результатах.<br><br><span style="font-size:11px;opacity:0.7;">Техническая причина: ${err.message || err}</span>`;
+    expl.classList.add('show');
+    btn.style.display = 'none';
+    document.getElementById(`nav-${cardIdx}`).classList.add('show');
+  }
+}
+
+function render(){
+  const container = document.getElementById('cardsContainer');
+  container.innerHTML = '';
+  items.forEach((it, i) => {
+    const card = document.createElement('div');
+    card.className = 'card' + (i === current ? ' active' : '');
+    card.id = 'card-' + i;
+
+    if (it.type === "mcq") {
+      let optionsHtml = it.options.map((opt, oi) =>
+        `<div class="option" data-idx="${oi}" onclick="selectOption(${i}, ${oi})">${opt.text}</div>`
+      ).join('');
+      card.innerHTML = `
+        <div class="case-label">${it.label}</div>
+        <div class="question">${it.question}</div>
+        <div class="options" id="options-${i}">${optionsHtml}</div>
+        <button class="check-btn" id="check-${i}" onclick="checkAnswer(${i})" disabled>Проверить ответ</button>
+        <div class="explanation" id="explanation-${i}"></div>
+        <button class="nav-btn" id="nav-${i}" onclick="nextItem()">${i === items.length - 1 ? 'Показать результат' : 'Следующий вопрос →'}</button>
+      `;
+    } else {
+      card.innerHTML = `
+        <div class="case-label">${it.label} · открытый вопрос</div>
+        <div class="question">${it.question}</div>
+        <textarea id="open-${i}" placeholder="${it.placeholder}" oninput="onOpenInput(${i})"></textarea>
+        <button class="check-btn" id="check-${i}" onclick="checkOpenAnswer(${i})">Проверить ответ (AI)</button>
+        <div class="explanation" id="explanation-${i}"></div>
+        <button class="nav-btn" id="nav-${i}" onclick="nextItem()">Показать результат</button>
+      `;
+    }
+    container.appendChild(card);
+  });
+  renderProgress();
+}
+
+function renderProgress(){
+  const dotsWrap = document.getElementById('progressDots');
+  dotsWrap.innerHTML = items.map((_, i) => {
+    let cls = 'dot';
+    if (i < current) cls += ' done';
+    if (i === current) cls += ' active';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+  document.getElementById('progressLabel').textContent = `Вопрос ${current + 1} из ${items.length}`;
+}
+
+function selectOption(cardIdx, optIdx){
+  if (answered[cardIdx]) return;
+  selected[cardIdx] = optIdx;
+  document.querySelectorAll(`#options-${cardIdx} .option`).forEach((el, i) => {
+    el.classList.toggle('selected', i === optIdx);
+  });
+  document.getElementById(`check-${cardIdx}`).disabled = false;
+}
+
+function checkAnswer(cardIdx){
+  if (selected[cardIdx] === undefined || answered[cardIdx]) return;
+  answered[cardIdx] = true;
+  const it = items[cardIdx];
+  const optsEl = document.getElementById(`options-${cardIdx}`);
+  optsEl.classList.add('locked');
+
+  const chosenCorrect = it.options[selected[cardIdx]].correct;
+  if (chosenCorrect) score++;
+
+  if (revealAnswers()){
+    const opts = optsEl.querySelectorAll('.option');
+    opts.forEach((el, i) => {
+      if (it.options[i].correct){
+        el.classList.add('correct-reveal');
+      } else if (i === selected[cardIdx]){
+        el.classList.add('wrong-reveal');
+      }
+    });
+  }
+
+  document.getElementById(`explanation-${cardIdx}`).innerHTML = it.explanation;
+  document.getElementById(`explanation-${cardIdx}`).classList.add('show');
+  document.getElementById(`check-${cardIdx}`).style.display = 'none';
+  document.getElementById(`nav-${cardIdx}`).classList.add('show');
+}
+
+function onOpenInput(cardIdx){
+  openAnswer = document.getElementById(`open-${cardIdx}`).value;
+}
+
+function nextItem(){
+  if (current < items.length - 1){
+    document.getElementById(`card-${current}`).classList.remove('active');
+    current++;
+    document.getElementById(`card-${current}`).classList.add('active');
+    renderProgress();
+  } else {
+    showResult();
+  }
+}
+
+function showResult(){
+  incrementAttemptCount();
+  document.getElementById('cardsContainer').style.display = 'none';
+  document.getElementById('progressDots').style.display = 'none';
+  document.getElementById('progressLabel').style.display = 'none';
+  const resultCard = document.getElementById('resultCard');
+  resultCard.classList.add('active');
+
+  const pct = Math.round((score / mcqCount) * 100);
+  document.getElementById('resultScore').textContent = `${score} / ${mcqCount} (${pct}%)`;
+
+  const statusEl = document.getElementById('resultStatus');
+  const textEl = document.getElementById('resultText');
+  if (pct >= 75){
+    statusEl.textContent = 'Тест пройден';
+    statusEl.className = 'result-status pass';
+    textEl.textContent = 'Проходной балл 75% достигнут. Материал по цене, локации и юридическим условиям усвоен - можно работать с лидами по проекту.';
+  } else {
+    statusEl.textContent = 'Тест не пройден';
+    statusEl.className = 'result-status fail';
+    textEl.textContent = 'Проходной балл - 75%. Пересмотрите запись обучения, особенно блоки про условия оплаты, лизхолд и локацию, и пройдите тест ещё раз.';
+  }
+
+  if (openAnswer.trim()){
+    document.getElementById('openAnswerBox').style.display = 'block';
+    let scoreLine = openAnswerScore !== null
+      ? `<b>Оценка AI по УТП: ${openAnswerScore}/3</b><br><span style="color:var(--text-dim);font-size:12px;">${openAnswerFeedback}</span><br><br>`
+      : '';
+    document.getElementById('openAnswerText').innerHTML = scoreLine + openAnswer;
+  }
+}
+
+function restart(){
+  current = 0;
+  score = 0;
+  answered = [];
+  selected = {};
+  openAnswer = "";
+  openAnswerScore = null;
+  openAnswerFeedback = "";
+  attemptNumber = getAttemptCount() + 1;
+  document.getElementById('attemptBadge').textContent = `Попытка ${attemptNumber}`;
+  document.getElementById('cardsContainer').style.display = 'block';
+  document.getElementById('progressDots').style.display = 'flex';
+  document.getElementById('progressLabel').style.display = 'block';
+  document.getElementById('resultCard').classList.remove('active');
+  document.getElementById('openAnswerBox').style.display = 'none';
+  render();
+}
+
+document.getElementById('attemptBadge').textContent = `Попытка ${attemptNumber}`;
+render();
+</script>
+
+</body>
+</html>
