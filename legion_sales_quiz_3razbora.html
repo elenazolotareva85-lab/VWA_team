@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legion Real Estate — Проверка знаний: разборы продаж</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1a1a1a;
+    --panel:#232323;
+    --panel2:#2a2a2a;
+    --gold:#c9a961;
+    --gold-dark:#9C7D51;
+    --text:#f0ece2;
+    --text-dim:#a8a29a;
+    --good:#7cb88f;
+    --bad:#c97a6b;
+    --border:#3a3733;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+  header{text-align:center;margin-bottom:28px;}
+  h1{
+    font-family:'Playfair Display',serif;
+    color:var(--gold);
+    font-size:26px;
+    margin:0 0 8px;
+    letter-spacing:.3px;
+  }
+  .subtitle{color:var(--text-dim);font-size:14px;line-height:1.5;}
+  .blocks-legend{
+    display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px;
+  }
+  .legend-item{
+    font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);
+    color:var(--text-dim);
+  }
+  .progress-bar{
+    height:4px;background:var(--panel2);border-radius:4px;overflow:hidden;margin:20px 0 4px;
+  }
+  .progress-fill{height:100%;background:var(--gold);width:0%;transition:width .3s;}
+  .progress-label{font-size:12px;color:var(--text-dim);text-align:right;margin-bottom:20px;}
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:24px 22px;
+    margin-bottom:18px;
+    display:none;
+  }
+  .card.active{display:block;}
+  .block-tag{
+    display:inline-block;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    color:var(--gold);
+    border:1px solid var(--gold-dark);
+    padding:3px 10px;
+    border-radius:20px;
+    margin-bottom:14px;
+  }
+  .q-type{
+    font-size:11px;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;
+  }
+  .q-title{
+    font-size:17px;line-height:1.5;margin:0 0 6px;font-weight:600;
+  }
+  .q-context{
+    font-size:14px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;
+    background:var(--panel2);border-left:3px solid var(--gold-dark);padding:12px 14px;border-radius:6px;
+    white-space:pre-line;
+  }
+  .options{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+  .option{
+    text-align:left;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:13px 16px;
+    border-radius:8px;
+    font-size:14.5px;
+    cursor:pointer;
+    line-height:1.45;
+    transition:border-color .15s, background .15s;
+    font-family:'Inter',sans-serif;
+  }
+  .option:hover{border-color:var(--gold-dark);}
+  .option.correct{border-color:var(--good);background:rgba(124,184,143,.12);}
+  .option.incorrect{border-color:var(--bad);background:rgba(201,122,107,.12);}
+  .option:disabled{cursor:default;}
+  .option.dim{opacity:.55;}
+
+  textarea.open-answer{
+    width:100%;
+    min-height:110px;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:8px;
+    padding:12px 14px;
+    font-family:'Inter',sans-serif;
+    font-size:14.5px;
+    line-height:1.5;
+    resize:vertical;
+    margin-bottom:12px;
+  }
+  textarea.open-answer:focus{outline:none;border-color:var(--gold-dark);}
+  textarea.open-answer:disabled{opacity:.7;}
+
+  input.email-input{
+    width:100%;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:8px;
+    padding:13px 16px;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    margin-bottom:14px;
+  }
+  input.email-input:focus{outline:none;border-color:var(--gold-dark);}
+
+  .feedback{
+    font-size:13.5px;line-height:1.6;padding:12px 14px;border-radius:8px;margin-top:6px;display:none;
+  }
+  .feedback.show{display:block;}
+  .feedback.ok{background:rgba(124,184,143,.1);border:1px solid rgba(124,184,143,.35);}
+  .feedback.no{background:rgba(201,122,107,.1);border:1px solid rgba(201,122,107,.35);}
+  .feedback.warn{background:rgba(201,169,97,.1);border:1px solid rgba(201,169,97,.35);}
+  .attempts-note{font-size:12px;color:var(--text-dim);margin-top:8px;display:none;}
+  .attempts-note.show{display:block;}
+
+  .nav-row{display:flex;justify-content:space-between;margin-top:18px;}
+  .btn{
+    font-family:'Inter',sans-serif;
+    background:transparent;
+    border:1px solid var(--gold-dark);
+    color:var(--gold);
+    padding:10px 20px;
+    border-radius:8px;
+    font-size:14px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .btn:hover{background:rgba(201,169,97,.1);}
+  .btn:disabled{opacity:.3;cursor:default;}
+  .btn.primary{background:var(--gold);color:#1a1a1a;border-color:var(--gold);}
+  .btn.primary:hover{background:#dab975;}
+  .btn.full{width:100%;padding:13px;}
+
+  .result-card{
+    background:var(--panel);
+    border:1px solid var(--gold-dark);
+    border-radius:12px;
+    padding:32px 24px;
+    text-align:center;
+    display:none;
+  }
+  .result-card.active{display:block;}
+  .result-score{
+    font-family:'Playfair Display',serif;
+    font-size:44px;color:var(--gold);margin:6px 0;
+  }
+  .result-msg{color:var(--text-dim);font-size:14px;margin-bottom:20px;line-height:1.6;}
+  .result-breakdown{
+    text-align:left;background:var(--panel2);border-radius:8px;padding:16px 18px;margin:18px 0;font-size:13.5px;
+  }
+  .result-breakdown div{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);}
+  .result-breakdown div:last-child{border-bottom:none;}
+  .restart-btn{margin-top:8px;}
+  .save-status{font-size:12px;color:var(--text-dim);margin-top:10px;}
+
+  .dots{display:flex;justify-content:center;gap:6px;margin-top:16px;flex-wrap:wrap;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--border);}
+  .dot.done{background:var(--gold-dark);}
+  .dot.current{background:var(--gold);}
+  .dot.open-type{border-radius:2px;}
+
+  .login-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:28px 24px;
+    text-align:left;
+  }
+  .login-card .q-title{margin-bottom:14px;}
+  .login-hint{font-size:12.5px;color:var(--text-dim);margin-top:-4px;margin-bottom:16px;line-height:1.5;}
+  .login-error{font-size:13px;color:var(--bad);margin-bottom:10px;display:none;}
+  .login-error.show{display:block;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Проверка знаний · Разборы отдела продаж</h1>
+    <div class="subtitle">По итогам трёх пятничных разборов: установление контакта (7 авг) · выявление потребности (14 авг) · ценность работы с компанией (31 июля)</div>
+    <div class="blocks-legend">
+      <span class="legend-item">🔵 Установление контакта</span>
+      <span class="legend-item">🟡 Выявление потребности</span>
+      <span class="legend-item">🟣 Ценность и доверие</span>
+    </div>
+  </header>
+
+  <div id="loginScreen">
+    <div class="login-card">
+      <div class="q-type">Вход</div>
+      <div class="q-title">Введите свой email, чтобы начать</div>
+      <div class="login-hint">По email считаются попытки прохождения и сохраняется статистика. С 3-й попытки правильные ответы подсвечиваются сразу.</div>
+      <div class="login-error" id="loginError">Введите корректный email.</div>
+      <input type="email" class="email-input" id="emailInput" placeholder="you@legion.com">
+      <button class="btn primary full" id="startBtn" onclick="startQuiz()">Начать проверку</button>
+    </div>
+  </div>
+
+  <div class="progress-bar" id="progressBar" style="display:none;"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel" style="display:none;">Вопрос 1 из 21</div>
+  <div class="dots" id="dots"></div>
+
+  <div id="quizArea"></div>
+
+  <div class="result-card" id="resultCard">
+    <div class="q-type">Результат</div>
+    <div class="result-score" id="resultScore">0 / 18</div>
+    <div class="result-msg" id="resultMsg"></div>
+    <div class="result-breakdown" id="resultBreakdown"></div>
+    <button class="btn primary restart-btn" onclick="restartQuiz()">Пройти ещё раз</button>
+    <div class="save-status" id="saveStatus"></div>
+  </div>
+</div>
+
+<script>
+const AI_PROXY_URL = "https://biom-quiz-proxy.legionrealestate95.workers.dev";
+const STATS_URL = "https://script.google.com/macros/s/AKfycbwgCDWwGVDCy020Y0OpQPiDG9PZ2mKCD55V6hHA-bB3Z1H4SEsBhZWkLvoB8O7NKQCZ/exec";
+
+const questions = [
+// ---------------- БЛОК 1: УСТАНОВЛЕНИЕ КОНТАКТА (7 августа) ----------------
+{
+  kind: "closed",
+  block: "🔵 Установление контакта",
+  type: "Кейс",
+  title: "Клиент оставил заявку у квалификатора и не отвечает на первое сообщение уже 15 минут.",
+  context: "Что делать дальше по логике, которую разобрали на встрече 7 августа?",
+  options: [
+    "Подождать до завтра, чтобы не давить на клиента и не выглядеть навязчиво",
+    "Позвонить — контакт уже квалифицирован, звонок будет логичным продолжением",
+    "Отправить более развёрнутое сообщение с презентацией компании",
+    "Написать то же самое ещё раз, добавив восклицательный знак"
+  ],
+  correct: 1,
+  explain: "Клиент уже прошёл квалификацию и ждёт связи с брокером — это не холодный контакт. Если человек не отвечает 5–15 минут, можно смело звонить, объясняя это тем, что заявка уже принята."
+},
+{
+  kind: "closed",
+  block: "🔵 Установление контакта",
+  type: "Диалог",
+  title: "Клиент пишет в первом сообщении: «Просто дайте каталог».",
+  context: "Кейс одного из брокеров, разобранный как рабочий скрипт: клиентка сразу просит презентацию, отвечает сухо и односложно.",
+  options: [
+    "Отказать в каталоге и настаивать на звонке, иначе точный подбор невозможен",
+    "Дать каталог и сразу задать вопрос-крючок, не давя на звонок",
+    "Игнорировать просьбу и продолжать список вопросов квалификации",
+    "Дать каталог и больше ничего не писать, дождаться реакции клиента"
+  ],
+  correct: 1,
+  explain: "Дать человеку то, что он просит, — это уважение к выбору. Но сообщение должно заканчиваться вопросом, чтобы диалог продолжился. Именно так сработал разобранный кейс — дали каталог и зацепили следующим вопросом."
+},
+{
+  kind: "closed",
+  block: "🔵 Установление контакта",
+  type: "Кейс",
+  title: "Клиент попросил квалификатора «не звонить, только переписка».",
+  context: "Как должно выглядеть первое сообщение брокера в этом случае?",
+  options: [
+    "Короткое: представление плюс один открытый вопрос, без списка",
+    "Длинное сообщение с рассказом о преимуществах агентства и рынка",
+    "Сразу 5–6 вопросов списком, чтобы сэкономить количество касаний",
+    "Голосовое сообщение длиной 2–3 минуты"
+  ],
+  correct: 0,
+  explain: "Короткие первые сообщения работают лучше: представиться, обозначить, откуда контакт, задать один вопрос. Длинные простыни текста люди просто не дочитывают. Если клиент сам не против списка вопросов — это можно предложить отдельно и получить его согласие."
+},
+{
+  kind: "closed",
+  block: "🔵 Установление контакта",
+  type: "Вопрос",
+  title: "Зачем нужен вопрос-крючок «Вы рассматриваете только Бали или смотрите ещё какие-то рынки?»",
+  context: "",
+  options: [
+    "Это формальность для отчётности в CRM",
+    "Открывает развилку в разговоре и работает при любом ответе клиента",
+    "Нужен, чтобы отсеять клиентов без денег",
+    "Просто вежливая фраза, заполняющая паузу в переписке"
+  ],
+  correct: 1,
+  explain: "Это открытый вопрос с двумя рабочими ветками: если клиент смотрит другие рынки — узнаём с каким агентством и предлагаем свои условия там; если только Бали — продолжаем углубляться в его мотивацию. В любом случае диалог не обрывается."
+},
+{
+  kind: "closed",
+  block: "🔵 Установление контакта",
+  type: "Кейс",
+  title: "Клиент не вышел на контакт после первого и второго касания.",
+  context: "По опыту команды, что сработало в 90% случаев на третьем касании?",
+  options: [
+    "Третий звонок подряд без изменений в подходе",
+    "Короткое видео по конкретному объекту — визуализация",
+    "Пауза на неделю и повторное первое сообщение",
+    "Передача лида другому брокеру"
+  ],
+  correct: 1,
+  explain: "На третьем касании видео сработало в 90% случаев с неконтактными клиентами. Видео даёт клиенту визуализацию — «представил себе виллу с видом на океан» — и это цепляет сильнее текста, особенно на англоязычном рынке."
+},
+{
+  kind: "closed",
+  block: "🔵 Установление контакта",
+  type: "Диалог",
+  title: "Разница между вопросами «Бывали на Бали раньше?» и «Насколько вы знакомы с рынком Бали?»",
+  context: "Оба вопроса — про опыт клиента. Какой считается более полезным для брокера и почему?",
+  options: [
+    "«Бывали на Бали?» короче, поэтому быстрее получить ответ",
+    "«Насколько вы знакомы с рынком?» — открытый вопрос, который даёт больше информации",
+    "Разницы нет, оба вопроса закрытые",
+    "«Насколько вы знакомы» звучит более формально и профессионально"
+  ],
+  correct: 1,
+  explain: "«Бывали на Бали?» — закрытый вопрос (да/нет). «Насколько вы знакомы с рынком?» — открытый, вынуждает клиента раскрыться шире: «немного видел в интернете», «друзья живут» и т.д. Это и есть та самая зацепка для развития диалога."
+},
+{
+  kind: "closed",
+  block: "🔵 Установление контакта",
+  type: "Кейс",
+  title: "Клиент на англоязычном рынке не отвечает на звонок и на сообщения.",
+  context: "На встрече обсуждали разницу подходов между русско- и англоязычным рынком. Что решили по итогу?",
+  options: [
+    "На EN-рынке холодный звонок часто считывается как вторжение — лучше заходить мягче",
+    "На EN-рынке нужно звонить активнее, чем на RU-рынке",
+    "EN-клиенты вообще не реагируют на звонки, поэтому звонить бессмысленно",
+    "Разницы между рынками нет, подход всегда одинаковый"
+  ],
+  correct: 0,
+  explain: "Тема осталась открытой на встрече, но ключевая мысль: на EN-рынке звонок без предупреждения часто воспринимается негативно. Рабочий вариант — писать, предлагать перейти в WhatsApp, при недоступности использовать мягкую формулировку и продолжать через сообщения/видео."
+},
+{
+  kind: "open",
+  block: "🔵 Установление контакта",
+  type: "Открытый вопрос · AI-оценка",
+  title: "Клиент оставил заявку через квалификатора с пометкой «не звонить, только текст». Прошло 20 минут без реакции.",
+  context: "Напишите первое сообщение брокера этому клиенту (2-4 предложения).",
+  rubric: `Тема: первое сообщение клиенту, который просил не звонить, только переписку.
+
+Что должно быть в хорошем ответе:
+- Короткое сообщение, без "простыни" текста
+- Представление брокера и упоминание, откуда контакт (от квалификатора/заявки)
+- Один открытый вопрос в конце сообщения, который продолжает диалог
+- Нет давления на звонок, раз клиент просил только текст
+- Тон живой, не шаблонный
+
+Что НЕ должно быть (не засчитывать как правильное):
+- Настойчивое предложение созвониться вопреки прямой просьбе клиента
+- Длинный текст с описанием всей компании и рынка Бали
+- Сразу список из 4-5 вопросов без объяснения и без разрешения клиента
+- Сообщение без представления или без вопроса в конце`,
+  placeholder: "Например: «Добрый день! Меня зовут ... , я брокер Legion Real Estate, коллега передал ваш запрос по недвижимости на Бали. Скажите, пожалуйста...»"
+},
+
+// ---------------- БЛОК 2: ВЫЯВЛЕНИЕ ПОТРЕБНОСТИ (14 августа) ----------------
+{
+  kind: "closed",
+  block: "🟡 Выявление потребности",
+  type: "Вопрос",
+  title: "Один из 8 базовых вопросов выявления потребности — про бюджет. С чем его полезно сразу связывать?",
+  context: "",
+  options: [
+    "С паспортными данными клиента",
+    "С вопросом о сроках и рассрочке — когда у клиента появится ликвидность",
+    "С вопросом о любимом цвете интерьера",
+    "Бюджет — самостоятельный вопрос, ни с чем не связывается"
+  ],
+  correct: 1,
+  explain: "Вопрос о бюджете стоит сочетать с вопросом о рассрочке и сроках готовности — это сразу даёт понимание, когда у клиента появится ликвидность и насколько быстро он готов принять решение."
+},
+{
+  kind: "closed",
+  block: "🟡 Выявление потребности",
+  type: "Кейс",
+  title: "Клиентка на звонке отвечает на вопрос о цели покупки: «Наверное, как их все» — с явным раздражением, что вопрос банальный.",
+  context: "Разбор реального кейса из переписки/звонка. Что брокер сделал правильно в ответ?",
+  options: [
+    "Проигнорировал раздражение и перешёл к следующему вопросу",
+    "Объяснил, зачем задаёт этот вопрос, показал, что он не случайный",
+    "Извинился за вопрос и больше не уточнял цель покупки",
+    "Сменил тему на локации, чтобы снять напряжение"
+  ],
+  correct: 1,
+  explain: "Брокер не проигнорировал реакцию клиентки, а объяснил причину вопроса. Это ключевой приём: когда человек понимает, зачем вы спрашиваете, он охотнее вовлекается, а не воспринимает диалог как допрос."
+},
+{
+  kind: "closed",
+  block: "🟡 Выявление потребности",
+  type: "Диалог",
+  title: "Клиентка написала коллеге «не звоните, у меня ребёнок на руках», но брокер всё равно позвонил.",
+  context: "Разбор показал, что звонок не был провальным. Что было сделано правильно, несмотря на звонок вопреки просьбе?",
+  options: [
+    "Извинился и мягко предложил перейти на текст, признав накладку",
+    "Настоял на продолжении звонка, чтобы не терять время",
+    "Перезвонил ещё раз спустя пять минут",
+    "Прекратил дальнейшую коммуникацию с этим клиентом"
+  ],
+  correct: 0,
+  explain: "Извиниться и мягко перейти в комфортный клиенту формат — рабочая тактика при накладке. Ошибку («не туда позвонил») не нужно замалчивать — важно признать её и сразу предложить альтернативу."
+},
+{
+  kind: "closed",
+  block: "🟡 Выявление потребности",
+  type: "Кейс",
+  title: "Клиентка написала, что впервые слышит о районе, который предлагает брокер.",
+  context: "Что должен сделать брокер в этот момент по разобранному правилу?",
+  options: [
+    "Пропустить мимо и продолжать презентацию объекта",
+    "Объяснить локацию через карту и сравнение с уже знакомым районом",
+    "Сказать, что информация есть на сайте, пусть посмотрит сама",
+    "Сменить объект на тот, что в уже знакомом клиенту районе"
+  ],
+  correct: 1,
+  explain: "Если клиент не в контексте — нужно закрывать пробел сразу, не откладывая. В кейсе брокер показал карту, объяснил направление развития инфраструктуры и провёл аналогию с уже известным районом — понятно и наглядно."
+},
+{
+  kind: "closed",
+  block: "🟡 Выявление потребности",
+  type: "Диалог",
+  title: "На тренировочной ролевой игре один брокер играл продавца, а его коллега — вредного клиента.",
+  context: "В разборе команда отметила ошибку продавца в начале диалога. В чём она?",
+  options: [
+    "Слишком долго готовился к вопросу",
+    "Не получил явного согласия клиента и продолжил без паузы",
+    "Задал слишком мало вопросов",
+    "Говорил слишком тихо и невнятно"
+  ],
+  correct: 1,
+  explain: "«Клиент» в роли отметил: он не дал формального согласия отвечать, а продавец продолжил, будто согласие уже было. Важно делать паузу после «Могу задать пару вопросов?» и получать реальное подтверждение, а не додумывать его."
+},
+{
+  kind: "closed",
+  block: "🟡 Выявление потребности",
+  type: "Кейс",
+  title: "В той же ролевой игре продавец так и не смог убедительно закрыть клиента на Zoom.",
+  context: "Что, по мнению команды, было упущено при попытке пригласить на созвон?",
+  options: [
+    "Zoom предлагался слишком часто",
+    "Не было конкретной причины для звонка — только общее «давайте созвонимся»",
+    "Zoom вообще не нужен для этого типа клиента",
+    "Продавец забыл сказать длительность звонка"
+  ],
+  correct: 1,
+  explain: "Команда предложила рабочий ход: дать причину для Zoom, которую нельзя закрыть перепиской — например, демонстрация экрана с реальной аналитикой доходности по районам. Тогда у клиента появляется конкретный повод согласиться, а не абстрактное «давайте созвонимся»."
+},
+{
+  kind: "closed",
+  block: "🟡 Выявление потребности",
+  type: "Вопрос",
+  title: "Зачем в блоке выявления потребности спрашивать «как и с кем вы принимаете решение?»",
+  context: "",
+  options: [
+    "Формальность для юридической чистоты сделки",
+    "Чтобы заранее выявить скрытого ЛПР, который повлияет на сделку позже",
+    "Чтобы понять, кому выставлять счёт",
+    "Вопрос не обязателен, его можно пропустить"
+  ],
+  correct: 1,
+  explain: "Частая ситуация — в конце сделки появляется человек (муж/жена, партнёр, друг), которого брокер вообще не знал, а он сильно влияет на решение. Выяснить это в начале — значит управлять риском заранее, а не разбираться с ним в последний момент."
+},
+{
+  kind: "open",
+  block: "🟡 Выявление потребности",
+  type: "Открытый вопрос · AI-оценка",
+  title: "Клиент на первом созвоне сказал: «Хочу купить для инвестиции, но точно не решил, что именно».",
+  context: "Составьте 2-3 уточняющих вопроса, которые брокер задаст дальше, чтобы выявить его реальную потребность.",
+  rubric: `Тема: уточняющие вопросы для выявления потребности инвестиционного клиента без конкретики.
+
+Что должно быть в хорошем ответе (нужно минимум 2 разных направления из списка):
+- Вопрос про цель инвестиции: перепродажа, сохранение капитала или сдача в аренду
+- Вопрос про бюджет и/или срок принятия решения (когда появится ликвидность, нужна ли рассрочка)
+- Вопрос про осведомлённость о рынке Бали и/или опыт покупки недвижимости за рубежом (был ли клиент на Бали, сравнивал ли с другими рынками)
+- Вопрос про то, кто ещё участвует в решении (с кем принимает решение)
+- Вопросы должны быть открытыми, не закрытыми (не просто да/нет)
+
+Что НЕ должно засчитываться как хороший ответ:
+- Только закрытые вопросы да/нет без развития диалога
+- Вопросы не по теме выявления потребности (например, про документы для сделки на этом этапе)
+- Сразу предложение конкретного объекта без выяснения потребности
+- Один короткий вопрос вместо нескольких направлений`,
+  placeholder: "Например: 1) ... 2) ... 3) ..."
+},
+
+// ---------------- БЛОК 3: ЦЕННОСТЬ И ДОВЕРИЕ (31 июля) ----------------
+{
+  kind: "closed",
+  block: "🟣 Ценность и доверие",
+  type: "Вопрос",
+  title: "Что в CRM считается стадией «презентация проведена»?",
+  context: "",
+  options: [
+    "Только полноценный Zoom-звонок от 30 минут",
+    "Любой содержательный диалог о проекте от 10+ минут, в любом формате",
+    "Только личная встреча в офисе",
+    "Отправка каталога клиенту"
+  ],
+  correct: 1,
+  explain: "Формат неважен — важна содержательность и длительность от 10 минут: голосовые, звонок после отправки предложения, офлайн-встреча, насыщенная переписка. Короткий комментарий в CRM после такого диалога критичен — без него нет данных для отчётности перед застройщиками."
+},
+{
+  kind: "closed",
+  block: "🟣 Ценность и доверие",
+  type: "Кейс",
+  title: "Клиент говорит: «А почему бы мне не обратиться напрямую к застройщику, без агентства?»",
+  context: "Какой аргумент разобрали как рабочий на встрече 31 июля?",
+  options: [
+    "Сказать, что напрямую вообще нельзя купить",
+    "Явно назвать выгоду агентства: особые условия и переговорный вес",
+    "Промолчать и сменить тему разговора",
+    "Предложить скидку от собственной комиссии"
+  ],
+  correct: 1,
+  explain: "Клиенты подсознательно ищут повод сравнить условия или уйти напрямую. Задача агента — явно (а не между строк) проговорить, какую конкретную выгоду даёт именно работа с крупным агентством: эксклюзивные условия, переговорный вес."
+},
+{
+  kind: "closed",
+  block: "🟣 Ценность и доверие",
+  type: "Диалог",
+  title: "Один из брокеров получил в разборе замечание за фразу «У меня есть объект» вместо «У нас есть объект».",
+  context: "Почему это важное замечание, а не придирка к словам?",
+  options: [
+    "«Мы» звучит более грамотно с точки зрения языка",
+    "«Мы» переносит доверие клиента на всю компанию, а не только на брокера",
+    "Разницы нет, оба варианта равнозначны",
+    "«У нас» звучит более скромно и вежливо"
+  ],
+  correct: 1,
+  explain: "Продавая «от агентства», брокер опирается на репутацию, кейсы и переговорный вес компании. Продавая «от себя», он должен сначала продать себя как независимого эксперта — это сложнее и рискованнее для доверия."
+},
+{
+  kind: "closed",
+  block: "🟣 Ценность и доверие",
+  type: "Кейс",
+  title: "Клиентка сказала: «У меня дети устали от обстрелов, хочу место тишины для отдыха».",
+  context: "Как эту информацию правильно использовать в подборе объектов (третий уровень слушания по книге)?",
+  options: [
+    "Проигнорировать эмоциональный контекст, предложить объекты строго по бюджету",
+    "Понять глубинную потребность и предложить тихую локацию, а не центр города",
+    "Спросить только про доходность объекта",
+    "Предложить самый дорогой объект в наличии"
+  ],
+  correct: 1,
+  explain: "Третий уровень слушания — не повторить слова клиента, а понять и назвать глубинную потребность за ними. Здесь это не «недвижимость», а «тишина и покой для семьи» — и подбор объекта должен отвечать именно на это, а не на формальные критерии."
+},
+{
+  kind: "open",
+  block: "🟣 Ценность и доверие",
+  type: "Открытый вопрос · AI-оценка",
+  title: "Клиент пишет: «Я подумаю, поищу варианты подешевле у других агентств».",
+  context: "Напишите ответ брокера, который доносит ценность работы именно с Legion, не давя на клиента (2-4 предложения).",
+  rubric: `Тема: ответ клиенту, который собирается сравнивать цены у других агентств.
+
+Что должно быть в хорошем ответе:
+- Явно названа конкретная ценность работы с агентством: эксклюзивные условия, переговорный вес крупной компании, опыт/репутация, индивидуальные условия по рассрочке или взносу
+- Тон уверенный, партнёрский, без давления и без выпрашивания
+- Клиенту оставлено право выбора, но брокер обозначает себя как ресурс, а не как проситель
+- Нет обесценивания конкурентов и нет грубости
+
+Что НЕ должно засчитываться как хороший ответ:
+- Давление, попытка любой ценой удержать клиента
+- Обещание нереалистичных гарантий (гарантированная доходность и т.п.)
+- Простое согласие «хорошо, ищите» без донесения ценности
+- Обесценивание или критика других агентств
+- Отсутствие конкретной причины остаться именно с Legion`,
+  placeholder: "Например: «Понимаю, сравнение — это нормально. Хочу, чтобы вы знали...»"
+}
+];
+
+let userEmail = "";
+let attemptNumber = 1;
+let revealMode = false;
+
+let current = 0;
+let selectedAnswers = new Array(questions.length).fill(null);
+let attemptsCount = new Array(questions.length).fill(0);
+let revealed = new Array(questions.length).fill(false);
+let openAnswers = new Array(questions.length).fill(null);
+let openScores = new Array(questions.length).fill(null);
+let openFeedbacks = new Array(questions.length).fill(null);
+let openAnswered = new Array(questions.length).fill(false);
+
+const quizArea = document.getElementById('quizArea');
+const progressFill = document.getElementById('progressFill');
+const progressLabel = document.getElementById('progressLabel');
+const progressBar = document.getElementById('progressBar');
+const dotsEl = document.getElementById('dots');
+const resultCard = document.getElementById('resultCard');
+const loginScreen = document.getElementById('loginScreen');
+
+function isValidEmail(v){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+async function startQuiz(){
+  const emailInput = document.getElementById('emailInput');
+  const err = document.getElementById('loginError');
+  const email = emailInput.value.trim().toLowerCase();
+
+  if(!isValidEmail(email)){
+    err.classList.add('show');
+    return;
+  }
+  err.classList.remove('show');
+  userEmail = email;
+
+  const startBtn = document.getElementById('startBtn');
+  startBtn.disabled = true;
+  startBtn.textContent = 'Загружаю…';
+
+  try{
+    const res = await fetch(STATS_URL + '?email=' + encodeURIComponent(userEmail));
+    const data = await res.json();
+    attemptNumber = (data.attempts || 0) + 1;
+  } catch(err2){
+    attemptNumber = 1;
+  }
+
+  revealMode = attemptNumber >= 3;
+
+  loginScreen.style.display = 'none';
+  progressBar.style.display = 'block';
+  progressLabel.style.display = 'block';
+
+  renderQuestion();
+}
+
+function buildDots(){
+  dotsEl.innerHTML = '';
+  questions.forEach((q,i)=>{
+    const d = document.createElement('div');
+    const isDone = q.kind === 'open' ? openAnswered[i] : selectedAnswers[i]!==null;
+    d.className = 'dot' + (q.kind === 'open' ? ' open-type' : '') + (isDone ? ' done' : '') + (i===current ? ' current':'');
+    dotsEl.appendChild(d);
+  });
+}
+
+function renderQuestion(){
+  quizArea.innerHTML = '';
+  resultCard.classList.remove('active');
+  const q = questions[current];
+
+  if(q.kind === 'open'){
+    renderOpenQuestion(q);
+  } else {
+    renderClosedQuestion(q);
+  }
+
+  updateProgress();
+}
+
+function renderClosedQuestion(q){
+  const card = document.createElement('div');
+  card.className = 'card active';
+
+  const tag = document.createElement('div');
+  tag.className = 'block-tag';
+  tag.textContent = q.block;
+  card.appendChild(tag);
+
+  const qtype = document.createElement('div');
+  qtype.className = 'q-type';
+  qtype.textContent = q.type + ' · Вопрос ' + (current+1) + ' из ' + questions.length;
+  card.appendChild(qtype);
+
+  const title = document.createElement('div');
+  title.className = 'q-title';
+  title.textContent = q.title;
+  card.appendChild(title);
+
+  if(q.context){
+    const ctx = document.createElement('div');
+    ctx.className = 'q-context';
+    ctx.textContent = q.context;
+    card.appendChild(ctx);
+  }
+
+  const opts = document.createElement('div');
+  opts.className = 'options';
+  q.options.forEach((optText, idx)=>{
+    const b = document.createElement('button');
+    b.className = 'option';
+    b.textContent = optText;
+    b.onclick = ()=>handleAnswer(idx);
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+
+  const fb = document.createElement('div');
+  fb.className = 'feedback';
+  fb.id = 'feedback';
+  card.appendChild(fb);
+
+  const note = document.createElement('div');
+  note.className = 'attempts-note';
+  note.id = 'attemptsNote';
+  card.appendChild(note);
+
+  card.appendChild(buildNavRow(selectedAnswers[current]===null));
+  quizArea.appendChild(card);
+
+  if(selectedAnswers[current]!==null){
+    restoreState();
+  }
+}
+
+function renderOpenQuestion(q){
+  const card = document.createElement('div');
+  card.className = 'card active';
+
+  const tag = document.createElement('div');
+  tag.className = 'block-tag';
+  tag.textContent = q.block;
+  card.appendChild(tag);
+
+  const qtype = document.createElement('div');
+  qtype.className = 'q-type';
+  qtype.textContent = q.type + ' · Вопрос ' + (current+1) + ' из ' + questions.length;
+  card.appendChild(qtype);
+
+  const title = document.createElement('div');
+  title.className = 'q-title';
+  title.textContent = q.title;
+  card.appendChild(title);
+
+  if(q.context){
+    const ctx = document.createElement('div');
+    ctx.className = 'q-context';
+    ctx.textContent = q.context;
+    card.appendChild(ctx);
+  }
+
+  const ta = document.createElement('textarea');
+  ta.className = 'open-answer';
+  ta.id = 'openInput';
+  ta.placeholder = q.placeholder || '';
+  ta.value = openAnswers[current] || '';
+  card.appendChild(ta);
+
+  const checkBtn = document.createElement('button');
+  checkBtn.className = 'btn primary';
+  checkBtn.id = 'checkBtn';
+  checkBtn.textContent = 'Проверить ответ (AI)';
+  checkBtn.onclick = checkOpenAnswer;
+  card.appendChild(checkBtn);
+
+  const fb = document.createElement('div');
+  fb.className = 'feedback';
+  fb.id = 'feedback';
+  card.appendChild(fb);
+
+  card.appendChild(buildNavRow(!openAnswered[current]));
+  quizArea.appendChild(card);
+
+  if(openAnswered[current]){
+    ta.disabled = true;
+    checkBtn.style.display = 'none';
+    const fbEl = document.getElementById('feedback');
+    if(openScores[current] !== null){
+      fbEl.className = 'feedback show ' + (openScores[current] >= 2 ? 'ok' : 'warn');
+      fbEl.innerHTML = '<b>Оценка AI: ' + openScores[current] + '/3</b><br>' + openFeedbacks[current];
+    } else {
+      fbEl.className = 'feedback show no';
+      fbEl.textContent = openFeedbacks[current] || 'Не оценено автоматически.';
+    }
+  }
+}
+
+function buildNavRow(nextDisabled){
+  const nav = document.createElement('div');
+  nav.className = 'nav-row';
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'btn';
+  prevBtn.textContent = '← Назад';
+  prevBtn.disabled = current===0;
+  prevBtn.onclick = ()=>{ current--; renderQuestion(); };
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'btn primary';
+  nextBtn.id = 'nextBtn';
+  nextBtn.textContent = current===questions.length-1 ? 'Завершить' : 'Далее →';
+  nextBtn.disabled = nextDisabled;
+  nextBtn.onclick = ()=>{
+    if(current===questions.length-1){ showResults(); }
+    else { current++; renderQuestion(); }
+  };
+  nav.appendChild(prevBtn);
+  nav.appendChild(nextBtn);
+  return nav;
+}
+
+function handleAnswer(idx){
+  const q = questions[current];
+  const optButtons = document.querySelectorAll('.option');
+  const isCorrect = idx === q.correct;
+
+  if(selectedAnswers[current]===null || !revealed[current]){
+    attemptsCount[current]++;
+  }
+  selectedAnswers[current] = idx;
+
+  const fb = document.getElementById('feedback');
+  const note = document.getElementById('attemptsNote');
+
+  if(isCorrect){
+    optButtons[idx].classList.add('correct');
+    optButtons.forEach((b,i)=>{ if(i!==idx) b.disabled = true; });
+    fb.className = 'feedback show ok';
+    fb.textContent = '✓ Верно. ' + q.explain;
+    revealed[current] = true;
+  } else {
+    optButtons[idx].classList.add('incorrect');
+    optButtons[idx].disabled = true;
+
+    const shouldReveal = revealMode || attemptsCount[current] >= 3;
+
+    if(shouldReveal){
+      optButtons[q.correct].classList.add('correct');
+      optButtons.forEach(b=>b.disabled = true);
+      fb.className = 'feedback show ok';
+      fb.textContent = '✓ Правильный ответ выделен. ' + q.explain;
+      revealed[current] = true;
+    } else {
+      fb.className = 'feedback show no';
+      fb.textContent = 'Не совсем. Попробуйте ещё раз.';
+      note.className = 'attempts-note show';
+      note.textContent = 'Попытка ' + attemptsCount[current] + ' из 3';
+    }
+  }
+
+  document.getElementById('nextBtn').disabled = false;
+  buildDots();
+}
+
+function restoreState(){
+  const q = questions[current];
+  const optButtons = document.querySelectorAll('.option');
+  const fb = document.getElementById('feedback');
+  const note = document.getElementById('attemptsNote');
+  const chosen = selectedAnswers[current];
+
+  if(revealed[current]){
+    optButtons[q.correct].classList.add('correct');
+    optButtons.forEach(b=>b.disabled = true);
+    fb.className = 'feedback show ok';
+    fb.textContent = (chosen===q.correct ? '✓ Верно. ' : '✓ Правильный ответ выделен. ') + q.explain;
+  } else if(chosen!==null){
+    optButtons[chosen].classList.add('incorrect');
+    optButtons[chosen].disabled = true;
+    fb.className = 'feedback show no';
+    fb.textContent = 'Не совсем. Попробуйте ещё раз.';
+    note.className = 'attempts-note show';
+    note.textContent = 'Попытка ' + attemptsCount[current] + ' из 3';
+  }
+}
+
+async function checkOpenAnswer(){
+  const q = questions[current];
+  const ta = document.getElementById('openInput');
+  const text = ta.value.trim();
+  if(!text){
+    alert('Сначала напишите ответ.');
+    return;
+  }
+  openAnswers[current] = text;
+
+  const btn = document.getElementById('checkBtn');
+  btn.disabled = true;
+  btn.textContent = 'Проверяю…';
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show warn';
+  fb.textContent = 'Отправляю ответ на AI-проверку…';
+
+  try{
+    const response = await fetch(AI_PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [
+          {
+            role: "user",
+            content: `Ты проверяешь открытый ответ брокера в тесте по разборам отдела продаж Legion Real Estate (Бали).
+
+${q.rubric}
+
+Ответ брокера:
+"""
+${text}
+"""
+
+Оцени ответ по критериям выше. Верни ТОЛЬКО JSON без markdown-разметки и без преамбулы, в формате:
+{"score": число от 0 до 3, "passed": true или false (true если score >= 2), "feedback": "короткий комментарий на русском 2-3 предложения — что засчитано, чего не хватает или что стоит поправить"}`
+          }
+        ]
+      })
+    });
+    const data = await response.json();
+    const textBlock = data.content.find(b => b.type === "text");
+    const cleaned = textBlock.text.replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(cleaned);
+
+    openScores[current] = parsed.score;
+    openFeedbacks[current] = parsed.feedback;
+    openAnswered[current] = true;
+
+    fb.className = 'feedback show ' + (parsed.score >= 2 ? 'ok' : 'warn');
+    fb.innerHTML = '<b>Оценка AI: ' + parsed.score + '/3</b><br>' + parsed.feedback;
+
+    ta.disabled = true;
+    btn.style.display = 'none';
+    document.getElementById('nextBtn').disabled = false;
+    buildDots();
+  } catch(err){
+    fb.className = 'feedback show no';
+    fb.textContent = 'Не получилось проверить автоматически (возможно, страница открыта не с GitHub Pages, где настроен доступ). Ответ сохранён — можно продолжить дальше.';
+    btn.disabled = false;
+    btn.textContent = 'Проверить ответ (AI)';
+    openAnswered[current] = true;
+    openScores[current] = null;
+    openFeedbacks[current] = 'Не оценено автоматически — требуется ручная проверка.';
+    document.getElementById('nextBtn').disabled = false;
+    buildDots();
+  }
+}
+
+function updateProgress(){
+  progressFill.style.width = ((current+1)/questions.length*100) + '%';
+  progressLabel.textContent = 'Вопрос ' + (current+1) + ' из ' + questions.length;
+  buildDots();
+}
+
+function getOpenIndices(){
+  const idxs = [];
+  questions.forEach((q,i)=>{ if(q.kind === 'open') idxs.push(i); });
+  return idxs;
+}
+
+async function showResults(){
+  quizArea.innerHTML = '';
+  resultCard.classList.add('active');
+
+  let firstTryCount = 0;
+  let openTotal = 0;
+  let openMax = 0;
+  const blockStats = {};
+
+  questions.forEach((q,i)=>{
+    if(!blockStats[q.block]) blockStats[q.block] = {closedTotal:0, closedFirstTry:0, openTotal:0, openMax:0};
+
+    if(q.kind === 'closed'){
+      const gotFirstTry = attemptsCount[i]===1 && selectedAnswers[i]===q.correct;
+      if(gotFirstTry) firstTryCount++;
+      blockStats[q.block].closedTotal++;
+      if(gotFirstTry) blockStats[q.block].closedFirstTry++;
+    } else {
+      openMax += 3;
+      blockStats[q.block].openMax += 3;
+      if(openScores[i] !== null){
+        openTotal += openScores[i];
+        blockStats[q.block].openTotal += openScores[i];
+      }
+    }
+  });
+
+  const closedTotalQ = questions.filter(q=>q.kind==='closed').length;
+  document.getElementById('resultScore').textContent = firstTryCount + ' / ' + closedTotalQ;
+
+  let msg = '';
+  const pct = Math.round(firstTryCount/closedTotalQ*100);
+  if(pct >= 85) msg = 'Отличный результат по закрытым вопросам.';
+  else if(pct >= 60) msg = 'Хороший результат, но есть темы, которые стоит повторить.';
+  else msg = 'Стоит ещё раз пройти по разборам — многое ещё не закрепилось.';
+  msg += ' По открытым вопросам: ' + openTotal + ' из ' + openMax + ' баллов (AI-оценка).';
+  document.getElementById('resultMsg').textContent = 'С первой попытки правильно: ' + firstTryCount + ' из ' + closedTotalQ + ' (' + pct + '%). ' + msg;
+
+  const breakdown = document.getElementById('resultBreakdown');
+  breakdown.innerHTML = '';
+  Object.keys(blockStats).forEach(block=>{
+    const s = blockStats[block];
+    const row = document.createElement('div');
+    row.innerHTML = '<span>' + block + ' — закрытые</span><span>' + s.closedFirstTry + ' / ' + s.closedTotal + '</span>';
+    breakdown.appendChild(row);
+    if(s.openMax > 0){
+      const row2 = document.createElement('div');
+      row2.innerHTML = '<span>' + block + ' — открытый (AI)</span><span>' + s.openTotal + ' / ' + s.openMax + '</span>';
+      breakdown.appendChild(row2);
+    }
+  });
+
+  progressFill.style.width = '100%';
+  progressLabel.textContent = 'Готово';
+
+  await saveResultsToSheet(firstTryCount, closedTotalQ, pct);
+}
+
+async function saveResultsToSheet(mcqScore, mcqTotal, mcqPercent){
+  const saveStatus = document.getElementById('saveStatus');
+  saveStatus.textContent = 'Сохраняю результат…';
+
+  const openIdxs = getOpenIndices();
+  const payload = {
+    email: userEmail,
+    attempt: attemptNumber,
+    mcqScore: mcqScore,
+    mcqPercent: mcqPercent,
+    open1Answer: openIdxs[0] !== undefined ? (openAnswers[openIdxs[0]] || "") : "",
+    open1Score: openIdxs[0] !== undefined ? openScores[openIdxs[0]] : undefined,
+    open2Answer: openIdxs[1] !== undefined ? (openAnswers[openIdxs[1]] || "") : "",
+    open2Score: openIdxs[1] !== undefined ? openScores[openIdxs[1]] : undefined,
+    open3Answer: openIdxs[2] !== undefined ? (openAnswers[openIdxs[2]] || "") : "",
+    open3Score: openIdxs[2] !== undefined ? openScores[openIdxs[2]] : undefined
+  };
+
+  try{
+    await fetch(STATS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    saveStatus.textContent = 'Результат сохранён в статистику.';
+  } catch(err){
+    saveStatus.textContent = 'Не удалось сохранить результат в статистику (соединение). Попробуйте пройти тест ещё раз позже.';
+  }
+}
+
+function restartQuiz(){
+  current = 0;
+  selectedAnswers = new Array(questions.length).fill(null);
+  attemptsCount = new Array(questions.length).fill(0);
+  revealed = new Array(questions.length).fill(false);
+  openAnswers = new Array(questions.length).fill(null);
+  openScores = new Array(questions.length).fill(null);
+  openFeedbacks = new Array(questions.length).fill(null);
+  openAnswered = new Array(questions.length).fill(false);
+
+  loginScreen.style.display = 'block';
+  progressBar.style.display = 'none';
+  progressLabel.style.display = 'none';
+  resultCard.classList.remove('active');
+  quizArea.innerHTML = '';
+  dotsEl.innerHTML = '';
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('startBtn').textContent = 'Начать проверку';
+}
+</script>
+</body>
+</html>
