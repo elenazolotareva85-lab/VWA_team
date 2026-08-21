@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legion Real Estate — Atmos Villas Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1a1a1a;
+    --panel:#232323;
+    --panel2:#2a2a2a;
+    --gold:#c9a961;
+    --gold-dark:#9C7D51;
+    --text:#f0ece2;
+    --text-dim:#a8a29a;
+    --good:#7cb88f;
+    --bad:#c97a6b;
+    --border:#3a3733;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+  header{text-align:center;margin-bottom:28px;position:relative;}
+  .logo-img{width:56px;height:56px;margin:0 auto 12px;display:block;}
+  .lang-switch{
+    position:absolute; top:0; right:0;
+    display:flex; gap:6px; background:var(--panel2); border:1px solid var(--border);
+    border-radius:20px; padding:3px;
+  }
+  .lang-btn{
+    font-family:'Inter',sans-serif; font-size:12px; font-weight:600; letter-spacing:.4px;
+    background:transparent; border:none; color:var(--text-dim); padding:5px 12px; border-radius:16px; cursor:pointer;
+  }
+  .lang-btn.active{background:var(--gold); color:#1a1a1a;}
+  h1{
+    font-family:'Playfair Display',serif;
+    color:var(--gold);
+    font-size:24px;
+    margin:0 0 8px;
+    letter-spacing:.3px;
+  }
+  .subtitle{color:var(--text-dim);font-size:14px;line-height:1.5;}
+  .blocks-legend{
+    display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px;
+  }
+  .legend-item{
+    font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);
+    color:var(--text-dim);
+  }
+  .progress-bar{
+    height:4px;background:var(--panel2);border-radius:4px;overflow:hidden;margin:20px 0 4px;
+  }
+  .progress-fill{height:100%;background:var(--gold);width:0%;transition:width .3s;}
+  .progress-label{font-size:12px;color:var(--text-dim);text-align:right;margin-bottom:20px;}
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:24px 22px;
+    margin-bottom:18px;
+    display:none;
+  }
+  .card.active{display:block;}
+  .block-tag{
+    display:inline-block;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    color:var(--gold);
+    border:1px solid var(--gold-dark);
+    padding:3px 10px;
+    border-radius:20px;
+    margin-bottom:14px;
+  }
+  .q-type{
+    font-size:11px;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;
+  }
+  .q-title{
+    font-size:17px;line-height:1.5;margin:0 0 6px;font-weight:600;
+  }
+  .q-context{
+    font-size:14px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;
+    background:var(--panel2);border-left:3px solid var(--gold-dark);padding:12px 14px;border-radius:6px;
+    white-space:pre-line;
+  }
+  .options{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+  .option{
+    text-align:left;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:13px 16px;
+    border-radius:8px;
+    font-size:14.5px;
+    cursor:pointer;
+    line-height:1.45;
+    transition:border-color .15s, background .15s;
+    font-family:'Inter',sans-serif;
+  }
+  .option:hover{border-color:var(--gold-dark);}
+  .option.correct{border-color:var(--good);background:rgba(124,184,143,.12);}
+  .option.incorrect{border-color:var(--bad);background:rgba(201,122,107,.12);}
+  .option:disabled{cursor:default;}
+  .option.dim{opacity:.55;}
+
+  textarea.open-answer{
+    width:100%;
+    min-height:110px;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:8px;
+    padding:12px 14px;
+    font-family:'Inter',sans-serif;
+    font-size:14.5px;
+    line-height:1.5;
+    resize:vertical;
+    margin-bottom:12px;
+  }
+  textarea.open-answer:focus{outline:none;border-color:var(--gold-dark);}
+  textarea.open-answer:disabled{opacity:.7;}
+
+  input.email-input{
+    width:100%;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:8px;
+    padding:13px 16px;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    margin-bottom:14px;
+  }
+  input.email-input:focus{outline:none;border-color:var(--gold-dark);}
+
+  .feedback{
+    font-size:13.5px;line-height:1.6;padding:12px 14px;border-radius:8px;margin-top:6px;display:none;
+  }
+  .feedback.show{display:block;}
+  .feedback.ok{background:rgba(124,184,143,.1);border:1px solid rgba(124,184,143,.35);}
+  .feedback.no{background:rgba(201,122,107,.1);border:1px solid rgba(201,122,107,.35);}
+  .feedback.warn{background:rgba(201,169,97,.1);border:1px solid rgba(201,169,97,.35);}
+  .attempts-note{font-size:12px;color:var(--text-dim);margin-top:8px;display:none;}
+  .attempts-note.show{display:block;}
+
+  .nav-row{display:flex;justify-content:space-between;margin-top:18px;}
+  .btn{
+    font-family:'Inter',sans-serif;
+    background:transparent;
+    border:1px solid var(--gold-dark);
+    color:var(--gold);
+    padding:10px 20px;
+    border-radius:8px;
+    font-size:14px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .btn:hover{background:rgba(201,169,97,.1);}
+  .btn:disabled{opacity:.3;cursor:default;}
+  .btn.primary{background:var(--gold);color:#1a1a1a;border-color:var(--gold);}
+  .btn.primary:hover{background:#dab975;}
+  .btn.full{width:100%;padding:13px;}
+
+  .result-card{
+    background:var(--panel);
+    border:1px solid var(--gold-dark);
+    border-radius:12px;
+    padding:32px 24px;
+    text-align:center;
+    display:none;
+  }
+  .result-card.active{display:block;}
+  .result-score{
+    font-family:'Playfair Display',serif;
+    font-size:44px;color:var(--gold);margin:6px 0;
+  }
+  .result-msg{color:var(--text-dim);font-size:14px;margin-bottom:20px;line-height:1.6;}
+  .result-breakdown{
+    text-align:left;background:var(--panel2);border-radius:8px;padding:16px 18px;margin:18px 0;font-size:13.5px;
+  }
+  .result-breakdown div{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);}
+  .result-breakdown div:last-child{border-bottom:none;}
+  .restart-btn{margin-top:8px;}
+  .save-status{font-size:12px;color:var(--text-dim);margin-top:10px;}
+
+  .dots{display:flex;justify-content:center;gap:6px;margin-top:16px;flex-wrap:wrap;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--border);}
+  .dot.done{background:var(--gold-dark);}
+  .dot.current{background:var(--gold);}
+  .dot.open-type{border-radius:2px;}
+
+  .login-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:28px 24px;
+    text-align:left;
+  }
+  .login-card .q-title{margin-bottom:14px;}
+  .login-hint{font-size:12.5px;color:var(--text-dim);margin-top:-4px;margin-bottom:16px;line-height:1.5;}
+  .login-error{font-size:13px;color:var(--bad);margin-bottom:10px;display:none;}
+  .login-error.show{display:block;}
+
+  @media (max-width:480px){
+    .lang-switch{position:static;justify-content:center;margin-bottom:12px;}
+  }
+
+  @media (max-width:600px){
+    body.quiz-active .subtitle,
+    body.quiz-active .blocks-legend{display:none;}
+    body.quiz-active .logo-img{width:30px;height:30px;margin:0 auto 4px;}
+    body.quiz-active h1{font-size:15px;margin-bottom:0;}
+    body.quiz-active header{margin-bottom:10px;}
+    body.quiz-active .lang-switch{position:absolute;top:0;right:0;margin-bottom:0;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="lang-switch">
+      <button class="lang-btn active" id="langRuBtn" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" id="langEnBtn" onclick="setLang('en')">EN</button>
+    </div>
+    <img class="logo-img" src="data:image/png;base64,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" alt="Legion Real Estate">
+    <h1 id="pageTitle"></h1>
+    <div class="subtitle" id="pageSubtitle"></div>
+    <div class="blocks-legend" id="blocksLegend"></div>
+  </header>
+
+  <div id="loginScreen">
+    <div class="login-card">
+      <div class="q-type" id="loginTypeLabel"></div>
+      <div class="q-title" id="loginTitleLabel"></div>
+      <div class="login-hint" id="loginHintLabel"></div>
+      <div class="login-error" id="loginError"></div>
+      <input type="email" class="email-input" id="emailInput">
+      <button class="btn primary full" id="startBtn" onclick="startQuiz()"></button>
+    </div>
+  </div>
+
+  <div class="progress-bar" id="progressBar" style="display:none;"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel" style="display:none;"></div>
+  <div class="dots" id="dots"></div>
+
+  <div id="quizArea"></div>
+
+  <div class="result-card" id="resultCard">
+    <div class="q-type" id="resultLabelTag"></div>
+    <div class="result-score" id="resultScore">0</div>
+    <div class="result-msg" id="resultMsg"></div>
+    <div class="result-breakdown" id="resultBreakdown"></div>
+    <button class="btn primary restart-btn" id="restartBtn" onclick="restartQuiz()"></button>
+    <div class="save-status" id="saveStatus"></div>
+  </div>
+</div>
+
+<script>
+
+const UI_TEXT = {
+  "ru": {
+    "title": "Проверка знаний · Atmos Villas (Koh Phangan)",
+    "subtitle": "По итогам обучающей встречи с застройщиком — 21 августа",
+    "legend": [
+      "🏝 Локация и проект",
+      "📜 Юридическая структура",
+      "🏗 Строительство и деньги",
+      "📊 Доходность и управление"
+    ],
+    "loginType": "Вход",
+    "loginTitle": "Введите свой email, чтобы начать",
+    "loginHint": "15 вопросов (13 закрытых + 2 открытых с AI-оценкой) · ориентировочно 12-15 минут.<br>По email считаются попытки прохождения и сохраняется статистика. С 3-й попытки правильные ответы подсвечиваются сразу.",
+    "loginError": "Введите корректный email.",
+    "emailPlaceholder": "you@legion.com",
+    "startBtn": "Начать проверку",
+    "startBtnLoading": "Загружаю…",
+    "questionOf": "Вопрос {n} из {total}",
+    "resultLabel": "Результат",
+    "backBtn": "← Назад",
+    "nextBtn": "Далее →",
+    "finishBtn": "Завершить",
+    "checkAiBtn": "Проверить ответ (AI)",
+    "checkingBtn": "Проверяю…",
+    "sendingMsg": "Отправляю ответ на AI-проверку…",
+    "aiScoreLabel": "Оценка AI",
+    "wrongTryAgain": "Не совсем. Попробуйте ещё раз.",
+    "attemptLabel": "Попытка {n} из 3",
+    "correctPrefix": "✓ Верно. ",
+    "revealedPrefix": "✓ Правильный ответ выделен. ",
+    "emptyAnswerAlert": "Сначала напишите ответ.",
+    "aiFailMsg": "Не получилось проверить автоматически (возможно, страница открыта не с GitHub Pages, где настроен доступ). Ответ сохранён — можно продолжить дальше.",
+    "aiNotScoredMsg": "Не оценено автоматически — требуется ручная проверка.",
+    "savingMsg": "Сохраняю результат…",
+    "savedMsg": "Результат сохранён в статистику.",
+    "saveFailMsg": "Не удалось сохранить результат в статистику (соединение). Попробуйте пройти тест ещё раз позже.",
+    "restartBtn": "Пройти ещё раз",
+    "closedSuffix": " — закрытые",
+    "openSuffix": " — открытый (AI)",
+    "resultGoodMsg": "Отличный результат по закрытым вопросам.",
+    "resultMidMsg": "Хороший результат, но есть темы, которые стоит повторить.",
+    "resultLowMsg": "Стоит ещё раз пройти материал по проекту — многое ещё не закрепилось.",
+    "openScoreSummary": " По открытым вопросам: {t} из {m} баллов (AI-оценка).",
+    "firstTryTemplate": "С первой попытки правильно: {f} из {total} ({pct}%). {msg}",
+    "aiPromptIntro": "Ты проверяешь открытый ответ брокера в тесте по проекту Atmos Villas (Koh Phangan), Legion Real Estate.",
+    "aiPromptTail": "Оцени ответ по критериям выше. Верни ТОЛЬКО JSON без markdown-разметки и без преамбулы, в формате:\n{{\"score\": число от 0 до 3, \"passed\": true или false (true если score >= 2), \"feedback\": \"короткий комментарий на русском 2-3 предложения — что засчитано, чего не хватает или что стоит поправить\"}}"
+  },
+  "en": {
+    "title": "Knowledge Check · Atmos Villas (Koh Phangan)",
+    "subtitle": "Based on the developer training call — August 21",
+    "legend": [
+      "🏝 Location & project",
+      "📜 Legal structure",
+      "🏗 Construction & payments",
+      "📊 Yield & management"
+    ],
+    "loginType": "Sign in",
+    "loginTitle": "Enter your email to start",
+    "loginHint": "15 questions (13 closed + 2 open with AI scoring) · about 12-15 minutes.<br>Attempts are tracked by email and statistics are saved. From the 3rd attempt, correct answers are revealed right away.",
+    "loginError": "Enter a valid email.",
+    "emailPlaceholder": "you@legion.com",
+    "startBtn": "Start the check",
+    "startBtnLoading": "Loading…",
+    "questionOf": "Question {n} of {total}",
+    "resultLabel": "Result",
+    "backBtn": "← Back",
+    "nextBtn": "Next →",
+    "finishBtn": "Finish",
+    "checkAiBtn": "Check answer (AI)",
+    "checkingBtn": "Checking…",
+    "sendingMsg": "Sending your answer for AI review…",
+    "aiScoreLabel": "AI score",
+    "wrongTryAgain": "Not quite. Try again.",
+    "attemptLabel": "Attempt {n} of 3",
+    "correctPrefix": "✓ Correct. ",
+    "revealedPrefix": "✓ Correct answer highlighted. ",
+    "emptyAnswerAlert": "Write an answer first.",
+    "aiFailMsg": "Automatic check failed (the page may not be running on the GitHub Pages domain with access configured). Your answer was saved — you can continue.",
+    "aiNotScoredMsg": "Not scored automatically — needs manual review.",
+    "savingMsg": "Saving result…",
+    "savedMsg": "Result saved to statistics.",
+    "saveFailMsg": "Couldn't save the result to statistics (connection issue). Try again later.",
+    "restartBtn": "Take again",
+    "closedSuffix": " — closed",
+    "openSuffix": " — open (AI)",
+    "resultGoodMsg": "Great result on the closed questions.",
+    "resultMidMsg": "Good result, but a few topics are worth revisiting.",
+    "resultLowMsg": "Worth going through the material again — several things haven't stuck yet.",
+    "openScoreSummary": " Open questions: {t} out of {m} points (AI score).",
+    "firstTryTemplate": "Correct on first try: {f} of {total} ({pct}%). {msg}",
+    "aiPromptIntro": "You are grading a broker's open-ended answer in a knowledge check about the Atmos Villas (Koh Phangan) project, Legion Real Estate.",
+    "aiPromptTail": "Score the answer against the criteria above. Return ONLY JSON, no markdown formatting, no preamble, in this format:\n{{\"score\": a number from 0 to 3, \"passed\": true or false (true if score >= 2), \"feedback\": \"a short comment in English, 2-3 sentences — what was covered, what's missing, or what to improve\"}}"
+  }
+};
+
+const questions = [
+  {
+    "kind": "closed",
+    "blockIdx": 0,
+    "type": {
+      "ru": "Вопрос",
+      "en": "Question"
+    },
+    "title": {
+      "ru": "Сколько времени занимает дорога от проекта до порта Тонгсала?",
+      "en": "How long is the drive from the project to Thong Sala pier?"
+    },
+    "context": {
+      "ru": "",
+      "en": ""
+    },
+    "options": {
+      "ru": [
+        "Около 10 минут на байке или машине",
+        "Около 40 минут, проект находится в удалённой части острова",
+        "До порта можно добраться только на лодке",
+        "Порт находится в шаговой доступности, 5 минут пешком"
+      ],
+      "en": [
+        "About 10 minutes by bike or car",
+        "About 40 minutes — the project is in a remote part of the island",
+        "The pier can only be reached by boat",
+        "The pier is within walking distance, 5 minutes on foot"
+      ]
+    },
+    "correct": 0,
+    "explain": {
+      "ru": "Проект расположен в равной удалённости от основных туристических локаций острова, до порта Тонгсала — около 10 минут на байке или машине.",
+      "en": "The project sits at an equal distance from the island's main tourist spots — about a 10-minute ride to Thong Sala pier by bike or car."
+    }
+  },
+  {
+    "kind": "closed",
+    "blockIdx": 0,
+    "type": {
+      "ru": "Вопрос",
+      "en": "Question"
+    },
+    "title": {
+      "ru": "Сколько вилл всего в проекте и какой размер участка самой маленькой из них?",
+      "en": "How many villas are in the project, and what is the size of the smallest plot?"
+    },
+    "context": {
+      "ru": "",
+      "en": ""
+    },
+    "options": {
+      "ru": [
+        "20 вилл, участки от 150 м²",
+        "8 вилл, участки от 320 до 383 м²",
+        "3 виллы, участки от 1000 м²",
+        "12 вилл, точный метраж ещё не определён"
+      ],
+      "en": [
+        "20 villas, plots from 150 m²",
+        "8 villas, plots from 320 to 383 m²",
+        "3 villas, plots from 1000 m²",
+        "12 villas, exact sizes not yet determined"
+      ]
+    },
+    "correct": 1,
+    "explain": {
+      "ru": "Всего 8 вилл на участке 3200 м². Метраж отдельных участков — от 320 до 383 м² (самый большой уже продан).",
+      "en": "There are 8 villas in total on a 3,200 m² plot. Individual plot sizes range from 320 to 383 m² (the largest one is already sold)."
+    }
+  },
+  {
+    "kind": "closed",
+    "blockIdx": 0,
+    "type": {
+      "ru": "Кейс",
+      "en": "Case"
+    },
+    "title": {
+      "ru": "Клиент сомневается: «Слышал, что Панган — это тусовочный остров, вечеринки Full Moon, наркотики. Не хочу такое соседство».",
+      "en": "A client is hesitant: ‘I heard Phangan is a party island — Full Moon parties, drugs. I don’t want that kind of neighborhood.’"
+    },
+    "context": {
+      "ru": "Как ответить клиенту, опираясь на то, что разобрали на встрече?",
+      "en": "How should the broker respond, based on what was discussed at the meeting?"
+    },
+    "options": {
+      "ru": [
+        "Согласиться, что это правда, и предложить рассмотреть другой остров",
+        "Объяснить, что это две разные аудитории: вечеринки локализованы на Хадрине несколько дней в месяц, а основная аудитория острова — семьи (в первую очередь израильские) и долгосрочные резиденты, ищущие спокойствия",
+        "Сказать, что вечеринки скоро запретят и вопрос решится сам",
+        "Сменить тему на доходность объекта, не отвечая на возражение"
+      ],
+      "en": [
+        "Agree that it's true and suggest considering a different island",
+        "Explain that these are two different audiences: the parties are localized in Haad Rin for a few days a month, while the island's main audience is families (mainly Israeli) and long-term residents seeking a quiet lifestyle",
+        "Say the parties will probably be banned soon so the issue will resolve itself",
+        "Change the subject to the object's yield without addressing the objection"
+      ]
+    },
+    "correct": 1,
+    "explain": {
+      "ru": "На встрече подробно объяснили: Full Moon Party — это отдельный, локализованный на Хадрине формат на пару дней в месяц. Основная аудитория острова — семьи (в первую очередь израильские, также украинское и русское комьюнити), удалённые сотрудники, люди, которые остаются на месяцы и годы ради спокойствия и природы.",
+      "en": "The meeting covered this in detail: Full Moon Party is a separate event localized in Haad Rin for a few days a month. The island's core audience is families (primarily Israeli, plus Ukrainian and Russian communities), remote workers, and people who stay for months or years seeking calm and nature."
+    }
+  },
+  {
+    "kind": "closed",
+    "blockIdx": 1,
+    "type": {
+      "ru": "Вопрос",
+      "en": "Question"
+    },
+    "title": {
+      "ru": "Кто выступает арендодателем земли в договоре лизхолда клиента?",
+      "en": "Who acts as the landlord in the client's leasehold contract?"
+    },
+    "context": {
+      "ru": "",
+      "en": ""
+    },
+    "options": {
+      "ru": [
+        "Сама компания-застройщик, как номинальная структура",
+        "Тайский собственник земли напрямую — застройщик не является стороной договора",
+        "Иностранная холдинговая компания, зарегистрированная на Кипре",
+        "Государство Таиланда напрямую"
+      ],
+      "en": [
+        "The developer company itself, acting as a nominee structure",
+        "The Thai landowner directly — the developer is not a party to the contract",
+        "A foreign holding company registered in Cyprus",
+        "The Thai government directly"
+      ]
+    },
+    "correct": 1,
+    "explain": {
+      "ru": "Ключевая особенность этой схемы: договор лизхолда заключается напрямую между клиентом и тайским собственником земли. Застройщик не фигурирует ни в одном договоре — это снижает риски для клиента, а не создаёт непонятность.",
+      "en": "The key feature of this scheme: the leasehold contract is signed directly between the client and the Thai landowner. The developer isn't a party to any contract — this reduces risk for the client rather than creating confusion."
+    }
+  },
+  {
+    "kind": "closed",
+    "blockIdx": 1,
+    "type": {
+      "ru": "Вопрос",
+      "en": "Question"
+    },
+    "title": {
+      "ru": "В чём главное отличие этого лизхолда от типичной схемы саблиза, которую используют многие другие застройщики на острове?",
+      "en": "What is the main difference between this leasehold and the typical sublease scheme many other developers on the island use?"
+    },
+    "context": {
+      "ru": "",
+      "en": ""
+    },
+    "options": {
+      "ru": [
+        "В этой схеме право трансфера земли зарегистрировано напрямую в чаноте (титуле), и нет посреднической компании — при саблизе клиент субарендует у компании-посредника, которая должна просуществовать все 30 лет",
+        "Разницы нет, обе схемы юридически идентичны",
+        "Саблиз всегда дешевле, но менее удобен географически",
+        "При саблизе аренда бессрочная, а при лизхолде — только 30 лет"
+      ],
+      "en": [
+        "In this scheme the land transfer right is registered directly in the Chanote (title deed) and there's no intermediary company — with a sublease, the client subleases from an intermediary company that must survive all 30 years",
+        "There's no difference, both schemes are legally identical",
+        "Sublease is always cheaper but less convenient location-wise",
+        "With sublease the lease is perpetual, while leasehold is only 30 years"
+      ]
+    },
+    "correct": 0,
+    "explain": {
+      "ru": "Саблиз — слабая структура: клиент субарендует у компании (часто с номинальными держателями долей), и вся конструкция зависит от того, будет ли эта компания существовать все 30 лет, платить налоги и не иметь проблем с номиналами. В этой схеме посредника нет, а трансфер земли зарегистрирован прямо в чаноте — обязательное условие, без которого перепродажа объекта позже невозможна.",
+      "en": "Sublease is a weak structure: the client subleases from a company (often with nominee shareholders), and the whole arrangement depends on whether that company survives all 30 years, pays taxes, and has no nominee-related issues. In this scheme there's no intermediary, and the land transfer is registered directly in the Chanote — a mandatory condition without which reselling the property later becomes impossible."
+    }
+  },
+  {
+    "kind": "closed",
+    "blockIdx": 1,
+    "type": {
+      "ru": "Вопрос",
+      "en": "Question"
+    },
+    "title": {
+      "ru": "Если сформулировать одним предложением, в чём главное УТП проекта Atmos Villas на фоне конкурентов на Пангане?",
+      "en": "If you had to sum it up in one sentence, what is Atmos Villas' main USP compared to competitors on Phangan?"
+    },
+    "context": {
+      "ru": "Выберите вариант, который точнее всего отражает то, что подчёркивали на встрече.",
+      "en": "Choose the option that most accurately reflects what was emphasized at the meeting."
+    },
+    "options": {
+      "ru": [
+        "Самая низкая цена за квадратный метр на всём острове",
+        "Прямой лизхолд с зарегистрированным трансфером земли в чаноте — без посреднической компании и субаренды, что резко снижает юридические риски для покупателя",
+        "Единственный проект на острове с собственным пляжем",
+        "Круглосуточная развлекательная инфраструктура в шаговой доступности"
+      ],
+      "en": [
+        "The lowest price per square meter on the whole island",
+        "A direct leasehold with the land transfer right registered in the Chanote — no intermediary company and no sublease, which sharply reduces legal risk for the buyer",
+        "The only project on the island with a private beach",
+        "24/7 entertainment infrastructure within walking distance"
+      ]
+    },
+    "correct": 1,
+    "explain": {
+      "ru": "Главное УТП, вокруг которого строилась вся презентация, — юридическая надёжность схемы: прямой договор с тайским собственником земли, право трансфера прямо в чаноте, никаких посредников и субаренды. Цена и локация — сильные аргументы, но не главное отличие от конкурентов, у которых чаще встречается более слабая структура саблиза.",
+      "en": "The main USP the whole presentation was built around is legal reliability: a direct contract with the Thai landowner, transfer rights registered right in the Chanote, no intermediaries, no sublease. Price and location are strong arguments, but not the main differentiator — competitors more often have the weaker sublease structure."
+    }
+  },
+  {
+    "kind": "closed",
+    "blockIdx": 1,
+    "type": {
+      "ru": "Вопрос",
+      "en": "Question"
+    },
+    "title": {
+      "ru": "На сколько лет заключается лизхолд и как индексируется арендная плата за землю?",
+      "en": "For how many years is the leasehold signed, and how is the land rent indexed?"
+    },
+    "context": {
+      "ru": "",
+      "en": ""
+    },
+    "options": {
+      "ru": [
+        "На 15 лет, индексация ежегодно на 5%",
+        "На 30 лет, повышение на 10% каждые 10 лет (первый платёж после подписания — в 2028 году)",
+        "Бессрочно, без индексации",
+        "На 30 лет, но с ежемесячной привязкой к курсу доллара"
+      ],
+      "en": [
+        "15 years, indexed annually by 5%",
+        "30 years, rent increases by 10% every 10 years (the first payment after signing is due in 2028)",
+        "Perpetual, no indexation",
+        "30 years, but tied monthly to the USD exchange rate"
+      ]
+    },
+    "correct": 1,
+    "explain": {
+      "ru": "Лизхолд заключён на 30 лет. Плата фиксирована и индексируется всего дважды за весь срок — на 10% через 10 лет и ещё на 10% через 20 лет. Первые три года аренды уже включены в стоимость виллы.",
+      "en": "The leasehold runs for 30 years. The rent is fixed and indexed only twice over the whole term — by 10% after 10 years and another 10% after 20 years. The first three years of rent are already included in the villa price."
+    }
+  },
+  {
+    "kind": "closed",
+    "blockIdx": 1,
+    "type": {
+      "ru": "Кейс",
+      "en": "Case"
+    },
+    "title": {
+      "ru": "Клиент спрашивает: «Если что-то случится с соседним участком — например, сосед не заплатит за аренду земли — это как-то повлияет на меня?»",
+      "en": "A client asks: ‘If something happens with the neighboring plot — say, a neighbor stops paying land rent — does that affect me in any way?’"
+    },
+    "context": {
+      "ru": "Какой ответ соответствует разобранной на встрече структуре?",
+      "en": "Which answer matches the structure discussed at the meeting?"
+    },
+    "options": {
+      "ru": [
+        "Да, повлияет — участки взаимосвязаны единым договором на весь комплекс",
+        "Нет — каждый участок зарегистрирован отдельным договором аренды, платежи и договорённости соседей никак не связаны между собой",
+        "Это будет зависеть от решения управляющей компании",
+        "Придётся временно приостановить сдачу в аренду до выяснения ситуации"
+      ],
+      "en": [
+        "Yes, it does — the plots are linked by a single contract covering the whole complex",
+        "No — each plot is registered under a separate lease agreement, and neighbors' payments and arrangements have no connection to each other",
+        "It would depend on the management company's decision",
+        "Rentals would have to be paused temporarily until the situation is clarified"
+      ]
+    },
+    "correct": 1,
+    "explain": {
+      "ru": "Каждый из 8 участков зарегистрирован отдельным лизинговым договором в лендофисе с индивидуальными прямыми платежами. Вопросы соседних участков (просрочка платежа, проблемы с землёй) никак не затрагивают конкретного покупателя.",
+      "en": "Each of the 8 plots is registered under a separate lease agreement at the Land Office with individual direct payments. Issues with neighboring plots (late payment, land disputes) have no effect on a specific buyer."
+    }
+  },
+  {
+    "kind": "closed",
+    "blockIdx": 2,
+    "type": {
+      "ru": "Вопрос",
+      "en": "Question"
+    },
+    "title": {
+      "ru": "Какую гарантию даёт строительная компания на конструктив дома и на отделку?",
+      "en": "What warranty does the construction company give on the structure and on interior finishing?"
+    },
+    "context": {
+      "ru": "",
+      "en": ""
+    },
+    "options": {
+      "ru": [
+        "1 год на всё вместе",
+        "5 лет на конструктив, 2 года на отделку интерьера",
+        "10 лет на всё вместе, без разделения",
+        "Гарантия не предусмотрена договором"
+      ],
+      "en": [
+        "1 year for everything combined",
+        "5 years on the structure, 2 years on interior finishing",
+        "10 years for everything, no breakdown",
+        "No warranty is provided under the contract"
+      ]
+    },
+    "correct": 1,
+    "explain": {
+      "ru": "Строительная компания даёт 5 лет гарантии на конструктив и 2 года на отделку интерьера. Это фиксируется в прямом договоре клиента со строительной компанией.",
+      "en": "The construction company gives a 5-year warranty on the structure and 2 years on interior finishing. This is fixed in the client's direct contract with the construction company."
+    }
+  },
+  {
+    "kind": "closed",
+    "blockIdx": 2,
+    "type": {
+      "ru": "Вопрос",
+      "en": "Question"
+    },
+    "title": {
+      "ru": "Из чего строятся стены вилл, и почему выбрали именно этот материал вместо каркасной конструкции?",
+      "en": "What are the villa walls built from, and why was this material chosen over a lightweight frame construction?"
+    },
+    "context": {
+      "ru": "",
+      "en": ""
+    },
+    "options": {
+      "ru": [
+        "Из лёгких сэндвич-панелей — это дешевле и быстрее",
+        "Двойной слой кирпича/пеноблока с воздушной прослойкой — для термо- и шумоизоляции, а также из-за настороженного отношения агентств и покупателей к металлокаркасным домам на острове",
+        "Из монолитного бетона без кирпичной кладки",
+        "Материал каждый раз выбирает клиент индивидуально, стандарта нет"
+      ],
+      "en": [
+        "Lightweight sandwich panels — cheaper and faster",
+        "Double-layer brick/foam block with an air gap — for thermal and sound insulation, and because island agencies and buyers are wary of metal-frame houses",
+        "Monolithic concrete without any brickwork",
+        "The client chooses the material individually each time, there's no standard"
+      ]
+    },
+    "correct": 1,
+    "explain": {
+      "ru": "Выбрали двухслойную кирпичную кладку с воздушной прослойкой — отработанный тайский стандарт для термо- и шумоизоляции. Дополнительный аргумент: агентства недвижимости на острове настороженно относятся к каркасным домам из металла, так как непонятно, как они поведут себя со временем.",
+      "en": "They chose double-layer brickwork with an air gap — a proven Thai standard for thermal and sound insulation. An additional reason: real estate agencies on the island are wary of metal-frame houses, since it's unclear how they'll hold up over time."
+    }
+  },
+  {
+    "kind": "closed",
+    "blockIdx": 2,
+    "type": {
+      "ru": "Кейс",
+      "en": "Case"
+    },
+    "title": {
+      "ru": "Клиент готов двигаться дальше и спрашивает: «Какой первый шаг и сколько нужно внести, чтобы начать процесс?»",
+      "en": "The client is ready to proceed and asks: ‘What's the first step, and how much do I need to put down to get started?’"
+    },
+    "context": {
+      "ru": "Опишите правильную последовательность по разобранной на встрече схеме.",
+      "en": "Describe the correct sequence based on the scheme discussed at the meeting."
+    },
+    "options": {
+      "ru": [
+        "Сразу полная оплата виллы, затем застройщик сам всё оформляет",
+        "Депозит около 150 000 бат (~5 000 $) → переоформление лизхолда земли напрямую на клиента → далее оплата строительства по этапам (фундамент, колонны, стены, отделка)",
+        "Клиент сразу подписывает договор со строительной компанией, депозит не требуется",
+        "50% предоплата застройщику, остальное после сдачи объекта"
+      ],
+      "en": [
+        "Full payment for the villa upfront, then the developer handles everything",
+        "A deposit of about 150,000 baht (~$5,000) → the land leasehold is transferred directly to the client → then construction is paid in stages (foundation, columns, walls, finishing)",
+        "The client signs directly with the construction company right away, no deposit needed",
+        "50% upfront to the developer, the rest after the object is delivered"
+      ]
+    },
+    "correct": 1,
+    "explain": {
+      "ru": "Процесс начинается с депозита ~150 000 бат ($5 000). После этого происходит переоформление лизхолда земли на имя клиента — с этого момента он в полной юридической безопасности. Далее заключается прямой договор со строительной компанией, и оплата идёт по этапам строительства.",
+      "en": "The process starts with a ~150,000 baht ($5,000) deposit. After that, the land leasehold is transferred to the client's name — from this point they're fully legally secure. Next, a direct contract is signed with the construction company, and payments follow the construction stages."
+    }
+  },
+  {
+    "kind": "closed",
+    "blockIdx": 3,
+    "type": {
+      "ru": "Кейс",
+      "en": "Case"
+    },
+    "title": {
+      "ru": "На встрече в финансовой модели застройщика была обнаружена неточность в расчёте расходов.",
+      "en": "At the meeting, an inaccuracy was found in the developer's financial model expense calculation."
+    },
+    "context": {
+      "ru": "В чём заключалась ошибка и что было решено сделать?",
+      "en": "What was the error, and what was decided?"
+    },
+    "options": {
+      "ru": [
+        "Расходы были указаны верно, ошибки не было",
+        "В модели фигурировали операционные расходы ~30%, но при подсчёте с учётом налога и комиссии Airbnb/Booking (~15-18%) реальная расходная часть составила около 48% — застройщик согласился пересчитать модель и указать более точные цифры",
+        "Ошибка была в сторону завышения расходов — реальные расходы оказались ниже заявленных",
+        "Ошибка касалась только валюты расчётов, на итоговый ROI это не повлияло"
+      ],
+      "en": [
+        "The expenses were stated correctly, there was no error",
+        "The model showed operating expenses of ~30%, but factoring in tax and Airbnb/Booking commission (~15-18%), real expenses came out to about 48% — the developer agreed to recalculate and provide more accurate figures",
+        "The error was an overstatement — real expenses turned out lower than stated",
+        "The error only concerned the currency of the calculation and didn't affect the final ROI"
+      ]
+    },
+    "correct": 1,
+    "explain": {
+      "ru": "В модели застройщика не были учтены комиссии агрегаторов (Airbnb/Booking, ~15-18%), из-за чего расходная часть в модели показывала ~30%, а реально выходила около 48%. Разница ощутимо влияет на итоговый ROI — команда попросила застройщика пересчитать модель точнее, ближе к реальности, до того как её увидит клиент.",
+      "en": "The developer's model didn't account for aggregator commissions (Airbnb/Booking, ~15-18%), so the model showed expenses of ~30% while the real figure came out to about 48%. That difference noticeably affects the final ROI — the team asked the developer to make the model more accurate before the client sees it."
+    }
+  },
+  {
+    "kind": "closed",
+    "blockIdx": 3,
+    "type": {
+      "ru": "Вопрос",
+      "en": "Question"
+    },
+    "title": {
+      "ru": "Какую управляющую компанию рекомендует застройщик клиентам и почему?",
+      "en": "Which management company does the developer recommend to clients, and why?"
+    },
+    "context": {
+      "ru": "",
+      "en": ""
+    },
+    "options": {
+      "ru": [
+        "Своя внутренняя управляющая компания застройщика — обязательна к использованию",
+        "Five Star — заявленная загрузка около 90%, используют динамическое ценообразование, чтобы объекты не простаивали даже в низкий сезон",
+        "Клиент обязан искать управляющую компанию самостоятельно, застройщик не даёт рекомендаций",
+        "Booking.com напрямую, без отдельной управляющей компании"
+      ],
+      "en": [
+        "The developer's own in-house management company — mandatory to use",
+        "Five Star — claimed occupancy of about 90%, they use dynamic pricing to avoid vacancies even in low season",
+        "The client must find a management company independently, the developer gives no recommendations",
+        "Booking.com directly, without a separate management company"
+      ]
+    },
+    "correct": 1,
+    "explain": {
+      "ru": "Застройщик рекомендует (но не навязывает) компанию Five Star — с заявленной загрузкой около 90% и динамическим ценообразованием, которое позволяет держать высокую заполняемость даже в низкий сезон. Клиент может выбрать любую другую управляющую компанию.",
+      "en": "The developer recommends (but doesn't require) Five Star — with a claimed occupancy of around 90% and dynamic pricing that keeps occupancy high even in low season. The client is free to choose a different management company."
+    }
+  },
+  {
+    "kind": "open",
+    "blockIdx": 3,
+    "type": {
+      "ru": "Открытый вопрос · AI-оценка",
+      "en": "Open question · AI-scored"
+    },
+    "title": {
+      "ru": "Клиент спрашивает: «А кто вы вообще в этой сделке, если вы не фигурируете ни в одном из договоров — ни на землю, ни на строительство?»",
+      "en": "A client asks: ‘So who are you in this deal if you're not a party to any of the contracts — not on the land, not on construction?’"
+    },
+    "context": {
+      "ru": "Напишите ответ брокера, который спокойно объясняет роль застройщика в этой юридической схеме (3-5 предложений).",
+      "en": "Write the broker's response calmly explaining the developer's role in this legal scheme (3-5 sentences)."
+    },
+    "rubric": {
+      "ru": "Тема: объяснение роли застройщика, который не является стороной ни в одном из договоров клиента.\n\nЧто должно быть в хорошем ответе:\n- Чётко объяснено, что отсутствие застройщика в договорах — это осознанное решение ради безопасности клиента, а не недостаток\n- Указано, что клиент заключает прямой договор на землю с тайским собственником и прямой договор на строительство с тайской строительной компанией\n- Объяснено, что застройщик выполняет роль куратора/связующего звена: курирует процесс, следит за стройкой, коммуницирует, но юридически не является стороной сделки\n- Тон уверенный, не оправдывающийся, без ощущения, что брокер сам не понимает схему\n\nЧто НЕ должно засчитываться как хороший ответ:\n- Уклонение от вопроса или смена темы\n- Утверждение, что застройщик всё же является стороной договора (это неверно и противоречит схеме)\n- Ответ, который сам звучит подозрительно или неуверенно (\"ну вообще-то и правда непонятно, кто они\")\n- Отсутствие объяснения, зачем это сделано именно так (без объяснения снижения рисков)",
+      "en": "Topic: explaining the developer's role when it isn't a party to any of the client's contracts.\n\nWhat a good answer should include:\n- Clearly explains that the developer's absence from the contracts is a deliberate choice for the client's safety, not a shortcoming\n- States that the client signs a direct land contract with the Thai landowner and a direct construction contract with the Thai construction company\n- Explains that the developer acts as a coordinator/liaison: oversees the process, monitors construction, communicates, but is not legally a party to the deal\n- Confident tone, not defensive, doesn't sound like the broker is unsure of the scheme themselves\n\nWhat should NOT count as a good answer:\n- Dodging the question or changing the subject\n- Claiming the developer is in fact a party to the contract (this is incorrect and contradicts the scheme)\n- An answer that itself sounds suspicious or uncertain (\"well, it is a bit unclear who they are, actually\")\n- No explanation of why it's set up this way (missing the risk-reduction rationale)"
+    },
+    "placeholder": {
+      "ru": "Например: «Хороший вопрос. На самом деле то, что мы не в договоре — это специально сделано для вашей безопасности...»",
+      "en": "For example: 'Good question. Actually, us not being in the contract is intentional, for your protection...'"
+    }
+  },
+  {
+    "kind": "open",
+    "blockIdx": 1,
+    "type": {
+      "ru": "Открытый вопрос · AI-оценка",
+      "en": "Open question · AI-scored"
+    },
+    "title": {
+      "ru": "Клиент сравнивает предложения и спрашивает: «Чем ваш лизхолд с трансфером земли лучше, чем схема саблиза у других застройщиков на острове?»",
+      "en": "A client comparing offers asks: ‘Why is your leasehold with land transfer better than the sublease scheme other developers on the island use?’"
+    },
+    "context": {
+      "ru": "Напишите ответ брокера, объясняющий разницу простым языком (3-5 предложений).",
+      "en": "Write the broker's answer explaining the difference in plain language (3-5 sentences)."
+    },
+    "rubric": {
+      "ru": "Тема: объяснение разницы между лизхолдом с прямым трансфером земли и типичной схемой саблиза.\n\nЧто должно быть в хорошем ответе:\n- Объяснено, что при саблизе клиент субарендует землю у промежуточной компании (часто с номинальными держателями долей), и вся конструкция зависит от того, будет ли эта компания существовать и платить налоги все 30 лет\n- Объяснено, что в этой схеме трансфер земли зарегистрирован напрямую в чаноте (титуле земли), посредника нет\n- Упомянуто, что без прописанного в договоре права трансфера дальнейшая перепродажа объекта становится практически невозможной или требует создания новой посреднической структуры\n- Простой, понятный язык — не юридический жаргон без объяснений\n\nЧто НЕ должно засчитываться как хороший ответ:\n- Утверждение, что схемы полностью идентичны и разницы нет\n- Ответ без объяснения риска зависимости от посреднической компании\n- Отсутствие упоминания про сложности с перепродажей при отсутствии трансфера в договоре\n- Слишком общий ответ без конкретики про чанот/трансфер",
+      "en": "Topic: explaining the difference between a leasehold with direct land transfer and a typical sublease scheme.\n\nWhat a good answer should include:\n- Explains that with a sublease, the client subleases the land from an intermediary company (often with nominee shareholders), and the whole structure depends on whether that company survives and keeps paying taxes for all 30 years\n- Explains that in this scheme the land transfer is registered directly in the Chanote (title deed), with no intermediary\n- Mentions that without a transfer right written into the original contract, reselling the property later becomes practically impossible or requires setting up a new intermediary structure\n- Simple, clear language — not legal jargon without explanation\n\nWhat should NOT count as a good answer:\n- Claiming the schemes are identical with no difference\n- No explanation of the risk of depending on an intermediary company\n- No mention of resale difficulties when there's no transfer right in the contract\n- Too generic an answer without specifics about the Chanote/transfer"
+    },
+    "placeholder": {
+      "ru": "Например: «Смотрите, разница в том, что при саблизе...»",
+      "en": "For example: 'Look, the difference is that with a sublease...'"
+    }
+  }
+];
+
+const AI_PROXY_URL = "https://biom-quiz-proxy.legionrealestate95.workers.dev";
+const STATS_URL = "https://script.google.com/macros/s/AKfycbwgCDWwGVDCy020Y0OpQPiDG9PZ2mKCD55V6hHA-bB3Z1H4SEsBhZWkLvoB8O7NKQCZ/exec";
+const QUIZ_NAME = "Atmos Villas (Koh Phangan)";
+
+let lang = "ru";
+let userEmail = "";
+let attemptNumber = 1;
+let revealMode = false;
+
+let current = 0;
+let selectedAnswers = new Array(questions.length).fill(null);
+let attemptsCount = new Array(questions.length).fill(0);
+let revealed = new Array(questions.length).fill(false);
+let openAnswers = new Array(questions.length).fill(null);
+let openScores = new Array(questions.length).fill(null);
+let openFeedbacks = new Array(questions.length).fill(null);
+let openAnswered = new Array(questions.length).fill(false);
+let quizStarted = false;
+
+const quizArea = document.getElementById('quizArea');
+const progressFill = document.getElementById('progressFill');
+const progressLabel = document.getElementById('progressLabel');
+const progressBar = document.getElementById('progressBar');
+const dotsEl = document.getElementById('dots');
+const resultCard = document.getElementById('resultCard');
+const loginScreen = document.getElementById('loginScreen');
+
+function t(key){
+  return UI_TEXT[lang][key];
+}
+function fmt(str, vars){
+  return str.replace(/\{(\w+)\}/g, (_, k) => vars[k] !== undefined ? vars[k] : '');
+}
+function questionMetaLabel(q){
+  const genericType = {ru:"Вопрос", en:"Question"};
+  const counter = fmt(t('questionOf'), {n: current+1, total: questions.length});
+  const typeLabel = q.type[lang];
+  if(typeLabel === genericType[lang]) return counter;
+  return typeLabel + ' · ' + counter;
+}
+
+function setLang(l){
+  lang = l;
+  document.getElementById('langRuBtn').classList.toggle('active', l==='ru');
+  document.getElementById('langEnBtn').classList.toggle('active', l==='en');
+  applyStaticText();
+  if(quizStarted){
+    renderQuestion();
+  } else if(resultCard.classList.contains('active')){
+    // no-op, results only shown at end; static text refreshed already
+  }
+}
+
+function applyStaticText(){
+  document.getElementById('pageTitle').textContent = t('title');
+  document.getElementById('pageSubtitle').textContent = t('subtitle');
+
+  const legend = document.getElementById('blocksLegend');
+  legend.innerHTML = '';
+  t('legend').forEach(item=>{
+    const span = document.createElement('span');
+    span.className = 'legend-item';
+    span.textContent = item;
+    legend.appendChild(span);
+  });
+
+  document.getElementById('loginTypeLabel').textContent = t('loginType');
+  document.getElementById('loginTitleLabel').textContent = t('loginTitle');
+  document.getElementById('loginHintLabel').innerHTML = t('loginHint');
+  document.getElementById('loginError').textContent = t('loginError');
+  document.getElementById('emailInput').placeholder = t('emailPlaceholder');
+  document.getElementById('startBtn').textContent = quizStarted ? t('startBtnLoading') : t('startBtn');
+  document.getElementById('resultLabelTag').textContent = t('resultLabel');
+  document.getElementById('restartBtn').textContent = t('restartBtn');
+}
+
+function isValidEmail(v){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+async function startQuiz(){
+  const emailInput = document.getElementById('emailInput');
+  const err = document.getElementById('loginError');
+  const email = emailInput.value.trim().toLowerCase();
+
+  if(!isValidEmail(email)){
+    err.classList.add('show');
+    return;
+  }
+  err.classList.remove('show');
+  userEmail = email;
+
+  const startBtn = document.getElementById('startBtn');
+  startBtn.disabled = true;
+  startBtn.textContent = t('startBtnLoading');
+
+  try{
+    const res = await fetch(STATS_URL + '?email=' + encodeURIComponent(userEmail) + '&quiz=' + encodeURIComponent(QUIZ_NAME));
+    const data = await res.json();
+    attemptNumber = (data.attempts || 0) + 1;
+  } catch(err2){
+    attemptNumber = 1;
+  }
+
+  revealMode = attemptNumber >= 3;
+  quizStarted = true;
+  document.body.classList.add('quiz-active');
+
+  loginScreen.style.display = 'none';
+  progressBar.style.display = 'block';
+  progressLabel.style.display = 'block';
+
+  renderQuestion();
+}
+
+function buildDots(){
+  dotsEl.innerHTML = '';
+  questions.forEach((q,i)=>{
+    const d = document.createElement('div');
+    const isDone = q.kind === 'open' ? openAnswered[i] : selectedAnswers[i]!==null;
+    d.className = 'dot' + (q.kind === 'open' ? ' open-type' : '') + (isDone ? ' done' : '') + (i===current ? ' current':'');
+    dotsEl.appendChild(d);
+  });
+}
+
+function renderQuestion(){
+  quizArea.innerHTML = '';
+  resultCard.classList.remove('active');
+  const q = questions[current];
+
+  if(q.kind === 'open'){
+    renderOpenQuestion(q);
+  } else {
+    renderClosedQuestion(q);
+  }
+
+  updateProgress();
+}
+
+function renderClosedQuestion(q){
+  const card = document.createElement('div');
+  card.className = 'card active';
+
+  const tag = document.createElement('div');
+  tag.className = 'block-tag';
+  tag.textContent = t('legend')[q.blockIdx];
+  card.appendChild(tag);
+
+  const qtype = document.createElement('div');
+  qtype.className = 'q-type';
+  qtype.textContent = questionMetaLabel(q);
+  card.appendChild(qtype);
+
+  const title = document.createElement('div');
+  title.className = 'q-title';
+  title.textContent = q.title[lang];
+  card.appendChild(title);
+
+  if(q.context[lang]){
+    const ctx = document.createElement('div');
+    ctx.className = 'q-context';
+    ctx.textContent = q.context[lang];
+    card.appendChild(ctx);
+  }
+
+  const opts = document.createElement('div');
+  opts.className = 'options';
+  q.options[lang].forEach((optText, idx)=>{
+    const b = document.createElement('button');
+    b.className = 'option';
+    b.textContent = optText;
+    b.onclick = ()=>handleAnswer(idx);
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+
+  const fb = document.createElement('div');
+  fb.className = 'feedback';
+  fb.id = 'feedback';
+  card.appendChild(fb);
+
+  const note = document.createElement('div');
+  note.className = 'attempts-note';
+  note.id = 'attemptsNote';
+  card.appendChild(note);
+
+  card.appendChild(buildNavRow(selectedAnswers[current]===null));
+  quizArea.appendChild(card);
+
+  if(selectedAnswers[current]!==null){
+    restoreState();
+  }
+}
+
+function renderOpenQuestion(q){
+  const card = document.createElement('div');
+  card.className = 'card active';
+
+  const tag = document.createElement('div');
+  tag.className = 'block-tag';
+  tag.textContent = t('legend')[q.blockIdx];
+  card.appendChild(tag);
+
+  const qtype = document.createElement('div');
+  qtype.className = 'q-type';
+  qtype.textContent = questionMetaLabel(q);
+  card.appendChild(qtype);
+
+  const title = document.createElement('div');
+  title.className = 'q-title';
+  title.textContent = q.title[lang];
+  card.appendChild(title);
+
+  if(q.context[lang]){
+    const ctx = document.createElement('div');
+    ctx.className = 'q-context';
+    ctx.textContent = q.context[lang];
+    card.appendChild(ctx);
+  }
+
+  const ta = document.createElement('textarea');
+  ta.className = 'open-answer';
+  ta.id = 'openInput';
+  ta.placeholder = q.placeholder[lang] || '';
+  ta.value = openAnswers[current] || '';
+  card.appendChild(ta);
+
+  const checkBtn = document.createElement('button');
+  checkBtn.className = 'btn primary';
+  checkBtn.id = 'checkBtn';
+  checkBtn.textContent = t('checkAiBtn');
+  checkBtn.onclick = checkOpenAnswer;
+  card.appendChild(checkBtn);
+
+  const fb = document.createElement('div');
+  fb.className = 'feedback';
+  fb.id = 'feedback';
+  card.appendChild(fb);
+
+  card.appendChild(buildNavRow(!openAnswered[current]));
+  quizArea.appendChild(card);
+
+  if(openAnswered[current]){
+    ta.disabled = true;
+    checkBtn.style.display = 'none';
+    const fbEl = document.getElementById('feedback');
+    if(openScores[current] !== null){
+      fbEl.className = 'feedback show ' + (openScores[current] >= 2 ? 'ok' : 'warn');
+      fbEl.innerHTML = '<b>' + t('aiScoreLabel') + ': ' + openScores[current] + '/3</b><br>' + openFeedbacks[current];
+    } else {
+      fbEl.className = 'feedback show no';
+      fbEl.textContent = openFeedbacks[current] || t('aiNotScoredMsg');
+    }
+  }
+}
+
+function buildNavRow(nextDisabled){
+  const nav = document.createElement('div');
+  nav.className = 'nav-row';
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'btn';
+  prevBtn.textContent = t('backBtn');
+  prevBtn.disabled = current===0;
+  prevBtn.onclick = ()=>{ current--; renderQuestion(); };
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'btn primary';
+  nextBtn.id = 'nextBtn';
+  nextBtn.textContent = current===questions.length-1 ? t('finishBtn') : t('nextBtn');
+  nextBtn.disabled = nextDisabled;
+  nextBtn.onclick = ()=>{
+    if(current===questions.length-1){ showResults(); }
+    else { current++; renderQuestion(); }
+  };
+  nav.appendChild(prevBtn);
+  nav.appendChild(nextBtn);
+  return nav;
+}
+
+function handleAnswer(idx){
+  const q = questions[current];
+  const optButtons = document.querySelectorAll('.option');
+  const isCorrect = idx === q.correct;
+
+  if(selectedAnswers[current]===null || !revealed[current]){
+    attemptsCount[current]++;
+  }
+  selectedAnswers[current] = idx;
+
+  const fb = document.getElementById('feedback');
+  const note = document.getElementById('attemptsNote');
+
+  if(isCorrect){
+    optButtons[idx].classList.add('correct');
+    optButtons.forEach((b,i)=>{ if(i!==idx) b.disabled = true; });
+    fb.className = 'feedback show ok';
+    fb.textContent = t('correctPrefix') + q.explain[lang];
+    revealed[current] = true;
+  } else {
+    optButtons[idx].classList.add('incorrect');
+    optButtons[idx].disabled = true;
+
+    const shouldReveal = revealMode || attemptsCount[current] >= 3;
+
+    if(shouldReveal){
+      optButtons[q.correct].classList.add('correct');
+      optButtons.forEach(b=>b.disabled = true);
+      fb.className = 'feedback show ok';
+      fb.textContent = t('revealedPrefix') + q.explain[lang];
+      revealed[current] = true;
+    } else {
+      fb.className = 'feedback show no';
+      fb.textContent = t('wrongTryAgain');
+      note.className = 'attempts-note show';
+      note.textContent = fmt(t('attemptLabel'), {n: attemptsCount[current]});
+    }
+  }
+
+  document.getElementById('nextBtn').disabled = false;
+  buildDots();
+}
+
+function restoreState(){
+  const q = questions[current];
+  const optButtons = document.querySelectorAll('.option');
+  const fb = document.getElementById('feedback');
+  const note = document.getElementById('attemptsNote');
+  const chosen = selectedAnswers[current];
+
+  if(revealed[current]){
+    optButtons[q.correct].classList.add('correct');
+    optButtons.forEach(b=>b.disabled = true);
+    fb.className = 'feedback show ok';
+    fb.textContent = (chosen===q.correct ? t('correctPrefix') : t('revealedPrefix')) + q.explain[lang];
+  } else if(chosen!==null){
+    optButtons[chosen].classList.add('incorrect');
+    optButtons[chosen].disabled = true;
+    fb.className = 'feedback show no';
+    fb.textContent = t('wrongTryAgain');
+    note.className = 'attempts-note show';
+    note.textContent = fmt(t('attemptLabel'), {n: attemptsCount[current]});
+  }
+}
+
+async function checkOpenAnswer(){
+  const q = questions[current];
+  const ta = document.getElementById('openInput');
+  const text = ta.value.trim();
+  if(!text){
+    alert(t('emptyAnswerAlert'));
+    return;
+  }
+  openAnswers[current] = text;
+
+  const btn = document.getElementById('checkBtn');
+  btn.disabled = true;
+  btn.textContent = t('checkingBtn');
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show warn';
+  fb.textContent = t('sendingMsg');
+
+  try{
+    const promptText = t('aiPromptIntro') + "\n\n" + q.rubric[lang] + "\n\n" +
+      (lang==='ru' ? "Ответ брокера:" : "Broker's answer:") + '\n"""\n' + text + '\n"""\n\n' +
+      t('aiPromptTail');
+
+    const response = await fetch(AI_PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [ { role: "user", content: promptText } ]
+      })
+    });
+    const data = await response.json();
+    const textBlock = data.content.find(b => b.type === "text");
+    const cleaned = textBlock.text.replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(cleaned);
+
+    openScores[current] = parsed.score;
+    openFeedbacks[current] = parsed.feedback;
+    openAnswered[current] = true;
+
+    fb.className = 'feedback show ' + (parsed.score >= 2 ? 'ok' : 'warn');
+    fb.innerHTML = '<b>' + t('aiScoreLabel') + ': ' + parsed.score + '/3</b><br>' + parsed.feedback;
+
+    ta.disabled = true;
+    btn.style.display = 'none';
+    document.getElementById('nextBtn').disabled = false;
+    buildDots();
+  } catch(err){
+    fb.className = 'feedback show no';
+    fb.textContent = t('aiFailMsg');
+    btn.disabled = false;
+    btn.textContent = t('checkAiBtn');
+    openAnswered[current] = true;
+    openScores[current] = null;
+    openFeedbacks[current] = t('aiNotScoredMsg');
+    document.getElementById('nextBtn').disabled = false;
+    buildDots();
+  }
+}
+
+function updateProgress(){
+  progressFill.style.width = ((current+1)/questions.length*100) + '%';
+  progressLabel.textContent = fmt(t('questionOf'), {n: current+1, total: questions.length});
+  buildDots();
+}
+
+function getOpenIndices(){
+  const idxs = [];
+  questions.forEach((q,i)=>{ if(q.kind === 'open') idxs.push(i); });
+  return idxs;
+}
+
+async function showResults(){
+  quizArea.innerHTML = '';
+  resultCard.classList.add('active');
+
+  let firstTryCount = 0;
+  let openTotal = 0;
+  let openMax = 0;
+  const blockStats = {};
+
+  questions.forEach((q,i)=>{
+    const blockName = t('legend')[q.blockIdx];
+    if(!blockStats[blockName]) blockStats[blockName] = {closedTotal:0, closedFirstTry:0, openTotal:0, openMax:0};
+
+    if(q.kind === 'closed'){
+      const gotFirstTry = attemptsCount[i]===1 && selectedAnswers[i]===q.correct;
+      if(gotFirstTry) firstTryCount++;
+      blockStats[blockName].closedTotal++;
+      if(gotFirstTry) blockStats[blockName].closedFirstTry++;
+    } else {
+      openMax += 3;
+      blockStats[blockName].openMax += 3;
+      if(openScores[i] !== null){
+        openTotal += openScores[i];
+        blockStats[blockName].openTotal += openScores[i];
+      }
+    }
+  });
+
+  const closedTotalQ = questions.filter(q=>q.kind==='closed').length;
+  document.getElementById('resultScore').textContent = firstTryCount + ' / ' + closedTotalQ;
+
+  let msg = '';
+  const pct = Math.round(firstTryCount/closedTotalQ*100);
+  if(pct >= 85) msg = t('resultGoodMsg');
+  else if(pct >= 60) msg = t('resultMidMsg');
+  else msg = t('resultLowMsg');
+  msg += fmt(t('openScoreSummary'), {t: openTotal, m: openMax});
+  document.getElementById('resultMsg').textContent = fmt(t('firstTryTemplate'), {f: firstTryCount, total: closedTotalQ, pct: pct, msg: msg});
+
+  const breakdown = document.getElementById('resultBreakdown');
+  breakdown.innerHTML = '';
+  Object.keys(blockStats).forEach(block=>{
+    const s = blockStats[block];
+    const row = document.createElement('div');
+    row.innerHTML = '<span>' + block + t('closedSuffix') + '</span><span>' + s.closedFirstTry + ' / ' + s.closedTotal + '</span>';
+    breakdown.appendChild(row);
+    if(s.openMax > 0){
+      const row2 = document.createElement('div');
+      row2.innerHTML = '<span>' + block + t('openSuffix') + '</span><span>' + s.openTotal + ' / ' + s.openMax + '</span>';
+      breakdown.appendChild(row2);
+    }
+  });
+
+  progressFill.style.width = '100%';
+  progressBar.style.display = 'none';
+  progressLabel.style.display = 'none';
+
+  await saveResultsToSheet(firstTryCount, closedTotalQ, pct);
+}
+
+async function saveResultsToSheet(mcqScore, mcqTotal, mcqPercent){
+  const saveStatus = document.getElementById('saveStatus');
+  saveStatus.textContent = t('savingMsg');
+
+  const openIdxs = getOpenIndices();
+  const payload = {
+    email: userEmail,
+    quiz: QUIZ_NAME,
+    attempt: attemptNumber,
+    mcqScore: mcqScore,
+    mcqPercent: mcqPercent,
+    open1Answer: openIdxs[0] !== undefined ? (openAnswers[openIdxs[0]] || "") : "",
+    open1Score: openIdxs[0] !== undefined ? openScores[openIdxs[0]] : undefined,
+    open2Answer: openIdxs[1] !== undefined ? (openAnswers[openIdxs[1]] || "") : "",
+    open2Score: openIdxs[1] !== undefined ? openScores[openIdxs[1]] : undefined,
+    open3Answer: openIdxs[2] !== undefined ? (openAnswers[openIdxs[2]] || "") : "",
+    open3Score: openIdxs[2] !== undefined ? openScores[openIdxs[2]] : undefined
+  };
+
+  try{
+    await fetch(STATS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    saveStatus.textContent = t('savedMsg');
+  } catch(err){
+    saveStatus.textContent = t('saveFailMsg');
+  }
+}
+
+function restartQuiz(){
+  current = 0;
+  selectedAnswers = new Array(questions.length).fill(null);
+  attemptsCount = new Array(questions.length).fill(0);
+  revealed = new Array(questions.length).fill(false);
+  openAnswers = new Array(questions.length).fill(null);
+  openScores = new Array(questions.length).fill(null);
+  openFeedbacks = new Array(questions.length).fill(null);
+  openAnswered = new Array(questions.length).fill(false);
+  quizStarted = false;
+  document.body.classList.remove('quiz-active');
+
+  loginScreen.style.display = 'block';
+  progressBar.style.display = 'none';
+  progressLabel.style.display = 'none';
+  resultCard.classList.remove('active');
+  quizArea.innerHTML = '';
+  dotsEl.innerHTML = '';
+  const startBtn = document.getElementById('startBtn');
+  startBtn.disabled = false;
+  startBtn.textContent = t('startBtn');
+}
+
+applyStaticText();
+
+</script>
+</body>
+</html>
