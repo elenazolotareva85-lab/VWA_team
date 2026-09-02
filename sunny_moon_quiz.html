@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legion Real Estate — Проверка знаний: Sunny Moon (Пхукет)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1a1a1a;
+    --panel:#232323;
+    --panel2:#2a2a2a;
+    --gold:#c9a961;
+    --gold-dark:#9C7D51;
+    --text:#f0ece2;
+    --text-dim:#a8a29a;
+    --good:#7cb88f;
+    --bad:#c97a6b;
+    --warn:#c9a961;
+    --border:#3a3733;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+  header{text-align:center;margin-bottom:28px;}
+  h1{
+    font-family:'Playfair Display',serif;
+    color:var(--gold);
+    font-size:24px;
+    margin:0 0 8px;
+    letter-spacing:.3px;
+  }
+  .subtitle{color:var(--text-dim);font-size:14px;line-height:1.5;}
+  .blocks-legend{
+    display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px;
+  }
+  .legend-item{
+    font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);
+    color:var(--text-dim);
+  }
+
+  /* Login screen */
+  .login-card{
+    background:var(--panel);
+    border:1px solid var(--gold-dark);
+    border-radius:12px;
+    padding:32px 24px;
+    text-align:center;
+  }
+  .login-card h2{
+    font-family:'Playfair Display',serif;
+    color:var(--gold);
+    font-size:19px;
+    margin:0 0 14px;
+  }
+  .login-hint{color:var(--text-dim);font-size:13px;line-height:1.6;margin-bottom:20px;}
+  .login-input{
+    width:100%;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:12px 14px;
+    border-radius:8px;
+    font-size:14px;
+    font-family:'Inter',sans-serif;
+    margin-bottom:8px;
+  }
+  .login-input:focus{outline:none;border-color:var(--gold-dark);}
+  .login-error{color:var(--bad);font-size:12.5px;margin-bottom:10px;display:none;text-align:left;}
+  .login-error.show{display:block;}
+
+  .progress-bar{
+    height:4px;background:var(--panel2);border-radius:4px;overflow:hidden;margin:20px 0 4px;
+    display:none;
+  }
+  .progress-fill{height:100%;background:var(--gold);width:0%;transition:width .3s;}
+  .progress-label{font-size:12px;color:var(--text-dim);text-align:right;margin-bottom:20px;display:none;}
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:24px 22px;
+    margin-bottom:18px;
+  }
+  .block-tag{
+    display:inline-block;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    color:var(--gold);
+    border:1px solid var(--gold-dark);
+    padding:3px 10px;
+    border-radius:20px;
+    margin-bottom:14px;
+  }
+  .q-type{
+    font-size:11px;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;
+  }
+  .q-title{
+    font-size:17px;line-height:1.5;margin:0 0 6px;font-weight:600;
+  }
+  .q-context{
+    font-size:14px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;
+    background:var(--panel2);border-left:3px solid var(--gold-dark);padding:12px 14px;border-radius:6px;
+    white-space:pre-line;
+  }
+  .options{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+  .option{
+    text-align:left;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:13px 16px;
+    border-radius:8px;
+    font-size:14.5px;
+    cursor:pointer;
+    line-height:1.45;
+    transition:border-color .15s, background .15s;
+    font-family:'Inter',sans-serif;
+  }
+  .option:hover{border-color:var(--gold-dark);}
+  .option.correct{border-color:var(--good);background:rgba(124,184,143,.12);}
+  .option.incorrect{border-color:var(--bad);background:rgba(201,122,107,.12);}
+  .option:disabled{cursor:default;}
+
+  .open-textarea{
+    width:100%;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:13px 14px;
+    border-radius:8px;
+    font-size:14.5px;
+    font-family:'Inter',sans-serif;
+    min-height:110px;
+    resize:vertical;
+    margin-bottom:12px;
+  }
+  .open-textarea:focus{outline:none;border-color:var(--gold-dark);}
+  .open-textarea:disabled{opacity:.7;}
+
+  .feedback{
+    font-size:13.5px;line-height:1.6;padding:12px 14px;border-radius:8px;margin-top:6px;display:none;
+  }
+  .feedback.show{display:block;}
+  .feedback.ok{background:rgba(124,184,143,.1);border:1px solid rgba(124,184,143,.35);}
+  .feedback.no{background:rgba(201,122,107,.1);border:1px solid rgba(201,122,107,.35);}
+  .feedback.warn{background:rgba(201,169,97,.1);border:1px solid rgba(201,169,97,.35);}
+  .attempts-note{font-size:12px;color:var(--text-dim);margin-top:8px;display:none;}
+  .attempts-note.show{display:block;}
+
+  .nav-row{display:flex;justify-content:space-between;margin-top:18px;}
+  .btn{
+    font-family:'Inter',sans-serif;
+    background:transparent;
+    border:1px solid var(--gold-dark);
+    color:var(--gold);
+    padding:10px 20px;
+    border-radius:8px;
+    font-size:14px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .btn:hover{background:rgba(201,169,97,.1);}
+  .btn:disabled{opacity:.3;cursor:default;}
+  .btn.primary{background:var(--gold);color:#1a1a1a;border-color:var(--gold);}
+  .btn.primary:hover{background:#dab975;}
+
+  .result-card{
+    background:var(--panel);
+    border:1px solid var(--gold-dark);
+    border-radius:12px;
+    padding:32px 24px;
+    text-align:center;
+    display:none;
+  }
+  .result-card.active{display:block;}
+  .result-score{
+    font-family:'Playfair Display',serif;
+    font-size:40px;color:var(--gold);margin:6px 0;
+  }
+  .result-msg{color:var(--text-dim);font-size:14px;margin-bottom:14px;line-height:1.6;}
+  .result-open{color:var(--text-dim);font-size:13.5px;margin-bottom:16px;}
+  .result-breakdown{
+    text-align:left;background:var(--panel2);border-radius:8px;padding:16px 18px;margin:18px 0;font-size:13.5px;
+  }
+  .result-breakdown div{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);}
+  .result-breakdown div:last-child{border-bottom:none;}
+  .save-status{font-size:12px;color:var(--text-dim);margin-top:10px;}
+
+  .dots{display:flex;justify-content:center;gap:6px;margin-top:16px;flex-wrap:wrap;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--border);}
+  .dot.done{background:var(--gold-dark);}
+  .dot.current{background:var(--gold);}
+  .dot.open-type{border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Проверка знаний · Sunny Moon (Пхукет)</h1>
+    <div class="subtitle">По итогам обучающей встречи с застройщиком Sunny — 28 августа</div>
+    <div class="blocks-legend">
+      <span class="legend-item">🏝 Локация и проект</span>
+      <span class="legend-item">🏗 Инфраструктура</span>
+      <span class="legend-item">💰 Финансы и юрструктура</span>
+      <span class="legend-item">📜 Управление</span>
+    </div>
+  </header>
+
+  <div class="login-card" id="loginScreen">
+    <h2>Введите email, чтобы начать</h2>
+    <div class="login-hint">15 вопросов (13 закрытых + 2 открытых с AI-оценкой) · ориентировочно 12-15 минут.<br>По email считаются попытки прохождения и сохраняется статистика. С 3-й попытки правильные ответы подсвечиваются сразу.</div>
+    <input type="email" class="login-input" id="emailInput" placeholder="you@legion.com" autocomplete="email">
+    <div class="login-error" id="loginError">Введите корректный email.</div>
+    <button class="btn primary" id="startBtn" onclick="startQuiz()" style="width:100%;">Начать проверку</button>
+  </div>
+
+  <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">Вопрос 1 из 15</div>
+  <div class="dots" id="dots"></div>
+
+  <div id="quizArea"></div>
+
+  <div class="result-card" id="resultCard">
+    <div class="q-type">Результат</div>
+    <div class="result-score" id="resultScore">0 / 13</div>
+    <div class="result-msg" id="resultMsg"></div>
+    <div class="result-open" id="resultOpen"></div>
+    <div class="result-breakdown" id="resultBreakdown"></div>
+    <button class="btn primary" onclick="restartQuiz()">Пройти ещё раз</button>
+    <div class="save-status" id="saveStatus"></div>
+  </div>
+</div>
+
+<script>
+// ====== ИНФРАСТРУКТУРА (тот же воркер и та же таблица, что и остальные тесты) ======
+const AI_PROXY_URL = "https://biom-quiz-proxy.legionrealestate95.workers.dev";
+const STATS_URL = "https://script.google.com/macros/s/AKfycbwgCDWwGVDCy020Y0OpQPiDG9PZ2mKCD55V6hHA-bB3Z1H4SEsBhZWkLvoB8O7NKQCZ/exec";
+const QUIZ_NAME = "Sunny Moon (Пхукет)";
+
+const questions = [
+// ---------------- 🏝 ЛОКАЦИЯ И ПРОЕКТ ----------------
+{
+  kind:"closed",
+  block:"🏝 Локация и проект",
+  type:"Вопрос",
+  title:"Сколько зданий в проекте Sunny Moon и что происходит с первой фазой?",
+  context:"",
+  options:[
+    "Два здания, сдача декабрём этого года",
+    "Три здания: первая фаза (2 здания) — приёмка первых 40 юнитов в сентябре, полностью заработает с декабря; третье здание (вторая фаза) — через полтора года",
+    "Четыре здания, все сданы",
+    "Одно здание, уже полностью заселено"
+  ],
+  correct:1,
+  explain:"В проекте три здания. Первая фаза — это первые два: приёмка первых 40 юнитов начинается в сентябре, но полноценно заработают с декабря — доделываются бассейн, ландшафт и коммерция. Третье здание (вторая фаза) сдаётся через полтора года и там уже более премиальный дизайн."
+},
+{
+  kind:"closed",
+  block:"🏝 Локация и проект",
+  type:"Кейс",
+  title:"Клиент читает презентацию: «750 метров до пляжа». Как правильно ответить, если он спросит про расстояние?",
+  context:"На звонке команда сама поймала эту неточность в материалах застройщика.",
+  options:[
+    "Подтвердить: 750 метров, всё верно",
+    "Поправить: 750 м — это до озера, а не до пляжа; до пляжа Найхарн — около 1,2 км, 15–20 минут пешком по асфальтированной тенистой дороге",
+    "Сказать, что расстояние неизвестно",
+    "Сказать, что пляж вообще не при проекте"
+  ],
+  correct:1,
+  explain:"В презентации застройщика была ошибка: указали 750 м как расстояние до пляжа, хотя это дистанция до озера. До пляжа Найхарн — 1,2 км. Команда прямо на встрече попросила застройщика исправить формулировку — цитата: неточная цифра бьёт по доверию клиента к брокеру."
+},
+{
+  kind:"closed",
+  block:"🏝 Локация и проект",
+  type:"Вопрос",
+  title:"Сколько всего вилл в проекте Sunny Moon Villas и как далеко они от апартаментов?",
+  context:"",
+  options:[
+    "35 вилл, около 3 минут на машине от Sunny Moon",
+    "50 вилл, 20 минут на машине",
+    "35 вилл в другом районе острова, добраться можно только паромом",
+    "17 вилл, на территории апартаментного комплекса"
+  ],
+  correct:0,
+  explain:"Всего 35 вилл в две фазы (17 + 18). От апартаментов Sunny Moon до вилл — около 3 минут на машине. От вилл до пляжа Найхарн — 2,4 км, от апартаментов — 1,2 км."
+},
+
+// ---------------- 🏗 ИНФРАСТРУКТУРА ----------------
+{
+  kind:"closed",
+  block:"🏗 Инфраструктура",
+  type:"Вопрос",
+  title:"Какой тренажёрный зал заходит в проект и в чём здесь сильный аргумент для клиента?",
+  context:"",
+  options:[
+    "Стандартный безымянный зал застройщика на 200 кв.м",
+    "Top Gym на 800 кв.м — и это первый проект на Пхукете, куда вообще заходит этот оператор",
+    "Зала не будет, только домашние тренажёры в юнитах",
+    "Fitness First на первом этаже"
+  ],
+  correct:1,
+  explain:"Top Gym заходит в проект с залом 800 кв.м — огромный по меркам острова. Важная деталь для презентации: это первый проект на Пхукете, где вообще появляется этот оператор — эксклюзивность, а не просто «ещё один зал»."
+},
+{
+  kind:"closed",
+  block:"🏗 Инфраструктура",
+  type:"Кейс",
+  title:"Клиент прямо спрашивает: «А из окна вид на море будет?» Как отвечать честно, опираясь на слова застройщика?",
+  context:"На встрече Лейла прямо сказала: «как sea view это точно нельзя продавать».",
+  options:[
+    "Да, у большинства юнитов вид на океан",
+    "Нет — из юнитов вид на джунгли; частичный вид на море есть только с рухтопа, и то вдалеке — это не sea view",
+    "Вид на море появится после завершения второй фазы",
+    "Вид на море есть только в трёхспальных апартаментах"
+  ],
+  correct:1,
+  explain:"Прямая цитата с созвона: продавать это как sea view нельзя. Из юнитов — только вид на джунгли, с рухтопа виден кусочек моря вдалеке. Честная формулировка клиенту защищает и его ожидания, и репутацию брокера."
+},
+{
+  kind:"closed",
+  block:"🏗 Инфраструктура",
+  type:"Вопрос",
+  title:"Какой нюанс всплыл на встрече про паддл-корт?",
+  context:"",
+  options:[
+    "Паддл-корта не будет вообще, идею отменили",
+    "Паддл-корт будет (уже всё закуплено, расположится на крыше второго здания), но в текущей презентации застройщика он не отображён — материалы устарели",
+    "Паддл-корт будет платным дополнительно, отдельно от инфраструктуры",
+    "Паддл-корт заменили на теннисный корт"
+  ],
+  correct:1,
+  explain:"Решение по паддл-корту приняли около полугода назад, оборудование уже заказано, но в презентации, с которой работает застройщик, его нет — иллюстрации делались раньше. Держать в голове при показе материалов клиенту, чтобы не создавать ощущение, что «обещали, а не будет»."
+},
+
+// ---------------- 💰 ФИНАНСЫ И ЮРСТРУКТУРА ----------------
+{
+  kind:"closed",
+  block:"💰 Финансы и юрструктура",
+  type:"Вопрос",
+  title:"Сколько сейчас стоит самая дешёвая студия и на чём строится расчёт доходности 8%?",
+  context:"",
+  options:[
+    "$196 000; расчёт на средних годовых цифрах — суточная ставка $95, загрузка 70%",
+    "$350 000; доходность не считалась вообще",
+    "$120 000; доходность 15% гарантирована договором",
+    "$196 000; доходность фиксируется застройщиком по договору"
+  ],
+  correct:0,
+  explain:"Самая дешёвая студия — $196 000. 8% — это ожидаемая доходность на основе средних годовых цифр (ставка $95/сутки, загрузка 70%), а не гарантия, зафиксированная в договоре."
+},
+{
+  kind:"closed",
+  block:"💰 Финансы и юрструктура",
+  type:"Вопрос",
+  title:"Как распределяются расходы и вознаграждение управляющей компании для собственника апартамента в аренде?",
+  context:"",
+  options:[
+    "Собственник платит только 10% управляющей компании, остальное берёт на себя застройщик",
+    "Собственник платит ~26% операционных расходов (букинг, комиссия, check-in/out, уборка) + 10% вознаграждение управляющей компании; итоговая цифра ещё дорабатывается",
+    "Фиксированная сумма $500 в месяц вне зависимости от дохода",
+    "Комиссия управляющей компании не взимается вообще"
+  ],
+  correct:1,
+  explain:"Модель на момент встречи: около 26% операционных расходов (booking, RMBB-комиссия, check-in/check-out, уборка и т.д.) + 10% вознаграждение управляющей компании. Застройщик подчеркнул, что цифра ещё уточняется — компания решила управлять сама, без внешнего оператора."
+},
+{
+  kind:"closed",
+  block:"💰 Финансы и юрструктура",
+  type:"Вопрос",
+  title:"Как устроена земля под апартаментами Sunny Moon?",
+  context:"",
+  options:[
+    "Только фрихолд, лизхолда нет вообще",
+    "Земля в собственности компании (есть чанот); клиенту доступны два варианта — долгосрочный лизхолд (3 контракта по 30 лет = 90 лет) или полный фрихолд (+10% к цене)",
+    "Аренда земли у государства на 50 лет без права продления",
+    "Земля принадлежит третьей стороне, компания только строит на ней"
+  ],
+  correct:1,
+  explain:"Земля в собственности застройщика — есть чанот. Клиенту дают выбор: лизхолд тремя последовательными контрактами по 30 лет (90 лет суммарно) или полный фрихолд с доплатой 10% от цены."
+},
+{
+  kind:"closed",
+  block:"💰 Финансы и юрструктура",
+  type:"Вопрос",
+  title:"Какие дополнительные платежи есть у апартаментов Sunny Moon сверх цены юнита?",
+  context:"",
+  options:[
+    "100 бат/кв.м maintenance fee, 1000 бат фонд капремонта, 20 000 бат установка счётчиков воды/электричества",
+    "Только maintenance fee, всё остальное включено",
+    "Ежегодный налог на недвижимость 5% от стоимости",
+    "Обязательная доплата за мебельный пакет отдельно от цены"
+  ],
+  correct:0,
+  explain:"Стандартный набор допрасходов: 100 бат/кв.м maintenance fee, 1000 бат фонд капремонта, 20 000 бат на установку счётчиков воды и электричества. Мебельный пакет уже включён в стоимость юнита."
+},
+
+// ---------------- 📜 УПРАВЛЕНИЕ ----------------
+{
+  kind:"closed",
+  block:"📜 Управление",
+  type:"Вопрос",
+  title:"Как устроен rental pool в апартаментах Sunny Moon?",
+  context:"",
+  options:[
+    "Единый котёл — доход делится поровну между всеми собственниками",
+    "Пул делится по типу юнита (студия/1/2/3-спальные) плюс коэффициенты за метраж, этаж и вид — юнит повыше или с видом получает больше",
+    "Доход получает только застройщик, собственники — фиксированную ставку",
+    "Rental pool не предусмотрен, каждый сдаёт юнит сам"
+  ],
+  correct:1,
+  explain:"Это rental pool, но не «общий котёл»: деление идёт по типу юнита плюс коэффициенты за метраж, этаж, вид на бассейн/лес. Это сильный аргумент для инвестиционно настроенного клиента: покупка юнита повыше или с видом напрямую увеличивает его долю в доходности, а не только комфорт."
+},
+{
+  kind:"closed",
+  block:"📜 Управление",
+  type:"Вопрос",
+  title:"Сколько дней в году собственник апартаментов может жить в своём юните, если сдаёт его в управление?",
+  context:"",
+  options:[
+    "Без ограничений",
+    "Низкий сезон — до 90 дней, высокий сезон (1 декабря – 28 февраля) — до 14 дней, максимум около 104 дней в год суммарно",
+    "Только 30 дней в году в любой сезон",
+    "Проживание запрещено полностью, пока юнит в управлении"
+  ],
+  correct:1,
+  explain:"90 дней в низкий сезон, 14 дней в высокий (декабрь–февраль) — максимум порядка 104 дней в год. Если клиенту принципиально важно жить дольше именно в высокий сезон, это можно обсуждать индивидуально и вносить в договор."
+},
+{
+  kind:"closed",
+  block:"📜 Управление",
+  type:"Вопрос",
+  title:"Чем виллы отличаются от апартаментов по аренде и по схеме строительства?",
+  context:"",
+  options:[
+    "Виллы тоже сдаются посуточно; застройщик начинает строить только после того, как продаст 30–35% вилл",
+    "Виллы сдаются только на долгосрок (от месяца), посуточной аренды концепция не предполагает; при этом застройщик строит все 17 вилл первой фазы полностью за свой счёт, не дожидаясь предоплаты от клиентов",
+    "Виллы и апартаменты идентичны по условиям",
+    "Виллы строятся только после 100% предоплаты каждого покупателя"
+  ],
+  correct:1,
+  explain:"Виллы — только долгосрочная аренда (от месяца), посуточно не сдаются. Ключевой аргумент для клиента: компания строит все 17 вилл первой фазы полностью за свой счёт, не дожидаясь, пока наберётся 30–35% предоплат от покупателей — это снижает риск задержек стройки."
+},
+
+// ---------------- ОТКРЫТЫЕ ВОПРОСЫ (AI-оценка) ----------------
+{
+  kind:"open",
+  block:"🏗 Инфраструктура",
+  type:"Открытый вопрос",
+  title:"Клиент говорит: «Я смотрел проект дешевле и с видом на море — зачем мне ваш Sunny Moon без вида?» Как вы ответите, опираясь на факты со встречи?",
+  context:"Дайте развёрнутый ответ клиенту (3–5 предложений). Не придумывайте вид на море — его нет, это подтверждено застройщиком.",
+  rubric:"Критерии хорошего ответа: (1) честно подтверждает отсутствие sea view из юнитов, не пытается это скрыть или приукрасить; (2) переключает внимание на реальные преимущества проекта с этой встречи — большие площади относительно рынка, насыщенная эксклюзивная инфраструктура (Top Gym 800 кв.м первый на острове, паддл-корт, кинотеатр, спа, фильтрация воды в третьем здании), rental pool с коэффициентами за вид/этаж, 14 лет компании на рынке и 12 реализованных проектов на Бали; (3) не даёт гарантий доходности и не выдумывает несуществующие факты; (4) звучит как живой ответ клиенту, а не список фактов."
+},
+{
+  kind:"open",
+  block:"💰 Финансы и юрструктура",
+  type:"Открытый вопрос",
+  title:"Клиент интересуется виллой и спрашивает про рост цены до 40–45% капитализации. Как объяснить логику повышений, не создавая нереалистичных ожиданий?",
+  context:"Дайте развёрнутый ответ клиенту (3–5 предложений), опираясь на то, что рассказал застройщик про землю и график повышения цен.",
+  rubric:"Критерии хорошего ответа: (1) верно описывает механику — цена растёт на 5% при продаже каждых 3 вилл, рост нелинейный (зависит от ликвидности конкретной виллы), цель — 40–45% капитализации к завершению; (2) упоминает, что земля пока не полностью в собственности компании — она задепонирована, чанот ожидается примерно через 3 месяца, и это стоит держать в уме как фактор, а не замалчивать; (3) не обещает клиенту точный процент или точную дату следующего повышения как гарантию — формулирует это как ожидаемую динамику, а не зафиксированное обязательство; (4) не придумывает цифры, которых не было на встрече."
+}
+];
+
+let current = 0;
+let selectedAnswers = new Array(questions.length).fill(null);
+let attemptsCount = new Array(questions.length).fill(0);
+let revealed = new Array(questions.length).fill(false);
+let openAnswers = new Array(questions.length).fill(null);
+let openScores = new Array(questions.length).fill(null);
+let openFeedbacks = new Array(questions.length).fill(null);
+let openAnswered = new Array(questions.length).fill(false);
+
+let userEmail = "";
+let attemptNumber = 1;
+let revealMode = false;
+
+const loginScreen = document.getElementById('loginScreen');
+const progressBar = document.getElementById('progressBar');
+const progressLabel = document.getElementById('progressLabel');
+const quizArea = document.getElementById('quizArea');
+const progressFill = document.getElementById('progressFill');
+const dotsEl = document.getElementById('dots');
+const resultCard = document.getElementById('resultCard');
+
+function isValidEmail(v){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+async function startQuiz(){
+  const emailInput = document.getElementById('emailInput');
+  const err = document.getElementById('loginError');
+  const email = emailInput.value.trim().toLowerCase();
+
+  if(!isValidEmail(email)){
+    err.classList.add('show');
+    return;
+  }
+  err.classList.remove('show');
+  userEmail = email;
+
+  const startBtn = document.getElementById('startBtn');
+  startBtn.disabled = true;
+  startBtn.textContent = 'Загружаю…';
+
+  try{
+    const res = await fetch(STATS_URL + '?email=' + encodeURIComponent(userEmail) + '&quiz=' + encodeURIComponent(QUIZ_NAME));
+    const data = await res.json();
+    attemptNumber = (data.attempts || 0) + 1;
+  } catch(e2){
+    attemptNumber = 1;
+  }
+
+  revealMode = attemptNumber >= 3;
+
+  loginScreen.style.display = 'none';
+  progressBar.style.display = 'block';
+  progressLabel.style.display = 'block';
+
+  renderQuestion();
+}
+
+function buildDots(){
+  dotsEl.innerHTML = '';
+  questions.forEach((q,i)=>{
+    const d = document.createElement('div');
+    const isDone = q.kind === 'open' ? openAnswered[i] : selectedAnswers[i]!==null;
+    d.className = 'dot' + (q.kind === 'open' ? ' open-type' : '') + (isDone ? ' done' : '') + (i===current ? ' current':'');
+    dotsEl.appendChild(d);
+  });
+}
+
+function renderQuestion(){
+  quizArea.innerHTML = '';
+  resultCard.classList.remove('active');
+  const q = questions[current];
+  if(q.kind === 'open'){ renderOpenQuestion(q); } else { renderClosedQuestion(q); }
+  updateProgress();
+}
+
+function renderClosedQuestion(q){
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const tag = document.createElement('div');
+  tag.className = 'block-tag';
+  tag.textContent = q.block;
+  card.appendChild(tag);
+
+  const qtype = document.createElement('div');
+  qtype.className = 'q-type';
+  qtype.textContent = q.type + ' · Вопрос ' + (current+1) + ' из ' + questions.length;
+  card.appendChild(qtype);
+
+  const title = document.createElement('div');
+  title.className = 'q-title';
+  title.textContent = q.title;
+  card.appendChild(title);
+
+  if(q.context){
+    const ctx = document.createElement('div');
+    ctx.className = 'q-context';
+    ctx.textContent = q.context;
+    card.appendChild(ctx);
+  }
+
+  const opts = document.createElement('div');
+  opts.className = 'options';
+  q.options.forEach((optText, idx)=>{
+    const b = document.createElement('button');
+    b.className = 'option';
+    b.textContent = optText;
+    b.onclick = ()=>handleAnswer(idx);
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+
+  const fb = document.createElement('div');
+  fb.className = 'feedback';
+  fb.id = 'feedback';
+  card.appendChild(fb);
+
+  const note = document.createElement('div');
+  note.className = 'attempts-note';
+  note.id = 'attemptsNote';
+  card.appendChild(note);
+
+  card.appendChild(buildNavRow());
+  quizArea.appendChild(card);
+
+  if(selectedAnswers[current]!==null){ restoreClosedState(); }
+  else if(revealMode){
+    // 3rd+ attempt overall: still requires interaction, but auto-unlocks after first click same as normal flow
+  }
+  document.getElementById('nextBtn').disabled = selectedAnswers[current]===null;
+}
+
+function renderOpenQuestion(q){
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const tag = document.createElement('div');
+  tag.className = 'block-tag';
+  tag.textContent = q.block;
+  card.appendChild(tag);
+
+  const qtype = document.createElement('div');
+  qtype.className = 'q-type';
+  qtype.textContent = q.type + ' · Вопрос ' + (current+1) + ' из ' + questions.length;
+  card.appendChild(qtype);
+
+  const title = document.createElement('div');
+  title.className = 'q-title';
+  title.textContent = q.title;
+  card.appendChild(title);
+
+  if(q.context){
+    const ctx = document.createElement('div');
+    ctx.className = 'q-context';
+    ctx.textContent = q.context;
+    card.appendChild(ctx);
+  }
+
+  const ta = document.createElement('textarea');
+  ta.className = 'open-textarea';
+  ta.id = 'openInput';
+  ta.placeholder = 'Напишите ответ клиенту здесь…';
+  if(openAnswers[current]) ta.value = openAnswers[current];
+  card.appendChild(ta);
+
+  const checkBtn = document.createElement('button');
+  checkBtn.className = 'btn primary';
+  checkBtn.id = 'checkBtn';
+  checkBtn.textContent = 'Проверить ответ (AI)';
+  checkBtn.onclick = checkOpenAnswer;
+  card.appendChild(checkBtn);
+
+  const fb = document.createElement('div');
+  fb.className = 'feedback';
+  fb.id = 'feedback';
+  card.appendChild(fb);
+
+  card.appendChild(buildNavRow());
+  quizArea.appendChild(card);
+
+  if(openAnswered[current]){
+    ta.disabled = true;
+    checkBtn.style.display = 'none';
+    const fbEl = document.getElementById('feedback');
+    if(openScores[current] !== null){
+      fbEl.className = 'feedback show ' + (openScores[current] >= 2 ? 'ok' : 'warn');
+      fbEl.innerHTML = '<b>Оценка AI: ' + openScores[current] + '/3</b><br>' + openFeedbacks[current];
+    } else {
+      fbEl.className = 'feedback show warn';
+      fbEl.textContent = openFeedbacks[current] || 'Не оценено автоматически.';
+    }
+  }
+  document.getElementById('nextBtn').disabled = !openAnswered[current];
+}
+
+function buildNavRow(){
+  const nav = document.createElement('div');
+  nav.className = 'nav-row';
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'btn';
+  prevBtn.textContent = '← Назад';
+  prevBtn.disabled = current===0;
+  prevBtn.onclick = ()=>{ current--; renderQuestion(); };
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'btn primary';
+  nextBtn.id = 'nextBtn';
+  nextBtn.textContent = current===questions.length-1 ? 'Завершить' : 'Далее →';
+  nextBtn.onclick = ()=>{
+    if(current===questions.length-1){ showResults(); }
+    else { current++; renderQuestion(); }
+  };
+  nav.appendChild(prevBtn);
+  nav.appendChild(nextBtn);
+  return nav;
+}
+
+function handleAnswer(idx){
+  const q = questions[current];
+  const optButtons = document.querySelectorAll('.option');
+  const isCorrect = idx === q.correct;
+
+  if(selectedAnswers[current]===null || !revealed[current]){
+    attemptsCount[current]++;
+  }
+  selectedAnswers[current] = idx;
+
+  const fb = document.getElementById('feedback');
+  const note = document.getElementById('attemptsNote');
+
+  if(isCorrect){
+    optButtons[idx].classList.add('correct');
+    optButtons.forEach((b,i)=>{ if(i!==idx) b.disabled = true; });
+    fb.className = 'feedback show ok';
+    fb.textContent = '✓ Верно. ' + q.explain;
+    revealed[current] = true;
+  } else {
+    optButtons[idx].classList.add('incorrect');
+    optButtons[idx].disabled = true;
+
+    if(attemptsCount[current] >= 3 || revealMode){
+      optButtons[q.correct].classList.add('correct');
+      optButtons.forEach(b=>b.disabled = true);
+      fb.className = 'feedback show ok';
+      fb.textContent = '✓ Правильный ответ выделен. ' + q.explain;
+      revealed[current] = true;
+    } else {
+      fb.className = 'feedback show no';
+      fb.textContent = 'Не совсем. Попробуйте ещё раз.';
+      note.className = 'attempts-note show';
+      note.textContent = 'Попытка ' + attemptsCount[current] + ' из 3';
+    }
+  }
+
+  document.getElementById('nextBtn').disabled = false;
+  buildDots();
+}
+
+function restoreClosedState(){
+  const q = questions[current];
+  const optButtons = document.querySelectorAll('.option');
+  const fb = document.getElementById('feedback');
+  const note = document.getElementById('attemptsNote');
+  const chosen = selectedAnswers[current];
+
+  if(revealed[current]){
+    optButtons[q.correct].classList.add('correct');
+    optButtons.forEach(b=>b.disabled = true);
+    fb.className = 'feedback show ok';
+    fb.textContent = (chosen===q.correct ? '✓ Верно. ' : '✓ Правильный ответ выделен. ') + q.explain;
+  } else if(chosen!==null){
+    optButtons[chosen].classList.add('incorrect');
+    optButtons[chosen].disabled = true;
+    fb.className = 'feedback show no';
+    fb.textContent = 'Не совсем. Попробуйте ещё раз.';
+    note.className = 'attempts-note show';
+    note.textContent = 'Попытка ' + attemptsCount[current] + ' из 3';
+  }
+}
+
+async function checkOpenAnswer(){
+  const q = questions[current];
+  const ta = document.getElementById('openInput');
+  const text = ta.value.trim();
+  if(!text){
+    alert('Сначала напишите ответ.');
+    return;
+  }
+  openAnswers[current] = text;
+
+  const btn = document.getElementById('checkBtn');
+  btn.disabled = true;
+  btn.textContent = 'Проверяю…';
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show warn';
+  fb.textContent = 'Отправляю ответ на AI-проверку…';
+
+  try{
+    const promptText = "Ты проверяешь открытый ответ брокера в тесте по проекту Sunny Moon (Пхукет), Legion Real Estate.\n\n" +
+      q.rubric + "\n\n" +
+      'Ответ брокера:\n"""\n' + text + '\n"""\n\n' +
+      'Оцени ответ по критериям выше. Верни ТОЛЬКО JSON без markdown-разметки и без преамбулы, в формате:\n' +
+      '{"score": число от 0 до 3, "passed": true или false (true если score >= 2), "feedback": "короткий комментарий на русском 2-3 предложения — что засчитано, чего не хватает или что стоит поправить"}';
+
+    const response = await fetch(AI_PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [ { role: "user", content: promptText } ]
+      })
+    });
+    const data = await response.json();
+    const textBlock = data.content.find(b => b.type === "text");
+    const cleaned = textBlock.text.replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(cleaned);
+
+    openScores[current] = parsed.score;
+    openFeedbacks[current] = parsed.feedback;
+    openAnswered[current] = true;
+
+    fb.className = 'feedback show ' + (parsed.score >= 2 ? 'ok' : 'warn');
+    fb.innerHTML = '<b>Оценка AI: ' + parsed.score + '/3</b><br>' + parsed.feedback;
+
+    ta.disabled = true;
+    btn.style.display = 'none';
+    document.getElementById('nextBtn').disabled = false;
+    buildDots();
+  } catch(err){
+    fb.className = 'feedback show no';
+    fb.textContent = 'Не получилось проверить автоматически (возможно, страница открыта не с GitHub Pages, где настроен доступ). Ответ сохранён — можно продолжить дальше.';
+    btn.disabled = false;
+    btn.textContent = 'Проверить ответ (AI)';
+    openAnswered[current] = true;
+    openScores[current] = null;
+    openFeedbacks[current] = 'Не оценено автоматически — требуется ручная проверка.';
+    document.getElementById('nextBtn').disabled = false;
+    buildDots();
+  }
+}
+
+function updateProgress(){
+  progressFill.style.width = ((current+1)/questions.length*100) + '%';
+  progressLabel.textContent = 'Вопрос ' + (current+1) + ' из ' + questions.length;
+  buildDots();
+}
+
+async function showResults(){
+  quizArea.innerHTML = '';
+  resultCard.classList.add('active');
+
+  let firstTryCount = 0;
+  let closedTotal = 0;
+  let openTotal = 0;
+  let openMax = 0;
+  const blockStats = {};
+
+  questions.forEach((q,i)=>{
+    if(!blockStats[q.block]) blockStats[q.block] = {total:0, firstTry:0};
+    if(q.kind === 'closed'){
+      closedTotal++;
+      blockStats[q.block].total++;
+      const gotFirstTry = attemptsCount[i]===1 && selectedAnswers[i]===q.correct;
+      if(gotFirstTry) firstTryCount++;
+      if(gotFirstTry) blockStats[q.block].firstTry++;
+    } else {
+      openMax += 3;
+      if(openScores[i] !== null) openTotal += openScores[i];
+    }
+  });
+
+  document.getElementById('resultScore').textContent = firstTryCount + ' / ' + closedTotal;
+
+  const pct = Math.round(firstTryCount/closedTotal*100);
+  let msg = '';
+  if(pct >= 85) msg = 'Отличный результат по закрытым вопросам.';
+  else if(pct >= 60) msg = 'Хороший результат, но есть темы, которые стоит повторить.';
+  else msg = 'Стоит ещё раз пройти материал по проекту — многое ещё не закрепилось.';
+  document.getElementById('resultMsg').textContent = 'С первой попытки правильно: ' + firstTryCount + ' из ' + closedTotal + ' (' + pct + '%). ' + msg;
+  document.getElementById('resultOpen').textContent = 'По открытым вопросам: ' + openTotal + ' из ' + openMax + ' баллов (AI-оценка).';
+
+  const breakdown = document.getElementById('resultBreakdown');
+  breakdown.innerHTML = '';
+  Object.keys(blockStats).forEach(block=>{
+    const s = blockStats[block];
+    if(s.total === 0) return;
+    const row = document.createElement('div');
+    row.innerHTML = '<span>' + block + '</span><span>' + s.firstTry + ' / ' + s.total + '</span>';
+    breakdown.appendChild(row);
+  });
+
+  progressFill.style.width = '100%';
+  progressLabel.textContent = 'Готово';
+
+  // Save to stats sheet
+  const saveStatus = document.getElementById('saveStatus');
+  saveStatus.textContent = 'Сохраняю результат…';
+  try{
+    const openIdxs = [];
+    questions.forEach((q,i)=>{ if(q.kind==='open') openIdxs.push(i); });
+
+    await fetch(STATS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: userEmail,
+        quiz: QUIZ_NAME,
+        attempt: attemptNumber,
+        mcqScore: firstTryCount,
+        mcqPercent: pct,
+        open1Answer: openAnswers[openIdxs[0]] || "",
+        open1Score: openScores[openIdxs[0]] !== null ? openScores[openIdxs[0]] : "",
+        open2Answer: openAnswers[openIdxs[1]] || "",
+        open2Score: openScores[openIdxs[1]] !== null ? openScores[openIdxs[1]] : ""
+      })
+    });
+    saveStatus.textContent = 'Результат сохранён в статистику.';
+  } catch(e){
+    saveStatus.textContent = 'Не удалось сохранить результат в статистику (соединение). Попробуйте пройти тест ещё раз позже.';
+  }
+}
+
+function restartQuiz(){
+  current = 0;
+  selectedAnswers = new Array(questions.length).fill(null);
+  attemptsCount = new Array(questions.length).fill(0);
+  revealed = new Array(questions.length).fill(false);
+  openAnswers = new Array(questions.length).fill(null);
+  openScores = new Array(questions.length).fill(null);
+  openFeedbacks = new Array(questions.length).fill(null);
+  openAnswered = new Array(questions.length).fill(false);
+  loginScreen.style.display = 'block';
+  progressBar.style.display = 'none';
+  progressLabel.style.display = 'none';
+  quizArea.innerHTML = '';
+  resultCard.classList.remove('active');
+  dotsEl.innerHTML = '';
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('startBtn').textContent = 'Начать проверку';
+}
+</script>
+</body>
+</html>
