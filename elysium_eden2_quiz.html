@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legion Real Estate — Проверка знаний: Elysium / Eden 2 (Бали)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1a1a1a;
+    --panel:#232323;
+    --panel2:#2a2a2a;
+    --gold:#c9a961;
+    --gold-dark:#9C7D51;
+    --text:#f0ece2;
+    --text-dim:#a8a29a;
+    --good:#7cb88f;
+    --bad:#c97a6b;
+    --warn:#c9a961;
+    --border:#3a3733;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+  header{text-align:center;margin-bottom:28px;}
+  h1{
+    font-family:'Playfair Display',serif;
+    color:var(--gold);
+    font-size:24px;
+    margin:0 0 8px;
+    letter-spacing:.3px;
+  }
+  .subtitle{color:var(--text-dim);font-size:14px;line-height:1.5;}
+  .blocks-legend{
+    display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px;
+  }
+  .legend-item{
+    font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);
+    color:var(--text-dim);
+  }
+
+  .login-card{
+    background:var(--panel);
+    border:1px solid var(--gold-dark);
+    border-radius:12px;
+    padding:32px 24px;
+    text-align:center;
+  }
+  .login-card h2{
+    font-family:'Playfair Display',serif;
+    color:var(--gold);
+    font-size:19px;
+    margin:0 0 14px;
+  }
+  .login-hint{color:var(--text-dim);font-size:13px;line-height:1.6;margin-bottom:20px;}
+  .login-input{
+    width:100%;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:12px 14px;
+    border-radius:8px;
+    font-size:14px;
+    font-family:'Inter',sans-serif;
+    margin-bottom:8px;
+  }
+  .login-input:focus{outline:none;border-color:var(--gold-dark);}
+  .login-error{color:var(--bad);font-size:12.5px;margin-bottom:10px;display:none;text-align:left;}
+  .login-error.show{display:block;}
+
+  .progress-bar{
+    height:4px;background:var(--panel2);border-radius:4px;overflow:hidden;margin:20px 0 4px;
+    display:none;
+  }
+  .progress-fill{height:100%;background:var(--gold);width:0%;transition:width .3s;}
+  .progress-label{font-size:12px;color:var(--text-dim);text-align:right;margin-bottom:20px;display:none;}
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:24px 22px;
+    margin-bottom:18px;
+  }
+  .block-tag{
+    display:inline-block;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    color:var(--gold);
+    border:1px solid var(--gold-dark);
+    padding:3px 10px;
+    border-radius:20px;
+    margin-bottom:14px;
+  }
+  .q-type{
+    font-size:11px;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;
+  }
+  .q-title{
+    font-size:17px;line-height:1.5;margin:0 0 6px;font-weight:600;
+  }
+  .q-context{
+    font-size:14px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;
+    background:var(--panel2);border-left:3px solid var(--gold-dark);padding:12px 14px;border-radius:6px;
+    white-space:pre-line;
+  }
+  .options{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+  .option{
+    text-align:left;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:13px 16px;
+    border-radius:8px;
+    font-size:14.5px;
+    cursor:pointer;
+    line-height:1.45;
+    transition:border-color .15s, background .15s;
+    font-family:'Inter',sans-serif;
+  }
+  .option:hover{border-color:var(--gold-dark);}
+  .option.correct{border-color:var(--good);background:rgba(124,184,143,.12);}
+  .option.incorrect{border-color:var(--bad);background:rgba(201,122,107,.12);}
+  .option:disabled{cursor:default;}
+
+  .open-textarea{
+    width:100%;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:13px 14px;
+    border-radius:8px;
+    font-size:14.5px;
+    font-family:'Inter',sans-serif;
+    min-height:110px;
+    resize:vertical;
+    margin-bottom:12px;
+  }
+  .open-textarea:focus{outline:none;border-color:var(--gold-dark);}
+  .open-textarea:disabled{opacity:.7;}
+
+  .feedback{
+    font-size:13.5px;line-height:1.6;padding:12px 14px;border-radius:8px;margin-top:6px;display:none;
+  }
+  .feedback.show{display:block;}
+  .feedback.ok{background:rgba(124,184,143,.1);border:1px solid rgba(124,184,143,.35);}
+  .feedback.no{background:rgba(201,122,107,.1);border:1px solid rgba(201,122,107,.35);}
+  .feedback.warn{background:rgba(201,169,97,.1);border:1px solid rgba(201,169,97,.35);}
+  .attempts-note{font-size:12px;color:var(--text-dim);margin-top:8px;display:none;}
+  .attempts-note.show{display:block;}
+
+  .nav-row{display:flex;justify-content:space-between;margin-top:18px;}
+  .btn{
+    font-family:'Inter',sans-serif;
+    background:transparent;
+    border:1px solid var(--gold-dark);
+    color:var(--gold);
+    padding:10px 20px;
+    border-radius:8px;
+    font-size:14px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .btn:hover{background:rgba(201,169,97,.1);}
+  .btn:disabled{opacity:.3;cursor:default;}
+  .btn.primary{background:var(--gold);color:#1a1a1a;border-color:var(--gold);}
+  .btn.primary:hover{background:#dab975;}
+
+  .result-card{
+    background:var(--panel);
+    border:1px solid var(--gold-dark);
+    border-radius:12px;
+    padding:32px 24px;
+    text-align:center;
+    display:none;
+  }
+  .result-card.active{display:block;}
+  .result-score{
+    font-family:'Playfair Display',serif;
+    font-size:40px;color:var(--gold);margin:6px 0;
+  }
+  .result-msg{color:var(--text-dim);font-size:14px;margin-bottom:14px;line-height:1.6;}
+  .result-open{color:var(--text-dim);font-size:13.5px;margin-bottom:16px;}
+  .result-breakdown{
+    text-align:left;background:var(--panel2);border-radius:8px;padding:16px 18px;margin:18px 0;font-size:13.5px;
+  }
+  .result-breakdown div{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);}
+  .result-breakdown div:last-child{border-bottom:none;}
+  .save-status{font-size:12px;color:var(--text-dim);margin-top:10px;}
+
+  .dots{display:flex;justify-content:center;gap:6px;margin-top:16px;flex-wrap:wrap;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--border);}
+  .dot.done{background:var(--gold-dark);}
+  .dot.current{background:var(--gold);}
+  .dot.open-type{border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Проверка знаний · Elysium / Eden 2 (Бали)</h1>
+    <div class="subtitle">По итогам обучающей встречи с застройщиком (Перереран и Нусадуа)</div>
+    <div class="blocks-legend">
+      <span class="legend-item">🏢 Компания и репутация</span>
+      <span class="legend-item">🏗 Проекты и стройка</span>
+      <span class="legend-item">💰 Финансы и доходность</span>
+      <span class="legend-item">📜 Условия и сервис</span>
+    </div>
+  </header>
+
+  <div class="login-card" id="loginScreen">
+    <h2>Введите email, чтобы начать</h2>
+    <div class="login-hint">15 вопросов (13 закрытых + 2 открытых с AI-оценкой) · ориентировочно 12-15 минут.<br>По email считаются попытки прохождения и сохраняется статистика. С 3-й попытки правильные ответы подсвечиваются сразу.</div>
+    <input type="email" class="login-input" id="emailInput" placeholder="you@legion.com" autocomplete="email">
+    <div class="login-error" id="loginError">Введите корректный email.</div>
+    <button class="btn primary" id="startBtn" onclick="startQuiz()" style="width:100%;">Начать проверку</button>
+  </div>
+
+  <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">Вопрос 1 из 15</div>
+  <div class="dots" id="dots"></div>
+
+  <div id="quizArea"></div>
+
+  <div class="result-card" id="resultCard">
+    <div class="q-type">Результат</div>
+    <div class="result-score" id="resultScore">0 / 13</div>
+    <div class="result-msg" id="resultMsg"></div>
+    <div class="result-open" id="resultOpen"></div>
+    <div class="result-breakdown" id="resultBreakdown"></div>
+    <div class="result-breakdown" id="wrongQuestionsBox" style="display:none;"></div>
+    <button class="btn primary" onclick="restartQuiz()">Пройти ещё раз</button>
+    <div class="save-status" id="saveStatus"></div>
+  </div>
+</div>
+
+<script>
+// ====== ИНФРАСТРУКТУРА (тот же воркер и та же таблица, что и остальные тесты) ======
+const AI_PROXY_URL = "https://biom-quiz-proxy.legionrealestate95.workers.dev";
+const STATS_URL = "https://script.google.com/macros/s/AKfycbwgCDWwGVDCy020Y0OpQPiDG9PZ2mKCD55V6hHA-bB3Z1H4SEsBhZWkLvoB8O7NKQCZ/exec";
+const QUIZ_NAME = "Elysium / Eden 2 (Бали)";
+
+const questions = [
+// ---------------- 🏢 КОМПАНИЯ И РЕПУТАЦИЯ ----------------
+{
+  kind:"closed",
+  block:"🏢 Компания и репутация",
+  type:"Вопрос",
+  title:"С какого года компания на рынке и что она из себя представляет по масштабу портфеля?",
+  context:"",
+  options:[
+    "Основана в 2016 году как управляющая компания, стройка началась с 2019-го; сейчас 16 полностью завершённых проектов с документами и SLF, ещё 4 в стройке",
+    "Основана в 2019 году сразу как девелоперская компания; за это время построено 6 проектов, ещё 3 в разработке, документы оформляются по каждому отдельно",
+    "Основана в 2021 году, специализируется на управлении чужими объектами; собственных завершённых проектов пока нет, всё в партнёрстве с другими застройщиками",
+    "Основана в 2016 году, но стройку так и не начала; компания работает исключительно как агентство по перепродаже готовой недвижимости других застройщиков"
+  ],
+  correct:0,
+  explain:"Компания на рынке с 2016 года как управляющая компания, стройку начали с 2019-го. За это время накопили большую клиентскую базу и 16 полностью завершённых проектов (с разрешениями и SLF), плюс 4 сейчас в стройке. В основном объекты в Чангу, один — в Убуде."
+},
+{
+  kind:"closed",
+  block:"🏢 Компания и репутация",
+  type:"Вопрос",
+  title:"Что конкретно даёт партнёрство с Marriott, о котором говорит застройщик?",
+  context:"",
+  options:[
+    "Marriott выкупила долю в управляющей компании и теперь совместно с ней принимает решения по ценообразованию на всех объектах портфеля",
+    "Виллы компании размещены на сайте Marriott «Homes and Villas», что расширяет базу бронирований; при этом управляет объектами по-прежнему собственная управляющая компания, а не отельный оператор",
+    "Marriott полностью взяла на себя операционное управление всеми виллами компании, включая уборку, ресепшн и работу с гостями на местах",
+    "Партнёрство с Marriott существует только на бумаге и пока не привело ни к каким изменениям в бронированиях или сервисе объектов"
+  ],
+  correct:1,
+  explain:"С конца 2024 года у компании партнёрство с Marriott: весь 2024 год ушёл на подгонку сервиса под их стандарты, после чего виллы стали доступны для бронирования на сайте Marriott Homes and Villas. Это даёт доступ к клиентской базе Marriott, но управляет объектами по-прежнему собственная управляющая компания — не отельный оператор."
+},
+{
+  kind:"closed",
+  block:"🏢 Компания и репутация",
+  type:"Кейс",
+  title:"Клиент спрашивает, откуда вообще берутся бронирования на виллы. Какой расклад источников назвал застройщик?",
+  context:"",
+  options:[
+    "Практически все бронирования, около 90%, идут напрямую с сайта Booking.com, остальное — через агентскую сеть и рекламу в соцсетях",
+    "Основной канал — контекстная реклама в Google, на неё приходится больше половины всех заявок, остальное дают партнёрские сайты",
+    "Большая часть бронирований идёт с Airbnb и Booking, около 30% приносит Instagram Direct, ещё около 10% — риэлторская сеть компании",
+    "Все бронирования поступают только через офлайн-агентства и партнёрские турфирмы, digital-каналы почти не используются"
+  ],
+  correct:2,
+  explain:"Большая часть бронирований идёт с Airbnb и Booking, около 30% приносит Instagram Direct, ещё около 10% — риэлторская сеть компании. Отдельно на вопрос про долю именно Booking.com застройщик назвал примерно 10%, уточнив, что точную цифру нужно будет посмотреть."
+},
+
+// ---------------- 🏗 ПРОЕКТЫ И СТРОЙКА ----------------
+{
+  kind:"closed",
+  block:"🏗 Проекты и стройка",
+  type:"Вопрос",
+  title:"Где находится Elysium и что там с землёй и видом, что защищает его от застройки соседями?",
+  context:"",
+  options:[
+    "В Убуде, до ближайшего пляжа около часа на машине, вид на рисовые террасы ничем не защищён от будущей застройки",
+    "В Нусадуа рядом с гольф-клубом, вид на океан гарантирован договором с соседним отельным оператором на 30 лет",
+    "В Чангу в центре туристической зоны, вид частично перекрыт соседними виллами, но застройщик обещает построить парк напротив",
+    "В Переренане, 600 метров (8 минут пешком) до пляжа; с одной стороны участка река, с другой — дорога, и рядом нет ни одного участка под легальную четырёхэтажку"
+  ],
+  correct:3,
+  explain:"Elysium находится в Переренане, 600 метров (8 минут пешком) до пляжа. С одной стороны участка река, с другой — дорога. По словам застройщика, вокруг нет ни одного участка, на котором можно было бы законно построить четырёхэтажное здание — земля раздроблена между разными собственниками, объединить её сложно."
+},
+{
+  kind:"closed",
+  block:"🏗 Проекты и стройка",
+  type:"Вопрос",
+  title:"Как обстоят дела с землёй и разрешениями по всем 16 завершённым и текущим проектам компании?",
+  context:"",
+  options:[
+    "Все проекты — только на розовой (не зелёной) земле, все объекты в стройке идут строго по PBG, а фрихолда сейчас нет вообще — только лизхолд",
+    "Половина проектов построена на зелёной земле без разрешений, вторая половина — на розовой земле с полным пакетом документов",
+    "PBG получают только на этапе сдачи объекта в эксплуатацию, а на этапе продаж разрешение по закону не требуется",
+    "Фрихолд доступен по большинству проектов компании, а лизхолд применяется только к нескольким старым объектам до 2019 года"
+  ],
+  correct:0,
+  explain:"Застройщик прямо подчеркнул: зелёной земли под проектами нет вообще, только розовая. Все объекты, которые сейчас в стройке, идут по PBG без исключений. Фрихолда пока нет — компания работает над этим, но пока все предложения только в лизхолде."
+},
+{
+  kind:"closed",
+  block:"🏗 Проекты и стройка",
+  type:"Кейс",
+  title:"Клиент спрашивает про сроки сдачи Eden 2 и его стадию стройки на момент встречи. Что ответить точно?",
+  context:"",
+  options:[
+    "Весь комплекс, включая виллы и апартаменты, уже сдан в эксплуатацию и полностью заселён текущими покупателями",
+    "Виллы планируют сдать к концу 2027 года, апартаменты — примерно к марту 2028-го; на момент встречи залиты чаши бассейнов и подпорные стены, PBG получен на первую ступень",
+    "Сроки сдачи пока не определены, разрешения не поданы, а стройка на площадке ещё не начиналась",
+    "Виллы и апартаменты сдаются одновременно, уже в конце этого года, стройка практически завершена по всему комплексу"
+  ],
+  correct:1,
+  explain:"Виллы Eden 2 планируют ввести в эксплуатацию к концу 2027 года, апартаменты — позже, примерно к марту 2028-го. На момент встречи по прогрессу: залиты чаши бассейнов и подпорные стены, PBG получен на первую ступень, на вторую — в процессе (третья объединена со второй)."
+},
+
+// ---------------- 💰 ФИНАНСЫ И ДОХОДНОСТЬ ----------------
+{
+  kind:"closed",
+  block:"💰 Финансы и доходность",
+  type:"Вопрос",
+  title:"На каких цифрах строится пример доходности по вилле Aquamarine (3 спальни)?",
+  context:"",
+  options:[
+    "Гарантированная доходность 20% годовых закреплена в договоре независимо от цены покупки и текущей загрузки объекта",
+    "Доходность по этому объекту вообще не считалась, застройщик работает только с прогнозными, а не фактическими цифрами",
+    "Средняя выручка около $7900-8000 в месяц, среднесуточная ставка $288, чистый доход около $5300 в месяц; при цене входа около $400 тысяч это ориентировочно 16% годовых",
+    "Средний чистый доход составляет фиксированные $1000 в месяц независимо от цены покупки виллы и сезона"
+  ],
+  correct:2,
+  explain:"Для 3-спальной виллы Aquamarine (район Боди-фэктори, Чангу) застройщик показал факт: средняя выручка $7900-8000/мес, ADR $288, чистый доход около $5300/мес. При средней цене входа $400 тыс. это около 16% годовых (точнее 15,9%) — при этом для тех, кто покупал дешевле (например, за $350 тыс.), доходность в процентах выше."
+},
+{
+  kind:"closed",
+  block:"💰 Финансы и доходность",
+  type:"Вопрос",
+  title:"Как распределяется выручка от аренды между инвестором и управляющей компанией, и чем это выгоднее отельного оператора?",
+  context:"",
+  options:[
+    "Инвестор получает только 30% выручки, а управляющая компания забирает оставшиеся 70% на собственные операционные нужды",
+    "Схема распределения выручки полностью идентична схеме отельных операторов вроде Vithm или Radisson, разницы в процентах нет",
+    "Инвестор получает 100% выручки от аренды, а управляющая компания работает бесплатно за счёт комиссии от застройщика",
+    "Инвестор получает 65% выручки (управляющая компания забирает 18% вознаграждения плюс 17% расходов); у отельных операторов вроде Vithm забирают 60-70%, и доходность там нечем подтвердить"
+  ],
+  correct:3,
+  explain:"От выручки инвестор получает 65%, управляющая компания забирает 35% (18% вознаграждение + 17% расходы). Застройщик прямо сравнил это с предложением отельного оператора (Vithm), который забирал бы 60-70% от выручки — при таких условиях реальная доходность падала до 7-8%, и её ещё нечем было бы подтвердить цифрами."
+},
+{
+  kind:"closed",
+  block:"💰 Финансы и доходность",
+  type:"Вопрос",
+  title:"Какая структура земли (лизхолд/фрихолд) действует по проектам компании, и чем отличаются условия Elysium?",
+  context:"",
+  options:[
+    "Стандартно лизхолд 30 лет плюс 30 лет гарантированного продления; на Elysium условия отличаются — 20 лет гарантированного продления и отдельно 10 лет приоритетного",
+    "Везде действует полный фрихолд без ограничений, а лизхолд компания перестала использовать ещё в 2022 году",
+    "Лизхолд оформляется только на 10 лет без права продления, независимо от проекта и договорённостей с лендлордом",
+    "Земля арендуется напрямую у государства на 99 лет без права выкупа, продление возможно только через решение суда"
+  ],
+  correct:0,
+  explain:"Фрихолда сейчас нет ни по одному проекту, стандартная модель — лизхолд 30 лет + 30 лет гарантированного продления. На Elysium условия сформулированы иначе: 20 лет гарантированного продления и отдельно 10 лет приоритетного. Продление, если что, можно инициировать и раньше срока — так уже делали на Оазис 3 и Аквамарин 1."
+},
+{
+  kind:"closed",
+  block:"💰 Финансы и доходность",
+  type:"Вопрос",
+  title:"Как устроена рассрочка и что защищает покупателя от давления по срокам оплаты?",
+  context:"",
+  options:[
+    "Первый взнос всегда составляет 50% от стоимости объекта, а вся оставшаяся сумма вносится единовременно на момент сдачи в эксплуатацию",
+    "Первый взнос от 10% даже на этапе стройки, рассрочка растянута на 3 года; платежи привязаны и к датам, и к этапам стройки — если этап не наступил, платить не обязательно",
+    "Полная оплата вносится единовременно при подписании договора, рассрочка доступна только для юридических лиц и по отдельному согласованию",
+    "Рассрочка возможна исключительно для уже готовых объектов, для строящихся допустима только полная предоплата стоимости юнита"
+  ],
+  correct:1,
+  explain:"Первый взнос от 10%, даже если объект ещё строится, рассрочка растягивается на 3 года. Платежи привязаны одновременно к датам и к этапам стройки: если дата платежа подошла, а этап (например, фундамент) ещё не наступил, клиент вправе не вносить платёж — это защищает его от риска платить за не выполненные работы."
+},
+
+// ---------------- 📜 УСЛОВИЯ И СЕРВИС ----------------
+{
+  kind:"closed",
+  block:"📜 Условия и сервис",
+  type:"Вопрос",
+  title:"Где находятся офисы компании и какие языки покрывают её менеджеры?",
+  context:"",
+  options:[
+    "Единственный офис компании находится в Убуде, все менеджеры говорят только на индонезийском и русском языках",
+    "Офисов у компании нет вообще, все встречи с клиентами проходят исключительно в формате видеозвонков",
+    "Два офиса — в Умаласе и в Чангу (на шорткате); в штате есть англо-, франко- и украиноговорящие менеджеры, наличие польскоговорящего уточняется",
+    "Офисы компании расположены только за пределами Бали, на острове представительства пока не открыты"
+  ],
+  correct:2,
+  explain:"У компании два офиса — в Умаласе и в Чангу (прямо на шорткате), куда можно привозить клиентов. В штате есть менеджеры, говорящие по-английски, по-французски и по-украински (Сергей); наличие польскоговорящего сотрудника застройщик обещал уточнить отдельно."
+},
+{
+  kind:"closed",
+  block:"📜 Условия и сервис",
+  type:"Кейс",
+  title:"Клиент из проекта в Нусадуа спрашивает: можно ли просто жить в своей вилле, а не сдавать её? Есть ли ограничения, как у отельных операторов?",
+  context:"",
+  options:[
+    "Владельцу разрешено жить в своей вилле не более 14 дней в году, причём только в низкий сезон",
+    "Проживание в собственной вилле полностью запрещено, пока объект находится в программе аренды",
+    "Жить в своей вилле можно только в высокий сезон, в остальное время объект обязателен к сдаче в аренду",
+    "Ограничений по проживанию нет вообще — это его недвижимость, жить можно сколько угодно; лимиты по дням характерны именно для отельных операторов, а не для этой управляющей компании"
+  ],
+  correct:3,
+  explain:"Застройщик прямо ответил: ограничений по проживанию у управляющей компании нет вообще, в отличие от отельных операторов, которые обычно позволяют владельцу жить в собственном юните всего 2-3 недели или месяц в году. Это один из аргументов в пользу управляющей компании против брендового отельного оператора."
+},
+{
+  kind:"closed",
+  block:"📜 Условия и сервис",
+  type:"Вопрос",
+  title:"Какие дожимные плюшки может согласовать застройщик вместо скидки на объект?",
+  context:"",
+  options:[
+    "Бесплатное управление недвижимостью на 6-12 месяцев, компенсация стоимости авиабилета из суммы покупки, проживание в объекте до недели и тестовое проживание в готовых виллах",
+    "Скидка на объект согласовывается легко по первой же просьбе клиента, вне зависимости от суммы и условий предоплаты",
+    "Компания предлагает только денежный кэшбэк на банковскую карту клиента, размер которого зависит от типа выбранного юнита",
+    "Никаких дополнительных условий, скидок или бонусов компания клиентам не предоставляет ни при каких обстоятельствах, позиция здесь жёсткая"
+  ],
+  correct:0,
+  explain:"Скидку на сам объект компания принципиально не даёт (кроме случаев крупной предоплаты 50-70% сразу). Вместо этого — гибкий набор плюшек: бесплатное управление недвижимостью от УК на 6-12 месяцев (экономия $7-10 тыс.), учёт стоимости авиабилета в сумме покупки, проживание в объекте на срок до недели, и возможность пожить сутки-двое в готовом объекте перед покупкой."
+},
+
+// ---------------- ОТКРЫТЫЕ ВОПРОСЫ (AI-оценка) ----------------
+{
+  kind:"open",
+  block:"💰 Финансы и доходность",
+  type:"Открытый вопрос",
+  title:"Клиент говорит: «В другом агентстве предлагают фрихолд, а у вас только лизхолд — почему я должен выбрать вас?» Как ответите, опираясь на факты со встречи?",
+  context:"Дайте развёрнутый ответ клиенту (3-5 предложений). Не придумывайте фрихолд там, где его нет.",
+  rubric:"Критерии хорошего ответа: (1) честно подтверждает, что фрихолда сейчас нет ни по одному проекту компании — только лизхолд, и не выдаёт желаемое за действительное; (2) объясняет структуру лизхолда как сильную сторону: 30 лет + 30 лет гарантированного продления (или для Elysium отдельно — 20 лет гарантированного + 10 лет приоритетного), с юридическим механизмом защиты через независимую оценку тремя оценщиками, если лендлорд отказывается продлевать; (3) упоминает прецеденты реального продления (Оазис 3, Аквамарин 1) как доказательство, что механизм рабочий, а не только на бумаге; (4) не обещает клиенту фрихолд «в будущем» как гарантию — можно упомянуть, что компания работает над этим, но без точных сроков; (5) звучит как живой ответ клиенту, а не список фактов."
+},
+{
+  kind:"open",
+  block:"💰 Финансы и доходность",
+  type:"Открытый вопрос",
+  title:"Клиент сомневается: «Доходность 12-16% по Aquamarine звучит слишком хорошо, откуда я знаю, что это не рекламный трюк?» Как убедить его фактами со встречи, не давая гарантий, которых нет?",
+  context:"Дайте развёрнутый ответ клиенту (3-5 предложений), опираясь на способ проверки доходности, о котором говорил застройщик.",
+  rubric:"Критерии хорошего ответа: (1) не называет доходность гарантированной — подчёркивает, что это фактические цифры за прошлые периоды, а не зафиксированное в договоре обязательство; (2) предлагает конкретный способ проверки, о котором говорил застройщик: сравнить среднесуточную ставку из финмодели с реальным публичным листингом объекта на Airbnb за вычетом комиссии площадки; (3) упоминает, что по каждому из 16 проектов есть помесячные отчёты по доходности, которые можно запросить и показать по конкретному объекту; (4) может сослаться на рейтинг управляющей компании (4.8, около 900 отзывов на разных платформах) как косвенное подтверждение качества сервиса, но не как доказательство доходности; (5) не придумывает цифры и факты, которых не было на встрече, и не смешивает Aquamarine с показателями других проектов (например, Oasis)."
+}
+];
+
+let current = 0;
+let selectedAnswers = new Array(questions.length).fill(null);
+let attemptsCount = new Array(questions.length).fill(0);
+let revealed = new Array(questions.length).fill(false);
+let openAnswers = new Array(questions.length).fill(null);
+let openScores = new Array(questions.length).fill(null);
+let openFeedbacks = new Array(questions.length).fill(null);
+let openAnswered = new Array(questions.length).fill(false);
+
+let userEmail = "";
+let attemptNumber = 1;
+let revealMode = false;
+
+const loginScreen = document.getElementById('loginScreen');
+const progressBar = document.getElementById('progressBar');
+const progressLabel = document.getElementById('progressLabel');
+const quizArea = document.getElementById('quizArea');
+const progressFill = document.getElementById('progressFill');
+const dotsEl = document.getElementById('dots');
+const resultCard = document.getElementById('resultCard');
+
+function isValidEmail(v){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+async function startQuiz(){
+  const emailInput = document.getElementById('emailInput');
+  const err = document.getElementById('loginError');
+  const email = emailInput.value.trim().toLowerCase();
+
+  if(!isValidEmail(email)){
+    err.classList.add('show');
+    return;
+  }
+  err.classList.remove('show');
+  userEmail = email;
+
+  const startBtn = document.getElementById('startBtn');
+  startBtn.disabled = true;
+  startBtn.textContent = 'Загружаю…';
+
+  try{
+    const res = await fetch(STATS_URL + '?email=' + encodeURIComponent(userEmail) + '&quiz=' + encodeURIComponent(QUIZ_NAME));
+    const data = await res.json();
+    attemptNumber = (data.attempts || 0) + 1;
+  } catch(e2){
+    attemptNumber = 1;
+  }
+
+  revealMode = attemptNumber >= 3;
+
+  loginScreen.style.display = 'none';
+  progressBar.style.display = 'block';
+  progressLabel.style.display = 'block';
+
+  renderQuestion();
+}
+
+function buildDots(){
+  dotsEl.innerHTML = '';
+  questions.forEach((q,i)=>{
+    const d = document.createElement('div');
+    const isDone = q.kind === 'open' ? openAnswered[i] : selectedAnswers[i]!==null;
+    d.className = 'dot' + (q.kind === 'open' ? ' open-type' : '') + (isDone ? ' done' : '') + (i===current ? ' current':'');
+    dotsEl.appendChild(d);
+  });
+}
+
+function renderQuestion(){
+  quizArea.innerHTML = '';
+  resultCard.classList.remove('active');
+  const q = questions[current];
+  if(q.kind === 'open'){ renderOpenQuestion(q); } else { renderClosedQuestion(q); }
+  updateProgress();
+}
+
+function renderClosedQuestion(q){
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const tag = document.createElement('div');
+  tag.className = 'block-tag';
+  tag.textContent = q.block;
+  card.appendChild(tag);
+
+  const qtype = document.createElement('div');
+  qtype.className = 'q-type';
+  qtype.textContent = q.type + ' · Вопрос ' + (current+1) + ' из ' + questions.length;
+  card.appendChild(qtype);
+
+  const title = document.createElement('div');
+  title.className = 'q-title';
+  title.textContent = q.title;
+  card.appendChild(title);
+
+  if(q.context){
+    const ctx = document.createElement('div');
+    ctx.className = 'q-context';
+    ctx.textContent = q.context;
+    card.appendChild(ctx);
+  }
+
+  const opts = document.createElement('div');
+  opts.className = 'options';
+  q.options.forEach((optText, idx)=>{
+    const b = document.createElement('button');
+    b.className = 'option';
+    b.textContent = optText;
+    b.onclick = ()=>handleAnswer(idx);
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+
+  const fb = document.createElement('div');
+  fb.className = 'feedback';
+  fb.id = 'feedback';
+  card.appendChild(fb);
+
+  const note = document.createElement('div');
+  note.className = 'attempts-note';
+  note.id = 'attemptsNote';
+  card.appendChild(note);
+
+  card.appendChild(buildNavRow());
+  quizArea.appendChild(card);
+
+  if(selectedAnswers[current]!==null){ restoreClosedState(); }
+  document.getElementById('nextBtn').disabled = selectedAnswers[current]===null;
+}
+
+function renderOpenQuestion(q){
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const tag = document.createElement('div');
+  tag.className = 'block-tag';
+  tag.textContent = q.block;
+  card.appendChild(tag);
+
+  const qtype = document.createElement('div');
+  qtype.className = 'q-type';
+  qtype.textContent = q.type + ' · Вопрос ' + (current+1) + ' из ' + questions.length;
+  card.appendChild(qtype);
+
+  const title = document.createElement('div');
+  title.className = 'q-title';
+  title.textContent = q.title;
+  card.appendChild(title);
+
+  if(q.context){
+    const ctx = document.createElement('div');
+    ctx.className = 'q-context';
+    ctx.textContent = q.context;
+    card.appendChild(ctx);
+  }
+
+  const ta = document.createElement('textarea');
+  ta.className = 'open-textarea';
+  ta.id = 'openInput';
+  ta.placeholder = 'Напишите ответ клиенту здесь…';
+  if(openAnswers[current]) ta.value = openAnswers[current];
+  card.appendChild(ta);
+
+  const checkBtn = document.createElement('button');
+  checkBtn.className = 'btn primary';
+  checkBtn.id = 'checkBtn';
+  checkBtn.textContent = 'Проверить ответ (AI)';
+  checkBtn.onclick = checkOpenAnswer;
+  card.appendChild(checkBtn);
+
+  const fb = document.createElement('div');
+  fb.className = 'feedback';
+  fb.id = 'feedback';
+  card.appendChild(fb);
+
+  card.appendChild(buildNavRow());
+  quizArea.appendChild(card);
+
+  if(openAnswered[current]){
+    ta.disabled = true;
+    checkBtn.style.display = 'none';
+    const fbEl = document.getElementById('feedback');
+    if(openScores[current] !== null){
+      fbEl.className = 'feedback show ' + (openScores[current] >= 2 ? 'ok' : 'warn');
+      fbEl.innerHTML = '<b>Оценка AI: ' + openScores[current] + '/3</b><br>' + openFeedbacks[current];
+    } else {
+      fbEl.className = 'feedback show warn';
+      fbEl.textContent = openFeedbacks[current] || 'Не оценено автоматически.';
+    }
+  }
+  document.getElementById('nextBtn').disabled = !openAnswered[current];
+}
+
+function buildNavRow(){
+  const nav = document.createElement('div');
+  nav.className = 'nav-row';
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'btn';
+  prevBtn.textContent = '← Назад';
+  prevBtn.disabled = current===0;
+  prevBtn.onclick = ()=>{ current--; renderQuestion(); };
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'btn primary';
+  nextBtn.id = 'nextBtn';
+  nextBtn.textContent = current===questions.length-1 ? 'Завершить' : 'Далее →';
+  nextBtn.onclick = ()=>{
+    if(current===questions.length-1){ showResults(); }
+    else { current++; renderQuestion(); }
+  };
+  nav.appendChild(prevBtn);
+  nav.appendChild(nextBtn);
+  return nav;
+}
+
+function handleAnswer(idx){
+  const q = questions[current];
+  const optButtons = document.querySelectorAll('.option');
+  const isCorrect = idx === q.correct;
+
+  if(selectedAnswers[current]===null || !revealed[current]){
+    attemptsCount[current]++;
+  }
+  selectedAnswers[current] = idx;
+
+  const fb = document.getElementById('feedback');
+  const note = document.getElementById('attemptsNote');
+
+  if(isCorrect){
+    optButtons[idx].classList.add('correct');
+    optButtons.forEach((b,i)=>{ if(i!==idx) b.disabled = true; });
+    fb.className = 'feedback show ok';
+    fb.textContent = '✓ Верно. ' + q.explain;
+    revealed[current] = true;
+  } else {
+    optButtons[idx].classList.add('incorrect');
+    optButtons[idx].disabled = true;
+
+    if(attemptsCount[current] >= 3 || revealMode){
+      optButtons[q.correct].classList.add('correct');
+      optButtons.forEach(b=>b.disabled = true);
+      fb.className = 'feedback show ok';
+      fb.textContent = '✓ Правильный ответ выделен. ' + q.explain;
+      revealed[current] = true;
+    } else {
+      fb.className = 'feedback show no';
+      fb.textContent = 'Не совсем. Попробуйте ещё раз.';
+      note.className = 'attempts-note show';
+      note.textContent = 'Попытка ' + attemptsCount[current] + ' из 3';
+    }
+  }
+
+  document.getElementById('nextBtn').disabled = false;
+  buildDots();
+}
+
+function restoreClosedState(){
+  const q = questions[current];
+  const optButtons = document.querySelectorAll('.option');
+  const fb = document.getElementById('feedback');
+  const note = document.getElementById('attemptsNote');
+  const chosen = selectedAnswers[current];
+
+  if(revealed[current]){
+    optButtons[q.correct].classList.add('correct');
+    optButtons.forEach(b=>b.disabled = true);
+    fb.className = 'feedback show ok';
+    fb.textContent = (chosen===q.correct ? '✓ Верно. ' : '✓ Правильный ответ выделен. ') + q.explain;
+  } else if(chosen!==null){
+    optButtons[chosen].classList.add('incorrect');
+    optButtons[chosen].disabled = true;
+    fb.className = 'feedback show no';
+    fb.textContent = 'Не совсем. Попробуйте ещё раз.';
+    note.className = 'attempts-note show';
+    note.textContent = 'Попытка ' + attemptsCount[current] + ' из 3';
+  }
+}
+
+async function checkOpenAnswer(){
+  const q = questions[current];
+  const ta = document.getElementById('openInput');
+  const text = ta.value.trim();
+  if(!text){
+    alert('Сначала напишите ответ.');
+    return;
+  }
+  openAnswers[current] = text;
+
+  const btn = document.getElementById('checkBtn');
+  btn.disabled = true;
+  btn.textContent = 'Проверяю…';
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show warn';
+  fb.textContent = 'Отправляю ответ на AI-проверку…';
+
+  try{
+    const promptText = "Ты проверяешь открытый ответ брокера в тесте по проектам Elysium / Eden 2 (Бали), Legion Real Estate.\n\n" +
+      q.rubric + "\n\n" +
+      'Ответ брокера:\n"""\n' + text + '\n"""\n\n' +
+      'Оцени ответ по критериям выше. Верни ТОЛЬКО JSON без markdown-разметки и без преамбулы, в формате:\n' +
+      '{"score": число от 0 до 3, "passed": true или false (true если score >= 2), "feedback": "короткий комментарий на русском 2-3 предложения — что засчитано, чего не хватает или что стоит поправить"}';
+
+    const response = await fetch(AI_PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [ { role: "user", content: promptText } ]
+      })
+    });
+    const data = await response.json();
+    const textBlock = data.content.find(b => b.type === "text");
+    const cleaned = textBlock.text.replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(cleaned);
+
+    openScores[current] = parsed.score;
+    openFeedbacks[current] = parsed.feedback;
+    openAnswered[current] = true;
+
+    fb.className = 'feedback show ' + (parsed.score >= 2 ? 'ok' : 'warn');
+    fb.innerHTML = '<b>Оценка AI: ' + parsed.score + '/3</b><br>' + parsed.feedback;
+
+    ta.disabled = true;
+    btn.style.display = 'none';
+    document.getElementById('nextBtn').disabled = false;
+    buildDots();
+  } catch(err){
+    fb.className = 'feedback show no';
+    fb.textContent = 'Не получилось проверить автоматически (возможно, страница открыта не с GitHub Pages, где настроен доступ). Ответ сохранён — можно продолжить дальше.';
+    btn.disabled = false;
+    btn.textContent = 'Проверить ответ (AI)';
+    openAnswered[current] = true;
+    openScores[current] = null;
+    openFeedbacks[current] = 'Не оценено автоматически — требуется ручная проверка.';
+    document.getElementById('nextBtn').disabled = false;
+    buildDots();
+  }
+}
+
+function updateProgress(){
+  progressFill.style.width = ((current+1)/questions.length*100) + '%';
+  progressLabel.textContent = 'Вопрос ' + (current+1) + ' из ' + questions.length;
+  buildDots();
+}
+
+async function showResults(){
+  quizArea.innerHTML = '';
+  resultCard.classList.add('active');
+
+  let firstTryCount = 0;
+  let closedTotal = 0;
+  let openTotal = 0;
+  let openMax = 0;
+  const blockStats = {};
+
+  questions.forEach((q,i)=>{
+    if(!blockStats[q.block]) blockStats[q.block] = {total:0, firstTry:0};
+    if(q.kind === 'closed'){
+      closedTotal++;
+      blockStats[q.block].total++;
+      const gotFirstTry = attemptsCount[i]===1 && selectedAnswers[i]===q.correct;
+      if(gotFirstTry) firstTryCount++;
+      if(gotFirstTry) blockStats[q.block].firstTry++;
+    } else {
+      openMax += 3;
+      if(openScores[i] !== null) openTotal += openScores[i];
+    }
+  });
+
+  document.getElementById('resultScore').textContent = firstTryCount + ' / ' + closedTotal;
+
+  const pct = Math.round(firstTryCount/closedTotal*100);
+  let msg = '';
+  if(pct >= 85) msg = 'Отличный результат по закрытым вопросам.';
+  else if(pct >= 60) msg = 'Хороший результат, но есть темы, которые стоит повторить.';
+  else msg = 'Стоит ещё раз пройти материал по проекту — многое ещё не закрепилось.';
+  document.getElementById('resultMsg').textContent = 'С первой попытки правильно: ' + firstTryCount + ' из ' + closedTotal + ' (' + pct + '%). ' + msg;
+  document.getElementById('resultOpen').textContent = 'По открытым вопросам: ' + openTotal + ' из ' + openMax + ' баллов (AI-оценка).';
+
+  const breakdown = document.getElementById('resultBreakdown');
+  breakdown.innerHTML = '';
+  Object.keys(blockStats).forEach(block=>{
+    const s = blockStats[block];
+    if(s.total === 0) return;
+    const row = document.createElement('div');
+    row.innerHTML = '<span>' + block + '</span><span>' + s.firstTry + ' / ' + s.total + '</span>';
+    breakdown.appendChild(row);
+  });
+
+  progressFill.style.width = '100%';
+  progressLabel.textContent = 'Готово';
+
+  // ---- Детализация по каждому вопросу: что ответили, с какой попытки, где ошиблись ----
+  const questionDetails = questions.map((q,i)=>{
+    if(q.kind === 'closed'){
+      const chosenIdx = selectedAnswers[i];
+      const gotFirstTry = attemptsCount[i]===1 && chosenIdx===q.correct;
+      return {
+        num: i+1,
+        block: q.block,
+        title: q.title,
+        type: 'closed',
+        correctFirstTry: gotFirstTry,
+        attempts: attemptsCount[i],
+        chosenAnswer: chosenIdx!==null ? q.options[chosenIdx] : '',
+        correctAnswer: q.options[q.correct]
+      };
+    } else {
+      return {
+        num: i+1,
+        block: q.block,
+        title: q.title,
+        type: 'open',
+        score: openScores[i],
+        answer: openAnswers[i] || '',
+        feedback: openFeedbacks[i] || ''
+      };
+    }
+  });
+
+  // Вопрос считается "проблемным", если закрытый не взят с первой попытки,
+  // либо открытый оценён ниже проходного балла (или не оценён вовсе)
+  const wrongDetails = questionDetails.filter(d =>
+    (d.type === 'closed' && !d.correctFirstTry) ||
+    (d.type === 'open' && (d.score === null || d.score < 2))
+  );
+  const wrongQuestionsSummary = wrongDetails
+    .map(d => 'Вопрос ' + d.num + ' (' + d.block + ')')
+    .join('; ');
+
+  // Показать список проблемных вопросов прямо на экране результата
+  const wrongBox = document.getElementById('wrongQuestionsBox');
+  wrongBox.style.display = 'block';
+  if(wrongDetails.length > 0){
+    wrongBox.innerHTML = '<div style="font-weight:600;color:var(--gold);margin-bottom:8px;">Стоит повторить:</div>' +
+      wrongDetails.map(d => '<div style="display:block;border-bottom:1px solid var(--border);padding:6px 0;text-align:left;">' +
+        '<b>Вопрос ' + d.num + '</b> · ' + d.block + '<br><span style="color:var(--text-dim);">' + d.title + '</span></div>').join('');
+  } else {
+    wrongBox.innerHTML = '<div style="color:var(--good);text-align:center;">Ошибок нет — все вопросы закрыты с первой попытки или на проходной балл.</div>';
+  }
+
+  const saveStatus = document.getElementById('saveStatus');
+  saveStatus.textContent = 'Сохраняю результат…';
+  try{
+    const openIdxs = [];
+    questions.forEach((q,i)=>{ if(q.kind==='open') openIdxs.push(i); });
+
+    await fetch(STATS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        email: userEmail,
+        quiz: QUIZ_NAME,
+        attempt: attemptNumber,
+        mcqScore: firstTryCount,
+        mcqPercent: pct,
+        open1Answer: openAnswers[openIdxs[0]] || "",
+        open1Score: openScores[openIdxs[0]] !== null ? openScores[openIdxs[0]] : "",
+        open2Answer: openAnswers[openIdxs[1]] || "",
+        open2Score: openScores[openIdxs[1]] !== null ? openScores[openIdxs[1]] : "",
+        wrongQuestions: wrongQuestionsSummary,
+        questionDetails: JSON.stringify(questionDetails)
+      })
+    });
+    saveStatus.textContent = 'Результат сохранён в статистику.';
+  } catch(e){
+    saveStatus.textContent = 'Не удалось сохранить результат в статистику (соединение). Попробуйте пройти тест ещё раз позже.';
+  }
+}
+
+function restartQuiz(){
+  current = 0;
+  selectedAnswers = new Array(questions.length).fill(null);
+  attemptsCount = new Array(questions.length).fill(0);
+  revealed = new Array(questions.length).fill(false);
+  openAnswers = new Array(questions.length).fill(null);
+  openScores = new Array(questions.length).fill(null);
+  openFeedbacks = new Array(questions.length).fill(null);
+  openAnswered = new Array(questions.length).fill(false);
+  loginScreen.style.display = 'block';
+  progressBar.style.display = 'none';
+  progressLabel.style.display = 'none';
+  quizArea.innerHTML = '';
+  resultCard.classList.remove('active');
+  dotsEl.innerHTML = '';
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('startBtn').textContent = 'Начать проверку';
+}
+</script>
+</body>
+</html>
