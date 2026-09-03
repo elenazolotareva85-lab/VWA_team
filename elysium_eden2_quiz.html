@@ -925,7 +925,7 @@ async function showResults(){
     wrongBox.innerHTML = '<div style="font-weight:600;color:var(--gold);margin-bottom:8px;">Стоит повторить:</div>' +
       wrongDetails.map(d => {
         const extra = d.type === 'closed'
-          ? 'Выбрано: «' + escapeHtml(d.firstWrongAnswer) + '»<br>Правильно: «' + escapeHtml(d.correctAnswer) + '»'
+          ? 'Выбрано неверно: «' + escapeHtml(d.firstWrongAnswer) + '»'
           : 'Ваш ответ: «' + escapeHtml(d.answer) + '»<br>Оценка AI: ' + (d.score !== null ? d.score + '/3' : 'не оценено');
         return '<div style="display:block;border-bottom:1px solid var(--border);padding:6px 0;text-align:left;">' +
           '<b>Вопрос ' + d.num + '</b> · ' + d.block + '<br><span style="color:var(--text-dim);">' + d.title + '</span>' +
