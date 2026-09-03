@@ -472,6 +472,7 @@ const questions = [
 
 let current = 0;
 let selectedAnswers = new Array(questions.length).fill(null);
+let firstSelectedAnswers = new Array(questions.length).fill(null);
 let attemptsCount = new Array(questions.length).fill(0);
 let revealed = new Array(questions.length).fill(false);
 let openAnswers = new Array(questions.length).fill(null);
@@ -692,6 +693,9 @@ function handleAnswer(idx){
   if(selectedAnswers[current]===null || !revealed[current]){
     attemptsCount[current]++;
   }
+  if(firstSelectedAnswers[current]===null){
+    firstSelectedAnswers[current] = idx;
+  }
   selectedAnswers[current] = idx;
 
   const fb = document.getElementById('feedback');
@@ -867,6 +871,7 @@ async function showResults(){
   const questionDetails = questions.map((q,i)=>{
     if(q.kind === 'closed'){
       const chosenIdx = selectedAnswers[i];
+      const firstIdx = firstSelectedAnswers[i];
       const gotFirstTry = attemptsCount[i]===1 && chosenIdx===q.correct;
       return {
         num: i+1,
@@ -876,6 +881,7 @@ async function showResults(){
         correctFirstTry: gotFirstTry,
         attempts: attemptsCount[i],
         chosenAnswer: chosenIdx!==null ? q.options[chosenIdx] : '',
+        firstWrongAnswer: (firstIdx!==null && firstIdx!==q.correct) ? q.options[firstIdx] : '',
         correctAnswer: q.options[q.correct]
       };
     } else {
@@ -898,16 +904,33 @@ async function showResults(){
     (d.type === 'open' && (d.score === null || d.score < 2))
   );
   const wrongQuestionsSummary = wrongDetails
-    .map(d => 'Вопрос ' + d.num + ' (' + d.block + ')')
-    .join('; ');
+    .map(d => {
+      if(d.type === 'closed'){
+        return 'Вопрос ' + d.num + ' (' + d.block + '): ' + d.title +
+          ' — выбран неверный ответ: «' + d.firstWrongAnswer + '»' +
+          ' (правильный: «' + d.correctAnswer + '»)';
+      } else {
+        return 'Вопрос ' + d.num + ' (' + d.block + '): ' + d.title +
+          ' — ответ брокера: «' + d.answer + '»' +
+          ' (оценка AI: ' + (d.score !== null ? d.score + '/3' : 'не оценено') + ')';
+      }
+    })
+    .join(' || ');
 
   // Показать список проблемных вопросов прямо на экране результата
+  const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const wrongBox = document.getElementById('wrongQuestionsBox');
   wrongBox.style.display = 'block';
   if(wrongDetails.length > 0){
     wrongBox.innerHTML = '<div style="font-weight:600;color:var(--gold);margin-bottom:8px;">Стоит повторить:</div>' +
-      wrongDetails.map(d => '<div style="display:block;border-bottom:1px solid var(--border);padding:6px 0;text-align:left;">' +
-        '<b>Вопрос ' + d.num + '</b> · ' + d.block + '<br><span style="color:var(--text-dim);">' + d.title + '</span></div>').join('');
+      wrongDetails.map(d => {
+        const extra = d.type === 'closed'
+          ? 'Выбрано: «' + escapeHtml(d.firstWrongAnswer) + '»<br>Правильно: «' + escapeHtml(d.correctAnswer) + '»'
+          : 'Ваш ответ: «' + escapeHtml(d.answer) + '»<br>Оценка AI: ' + (d.score !== null ? d.score + '/3' : 'не оценено');
+        return '<div style="display:block;border-bottom:1px solid var(--border);padding:6px 0;text-align:left;">' +
+          '<b>Вопрос ' + d.num + '</b> · ' + d.block + '<br><span style="color:var(--text-dim);">' + d.title + '</span>' +
+          '<br><span style="color:var(--text-dim);font-size:12.5px;">' + extra + '</span></div>';
+      }).join('');
   } else {
     wrongBox.innerHTML = '<div style="color:var(--good);text-align:center;">Ошибок нет — все вопросы закрыты с первой попытки или на проходной балл.</div>';
   }
@@ -944,6 +967,7 @@ async function showResults(){
 function restartQuiz(){
   current = 0;
   selectedAnswers = new Array(questions.length).fill(null);
+  firstSelectedAnswers = new Array(questions.length).fill(null);
   attemptsCount = new Array(questions.length).fill(0);
   revealed = new Array(questions.length).fill(false);
   openAnswers = new Array(questions.length).fill(null);
