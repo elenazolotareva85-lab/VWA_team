@@ -593,6 +593,7 @@ let revealMode = false;
 
 let current = 0;
 let selectedAnswers = new Array(questions.length).fill(null);
+let firstSelectedAnswers = new Array(questions.length).fill(null);
 let attemptsCount = new Array(questions.length).fill(0);
 let revealed = new Array(questions.length).fill(false);
 let openAnswers = new Array(questions.length).fill(null);
@@ -816,6 +817,9 @@ function handleAnswer(idx){
   if(selectedAnswers[current]===null || !revealed[current]){
     attemptsCount[current]++;
   }
+  if(firstSelectedAnswers[current]===null){
+    firstSelectedAnswers[current] = idx;
+  }
   selectedAnswers[current] = idx;
 
   const fb = document.getElementById('feedback');
@@ -1015,11 +1019,66 @@ async function showResults(){
   await saveResultsToSheet(firstTryCount, closedTotalQ, pct);
 }
 
+// Детализация по вопросам для статистики: что ответили, с какой попытки, где ошиблись
+// и какой неверный ответ брокер выбрал первым.
+function buildQuestionDetails(){
+  const questionDetails = questions.map((q,i)=>{
+    if(q.kind === 'closed'){
+      const chosenIdx = selectedAnswers[i];
+      const firstIdx = firstSelectedAnswers[i];
+      const gotFirstTry = attemptsCount[i]===1 && chosenIdx===q.correct;
+      return {
+        num: i+1,
+        block: q.block,
+        title: q.title,
+        type: 'closed',
+        correctFirstTry: gotFirstTry,
+        attempts: attemptsCount[i],
+        chosenAnswer: chosenIdx!==null ? q.options[chosenIdx] : '',
+        firstWrongAnswer: (firstIdx!==null && firstIdx!==q.correct) ? q.options[firstIdx] : '',
+        correctAnswer: q.options[q.correct]
+      };
+    } else {
+      return {
+        num: i+1,
+        block: q.block,
+        title: q.title,
+        type: 'open',
+        score: openScores[i],
+        answer: openAnswers[i] || '',
+        feedback: openFeedbacks[i] || ''
+      };
+    }
+  });
+
+  // Проблемный вопрос: закрытый не взят с первой попытки либо открытый оценён ниже 2 (или не оценён)
+  const wrongDetails = questionDetails.filter(d =>
+    (d.type === 'closed' && !d.correctFirstTry) ||
+    (d.type === 'open' && (d.score === null || d.score < 2))
+  );
+  const wrongQuestionsSummary = wrongDetails
+    .map(d => {
+      if(d.type === 'closed'){
+        return 'Вопрос ' + d.num + ' (' + d.block + '): ' + d.title +
+          ' — выбран неверный ответ: «' + d.firstWrongAnswer + '»' +
+          ' (правильный: «' + d.correctAnswer + '»)';
+      } else {
+        return 'Вопрос ' + d.num + ' (' + d.block + '): ' + d.title +
+          ' — ответ брокера: «' + d.answer + '»' +
+          ' (оценка AI: ' + (d.score !== null ? d.score + '/3' : 'не оценено') + ')';
+      }
+    })
+    .join(' || ');
+
+  return { questionDetails, wrongQuestionsSummary };
+}
+
 async function saveResultsToSheet(mcqScore, mcqTotal, mcqPercent){
   const saveStatus = document.getElementById('saveStatus');
   saveStatus.textContent = 'Сохраняю результат…';
 
   const openIdxs = getOpenIndices();
+  const details = buildQuestionDetails();
   const payload = {
     email: userEmail,
     attempt: attemptNumber,
@@ -1030,7 +1089,9 @@ async function saveResultsToSheet(mcqScore, mcqTotal, mcqPercent){
     open2Answer: openIdxs[1] !== undefined ? (openAnswers[openIdxs[1]] || "") : "",
     open2Score: openIdxs[1] !== undefined ? openScores[openIdxs[1]] : undefined,
     open3Answer: openIdxs[2] !== undefined ? (openAnswers[openIdxs[2]] || "") : "",
-    open3Score: openIdxs[2] !== undefined ? openScores[openIdxs[2]] : undefined
+    open3Score: openIdxs[2] !== undefined ? openScores[openIdxs[2]] : undefined,
+    wrongQuestions: details.wrongQuestionsSummary,
+    questionDetails: JSON.stringify(details.questionDetails)
   };
 
   try{
@@ -1048,6 +1109,7 @@ async function saveResultsToSheet(mcqScore, mcqTotal, mcqPercent){
 function restartQuiz(){
   current = 0;
   selectedAnswers = new Array(questions.length).fill(null);
+  firstSelectedAnswers = new Array(questions.length).fill(null);
   attemptsCount = new Array(questions.length).fill(0);
   revealed = new Array(questions.length).fill(false);
   openAnswers = new Array(questions.length).fill(null);
