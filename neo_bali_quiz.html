@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legion Real Estate — Проверка знаний: Neo Bali</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1a1a1a;
+    --panel:#232323;
+    --panel2:#2a2a2a;
+    --gold:#c9a961;
+    --gold-dark:#9C7D51;
+    --text:#f0ece2;
+    --text-dim:#a8a29a;
+    --good:#7cb88f;
+    --bad:#c97a6b;
+    --warn:#c9a961;
+    --border:#3a3733;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+  header{text-align:center;margin-bottom:28px;}
+  h1{
+    font-family:'Playfair Display',serif;
+    color:var(--gold);
+    font-size:24px;
+    margin:0 0 8px;
+    letter-spacing:.3px;
+  }
+  .subtitle{color:var(--text-dim);font-size:14px;line-height:1.5;}
+  .blocks-legend{
+    display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px;
+  }
+  .legend-item{
+    font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);
+    color:var(--text-dim);
+  }
+
+  /* Login screen */
+  .login-card{
+    background:var(--panel);
+    border:1px solid var(--gold-dark);
+    border-radius:12px;
+    padding:32px 24px;
+    text-align:center;
+  }
+  .login-card h2{
+    font-family:'Playfair Display',serif;
+    color:var(--gold);
+    font-size:19px;
+    margin:0 0 14px;
+  }
+  .login-hint{color:var(--text-dim);font-size:13px;line-height:1.6;margin-bottom:20px;}
+  .login-input{
+    width:100%;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:12px 14px;
+    border-radius:8px;
+    font-size:14px;
+    font-family:'Inter',sans-serif;
+    margin-bottom:8px;
+  }
+  .login-input:focus{outline:none;border-color:var(--gold-dark);}
+  .login-error{color:var(--bad);font-size:12.5px;margin-bottom:10px;display:none;text-align:left;}
+  .login-error.show{display:block;}
+
+  .progress-bar{
+    height:4px;background:var(--panel2);border-radius:4px;overflow:hidden;margin:20px 0 4px;
+    display:none;
+  }
+  .progress-fill{height:100%;background:var(--gold);width:0%;transition:width .3s;}
+  .progress-label{font-size:12px;color:var(--text-dim);text-align:right;margin-bottom:20px;display:none;}
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:24px 22px;
+    margin-bottom:18px;
+  }
+  .block-tag{
+    display:inline-block;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    color:var(--gold);
+    border:1px solid var(--gold-dark);
+    padding:3px 10px;
+    border-radius:20px;
+    margin-bottom:14px;
+  }
+  .q-type{
+    font-size:11px;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;
+  }
+  .q-title{
+    font-size:17px;line-height:1.5;margin:0 0 6px;font-weight:600;
+  }
+  .q-context{
+    font-size:14px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;
+    background:var(--panel2);border-left:3px solid var(--gold-dark);padding:12px 14px;border-radius:6px;
+    white-space:pre-line;
+  }
+  .options{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+  .option{
+    text-align:left;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:13px 16px;
+    border-radius:8px;
+    font-size:14.5px;
+    cursor:pointer;
+    line-height:1.45;
+    transition:border-color .15s, background .15s;
+    font-family:'Inter',sans-serif;
+  }
+  .option:hover{border-color:var(--gold-dark);}
+  .option.correct{border-color:var(--good);background:rgba(124,184,143,.12);}
+  .option.incorrect{border-color:var(--bad);background:rgba(201,122,107,.12);}
+  .option:disabled{cursor:default;}
+
+  .open-textarea{
+    width:100%;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:13px 14px;
+    border-radius:8px;
+    font-size:14.5px;
+    font-family:'Inter',sans-serif;
+    min-height:110px;
+    resize:vertical;
+    margin-bottom:12px;
+  }
+  .open-textarea:focus{outline:none;border-color:var(--gold-dark);}
+  .open-textarea:disabled{opacity:.7;}
+
+  .feedback{
+    font-size:13.5px;line-height:1.6;padding:12px 14px;border-radius:8px;margin-top:6px;display:none;
+  }
+  .feedback.show{display:block;}
+  .feedback.ok{background:rgba(124,184,143,.1);border:1px solid rgba(124,184,143,.35);}
+  .feedback.no{background:rgba(201,122,107,.1);border:1px solid rgba(201,122,107,.35);}
+  .feedback.warn{background:rgba(201,169,97,.1);border:1px solid rgba(201,169,97,.35);}
+  .attempts-note{font-size:12px;color:var(--text-dim);margin-top:8px;display:none;}
+  .attempts-note.show{display:block;}
+
+  .nav-row{display:flex;justify-content:space-between;margin-top:18px;}
+  .btn{
+    font-family:'Inter',sans-serif;
+    background:transparent;
+    border:1px solid var(--gold-dark);
+    color:var(--gold);
+    padding:10px 20px;
+    border-radius:8px;
+    font-size:14px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .btn:hover{background:rgba(201,169,97,.1);}
+  .btn:disabled{opacity:.3;cursor:default;}
+  .btn.primary{background:var(--gold);color:#1a1a1a;border-color:var(--gold);}
+  .btn.primary:hover{background:#dab975;}
+
+  .result-card{
+    background:var(--panel);
+    border:1px solid var(--gold-dark);
+    border-radius:12px;
+    padding:32px 24px;
+    text-align:center;
+    display:none;
+  }
+  .result-card.active{display:block;}
+  .result-score{
+    font-family:'Playfair Display',serif;
+    font-size:40px;color:var(--gold);margin:6px 0;
+  }
+  .result-msg{color:var(--text-dim);font-size:14px;margin-bottom:14px;line-height:1.6;}
+  .result-open{color:var(--text-dim);font-size:13.5px;margin-bottom:16px;}
+  .result-breakdown{
+    text-align:left;background:var(--panel2);border-radius:8px;padding:16px 18px;margin:18px 0;font-size:13.5px;
+  }
+  .result-breakdown div{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);}
+  .result-breakdown div:last-child{border-bottom:none;}
+  .save-status{font-size:12px;color:var(--text-dim);margin-top:10px;}
+
+  .dots{display:flex;justify-content:center;gap:6px;margin-top:16px;flex-wrap:wrap;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--border);}
+  .dot.done{background:var(--gold-dark);}
+  .dot.current{background:var(--gold);}
+  .dot.open-type{border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Проверка знаний · Neo Bali</h1>
+    <div class="subtitle">По итогам обучающей встречи с застройщиком — бутик-комплекс в Чангу (Берава)</div>
+    <div class="blocks-legend">
+      <span class="legend-item">🏝 Проект и локация</span>
+      <span class="legend-item">🏗 Стройка и документы</span>
+      <span class="legend-item">💰 Цены и рассрочка</span>
+      <span class="legend-item">📜 Управление и доходность</span>
+      <span class="legend-item">💬 Работа с клиентом</span>
+    </div>
+  </header>
+
+  <div class="login-card" id="loginScreen">
+    <h2>Введите email, чтобы начать</h2>
+    <div class="login-hint">15 вопросов (13 закрытых + 2 открытых с AI-оценкой) · ориентировочно 12–15 минут.<br>По email считаются попытки прохождения и сохраняется статистика.<br>С 3-й попытки правильные ответы подсвечиваются сразу.</div>
+    <input type="email" class="login-input" id="emailInput" placeholder="you@legion.com" autocomplete="email">
+    <div class="login-error" id="loginError">Введите корректный email.</div>
+    <button class="btn primary" id="startBtn" onclick="startQuiz()" style="width:100%;">Начать проверку</button>
+  </div>
+
+  <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">Вопрос 1 из 15</div>
+  <div class="dots" id="dots"></div>
+
+  <div id="quizArea"></div>
+
+  <div class="result-card" id="resultCard">
+    <div class="q-type">Результат</div>
+    <div class="result-score" id="resultScore">0 / 13</div>
+    <div class="result-msg" id="resultMsg"></div>
+    <div class="result-open" id="resultOpen"></div>
+    <div class="result-breakdown" id="resultBreakdown"></div>
+    <div class="result-breakdown" id="wrongQuestionsBox" style="display:none;"></div>
+    <button class="btn primary" onclick="restartQuiz()">Пройти ещё раз</button>
+    <div class="save-status" id="saveStatus"></div>
+  </div>
+</div>
+
+<script>
+// ====== ИНФРАСТРУКТУРА (тот же воркер и та же таблица, что и остальные тесты) ======
+const AI_PROXY_URL = "https://biom-quiz-proxy.legionrealestate95.workers.dev";
+const STATS_URL = "https://script.google.com/macros/s/AKfycbwgCDWwGVDCy020Y0OpQPiDG9PZ2mKCD55V6hHA-bB3Z1H4SEsBhZWkLvoB8O7NKQCZ/exec";
+const QUIZ_NAME = "Neo Bali (Чангу)";
+
+const questions = [
+// ---------------- 🏝 ПРОЕКТ И ЛОКАЦИЯ ----------------
+{
+  kind:"closed",
+  block:"🏝 Проект и локация",
+  type:"Вопрос",
+  title:"Из скольких юнитов состоит бутик-комплекс Neo Bali?",
+  context:"",
+  options:["20 апартаментов + 3 виллы","26 апартаментов + 3 виллы","26 апартаментов + 5 вилл","35 апартаментов + 3 виллы (так и было бы, если бы не срезали этаж)"],
+  correct:1,
+  explain:"26 апартаментов и 3 виллы — небольшой формат бутик-отеля, за счёт которого проще держать высокую заполняемость. (Neo Bali/Инна, презентация)"
+},
+{
+  kind:"closed",
+  block:"🏝 Проект и локация",
+  type:"Вопрос",
+  title:"Как распределены функции по этажам комплекса?",
+  context:"",
+  options:["Бассейн, спа и ресепшн на 1 этаже, апартаменты на 2–4, руфтоп — ресторан/йога/смотровая","Бассейн и спа на руфтопе, ресепшн и апартаменты на 1–3 этажах","Ресепшн и парковка на 1 этаже, бассейн и спа на 2 этаже, апартаменты на 3–4","Бассейн, спа и ресепшн на 1 этаже, апартаменты на 2–3, руфтоп занят виллами"],
+  correct:0,
+  explain:"1 этаж — бассейн со спа-зоной, круглосуточный консьерж, охрана, лобби, парковка; 2–4 этаж — апартаменты; руфтоп — ресторан, зона йоги, смотровая площадка. (Neo Bali/Инна, презентация)"
+},
+{
+  kind:"closed",
+  block:"🏝 Проект и локация",
+  type:"Кейс",
+  title:"Какого цвета земля под Neo Bali и на сколько лет оформлен лизхолд?",
+  context:"",
+  options:["Жёлтая земля, лизхолд оплачен на 31 год до 2057 года плюс продление ещё на 35 лет","Розовая земля, лизхолд оплачен на 31 год до 2057 года плюс возможность продления ещё на 35 лет","Розовая земля, фрихолд без ограничения по сроку","Розовая земля, лизхолд на 31 год без права продления"],
+  correct:1,
+  explain:"Земля розовая — застройщик сразу подчёркивает это как преимущество; лизхолд оплачен на 31 год до 2057 года, плюс возможность продления ещё на 35 лет. (Neo Bali/Инна, презентация)"
+},
+
+// ---------------- 🏗 СТРОЙКА И ДОКУМЕНТЫ ----------------
+{
+  kind:"closed",
+  block:"🏗 Стройка и документы",
+  type:"Вопрос",
+  title:"Какой статус PBG у проекта на сегодня и когда его получили?",
+  context:"",
+  options:["PBG получен на раннем этапе — летом, в августе этого года","PBG получен в 2024 году, сразу после старта строительства в августе","PBG подан, но пока в процессе — точной даты получения ещё нет","PBG получен на виллы, но пока не на основное здание"],
+  correct:0,
+  explain:"PBG получен рано — прямой ответ Константина на вопрос Виктории: летом, в августе этого года. (k, @31:00–31:04)"
+},
+{
+  kind:"closed",
+  block:"🏗 Стройка и документы",
+  type:"Кейс",
+  title:"Почему в итоге у здания меньше жилых этажей, чем планировалось изначально (было 35 номеров)?",
+  context:"Клиент может спросить, почему проект выглядит компактнее, чем в старых материалах.",
+  options:["Не смогли получить разрешение на дополнительный этаж из-за сейсмических норм","Срезали один жилой этаж, чтобы уложиться в PBG на разрешённую площадь 1500 кв.м, вместо того чтобы получать SLF со штрафом за превышение, как делают многие","Оставили изначальные 35 номеров, но часть из них перенесли в формат вилл","Уменьшили этажность по требованию подрядчика «Харма» из-за сроков стройки"],
+  correct:1,
+  explain:"Изначально планировалось 35 номеров с дополнительным этажом, но чтобы получить PBG строго по документам на 1500 кв.м, застройщик сознательно срезал жилой этаж — вместо того чтобы строить с превышением площади и потом получать SLF со штрафными санкциями. (k, @36:56–37:41)"
+},
+{
+  kind:"closed",
+  block:"🏗 Стройка и документы",
+  type:"Кейс",
+  title:"Какой сейчас реальный срок сдачи комплекса и насколько он отличается от изначально заявленного?",
+  context:"Клиент нашёл на сайте застройщика разные даты сдачи в разных материалах.",
+  options:["По подписанным договорам план был 2025 год, сейчас факт. сдача сдвинута на конец 2026","Q1 2027 — фактическая задержка стройки около 8 месяцев от плана «март 2026 + 4 месяца пролонгации»","Ни в одном договоре срок сдачи вообще не фиксировался","Задержка составляет почти два года, как указано в старых материалах на сайте застройщика"],
+  correct:1,
+  explain:"По подписанным договорам план был март 2026 + 4 месяца пролонгации; фактическая задержка стройки — около 8 месяцев, актуальный план сдачи — первый квартал 2027 года. Упоминания 2025 года в старых материалах — по словам застройщика, устаревшие маркетинговые истории, не подкреплённые ни одним договором. (k, @36:00–40:00)"
+},
+{
+  kind:"closed",
+  block:"🏗 Стройка и документы",
+  type:"Вопрос",
+  title:"Насколько свежий DDG (due diligence) есть у проекта на сегодня?",
+  context:"",
+  options:["Свежий DDG сделали в этом месяце специально к этой встрече","Последний DDG делался примерно полтора года назад, команда обещала подготовить обновление","DDG обновили сразу после получения PBG в августе","DDG не делали ни разу, обновление только обещали на будущее"],
+  correct:1,
+  explain:"Свежего DDG нет — последний делали примерно полтора года назад; команда обещала обновить его и передать для презентаций клиентам. (k, @37:41–38:02)"
+},
+
+// ---------------- 💰 ЦЕНЫ И РАССРОЧКА ----------------
+{
+  kind:"closed",
+  block:"💰 Цены и рассрочка",
+  type:"Вопрос",
+  title:"Какая минимальная цена на апартаменты сейчас и какая это площадь?",
+  context:"",
+  options:["$117 000 за студию 40 кв.м — минимальная цена на нижнем из апартаментных этажей","$139 000 за студию 40 кв.м","$117 000 за апартамент 53 кв.м","$105 000 за студию 35 кв.м"],
+  correct:0,
+  explain:"$117 000 — минимальная цена на сегодня, студия 40 кв.м; максимальная в текущем прайсе — $139 000 за 53 кв.м, дальше цена растёт по этажам. (Neo Bali/Инна, презентация)"
+},
+{
+  kind:"closed",
+  block:"💰 Цены и рассрочка",
+  type:"Кейс",
+  title:"Сколько стоит вилла (103 кв.м) по стандартной цене и какая цена согласована для Legion?",
+  context:"На звонке в этих цифрах была путаница (звучали и 150, и 180), но в итоге застройщик подтвердил цифры прямо.",
+  options:["Стандарт $280 000, для Legion — $250 000","Стандарт $250 000, для Legion — $280 000","Обе цены одинаковые — $265 000","Стандарт $180 000, для Legion — $150 000"],
+  correct:0,
+  explain:"Стандартная цена виллы — $280 000, для Legion согласована спеццена $250 000. Прямая цитата Константина: «Мы продаем по 280, для Легиона согласовали 250 как цену». (k, @29:08–29:40)"
+},
+{
+  kind:"closed",
+  block:"💰 Цены и рассрочка",
+  type:"Кейс",
+  title:"Как устроен payment-план по виллам для клиентов Legion?",
+  context:"",
+  options:["25% предоплата (снижена с базовых 30% для Legion), доплата до 50% к завершению стройки, оставшиеся 50% — год рассрочки после сдачи (в отдельных случаях до 1,5 лет)","30% предоплата (базовое условие, без скидки для Legion), доплата до 50%, остаток — год рассрочки после сдачи","25% предоплата, доплата до 70% к завершению стройки, остаток 30% — рассрочка 6 месяцев","50% предоплата, остаток единым платежом при сдаче"],
+  correct:0,
+  explain:"Базовое условие застройщика — 30% предоплата, для Legion снизили до 25%; далее доплата до 50% к завершению стройки, оставшиеся 50% — рассрочка на год после ввода в эксплуатацию, в отдельных сложных кейсах можно растянуть до полутора лет. (k, @26:16–29:10)"
+},
+
+// ---------------- 📜 УПРАВЛЕНИЕ И ДОХОДНОСТЬ ----------------
+{
+  kind:"closed",
+  block:"📜 Управление и доходность",
+  type:"Вопрос",
+  title:"Какая управляющая компания будет управлять юнитами Neo Bali?",
+  context:"",
+  options:["Bali Legends","IGGI","«Харма»","AYANA"],
+  correct:1,
+  explain:"Управляющая компания — IGGI, подтвердили сразу на прямой вопрос Кристины. «Харма» на звонке тоже звучала — но как строительный подрядчик, который непосредственно строит комплекс, а не как управляющая компания. (Neo Bali/k, @11:42–12:04; @46:26)"
+},
+{
+  kind:"closed",
+  block:"📜 Управление и доходность",
+  type:"Вопрос",
+  title:"Какая доходность и окупаемость озвучены по проекту на минимальной сегодняшней цене?",
+  context:"",
+  options:["8–10% годовых, окупаемость около 10 лет","12–14% годовых, окупаемость около 7,5 лет при входе по $117 000","12–14% годовых, окупаемость около 12 лет","15–17% годовых, окупаемость около 6 лет"],
+  correct:1,
+  explain:"12–14% годовых по финмодели, окупаемость около 7,5 лет при входе по минимальной сегодняшней цене $117 000. (Neo Bali/Инна, презентация)"
+},
+{
+  kind:"closed",
+  block:"📜 Управление и доходность",
+  type:"Кейс",
+  title:"Даёт ли застройщик гарантию минимальной доходности по умолчанию всем клиентам?",
+  context:"Партнёр-агент напрямую спросила про минимальную гарантию дохода по договору.",
+  options:["Да, 10% гарантированно всем клиентам без исключений","По умолчанию нет — 10% возможны только как индивидуальное исключение под конкретного клиента; в базовых условиях уже даётся расширенная рассрочка вместо гарантии","Гарантию дают всем, кто купил апартамент, но не по виллам","Гарантии нет вообще ни при каких условиях, даже индивидуально"],
+  correct:1,
+  explain:"Базово гарантию давать не просят — команда уже даёт расширенную рассрочку вместо неё; 10% возможны только как индивидуальное исключение под сложного клиента, а не как стандартное предложение всем. (k, @30:00–30:53)"
+},
+
+// ---------------- 💬 РАБОТА С КЛИЕНТОМ (открытые) ----------------
+{
+  kind:"open",
+  block:"💬 Работа с клиентом",
+  type:"Открытый вопрос",
+  title:"Клиент заметил на сайте застройщика разные даты сдачи в разных материалах — 2025, потом 2026, а сейчас озвучен Q1 2027 — и говорит: «Вы срываете сроки уже два года, где гарантии, что не сорвёте снова?» Что вы ответите, опираясь на факты со звонка?",
+  context:"Дайте развёрнутый ответ клиенту (3–5 предложений).",
+  rubric:"Критерии хорошего ответа: (1) не отрицает и не приукрашивает — признаёт, что фактическая задержка стройки составила около 8 месяцев от изначального плана (март 2026 + 4 месяца пролонгации, сейчас Q1 2027); (2) объясняет, что упоминания 2025 года в старых материалах — по словам застройщика, устаревшие маркетинговые истории, не подкреплённые ни одним подписанным договором с такой датой (единственные подписанные договоры — на март 2026 + 4 месяца); (3) опирается на конкретные проверяемые факты со звонка: завершены все монолитные работы, PBG уже получен (в августе этого года), проект строится за собственные средства двух собственников без внешнего финансирования, можно организовать выездной тур на объект; (4) не обещает клиенту, что новых сдвигов точно не будет — на Бали задержки чаще связаны с документацией, а не с волей застройщика, и честно об этом говорит; (5) не выдумывает гарантий, процентов компенсации или дат, которых не звучало на звонке; (6) снижает балл, если ответ игнорирует реальную историю задержек или пытается представить её как несуществующую."
+},
+{
+  kind:"open",
+  block:"💬 Работа с клиентом",
+  type:"Открытый вопрос",
+  title:"Клиент спрашивает: «А что если у застройщика закончатся деньги на стройку, если вы не сможете продать быстро?» Что вы ответите, опираясь на факты со звонка?",
+  context:"Дайте развёрнутый ответ клиенту (3–5 предложений).",
+  rubric:"Критерии хорошего ответа: (1) объясняет, что проект строится за собственные средства двух собственников (Константин и партнёр), а не за счёт клиентских денег — то есть стройка не должна встать просто из-за низких продаж; (2) честно называет факт со звонка — 4 уже проданных юнита пока даже не покрыли 50% аренды земли, то есть основной объём инвестиций реально идёт из собственных средств застройщика; (3) передаёт логику застройщика не как жёсткую гарантию, а как то, что реально прозвучало: если появятся клиентские деньги, они пойдут именно в этот проект, а свои свободные средства — на другие проекты компании; (4) предлагает клиенту реальный, подтверждаемый шаг — приехать лично на объект и увидеть текущий прогресс стройки (застройщик сам предлагал тур для команды в ближайшие недели); (5) не выдумывает финансовых гарантий, процентов резерва бюджета или конкретных сумм, которых не звучало на звонке; (6) снижает балл, если ответ сводится к общим уверениям («не переживайте, всё будет хорошо») без опоры на факты со звонка."
+}
+];
+
+let current = 0;
+let selectedAnswers = new Array(questions.length).fill(null);
+let firstSelectedAnswers = new Array(questions.length).fill(null);
+let attemptsCount = new Array(questions.length).fill(0);
+let revealed = new Array(questions.length).fill(false);
+let openAnswers = new Array(questions.length).fill(null);
+let openScores = new Array(questions.length).fill(null);
+let openFeedbacks = new Array(questions.length).fill(null);
+let openAnswered = new Array(questions.length).fill(false);
+
+let userEmail = "";
+let attemptNumber = 1;
+let revealMode = false;
+
+const loginScreen = document.getElementById('loginScreen');
+const progressBar = document.getElementById('progressBar');
+const progressLabel = document.getElementById('progressLabel');
+const quizArea = document.getElementById('quizArea');
+const progressFill = document.getElementById('progressFill');
+const dotsEl = document.getElementById('dots');
+const resultCard = document.getElementById('resultCard');
+
+function isValidEmail(v){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+async function startQuiz(){
+  const emailInput = document.getElementById('emailInput');
+  const err = document.getElementById('loginError');
+  const email = emailInput.value.trim().toLowerCase();
+
+  if(!isValidEmail(email)){
+    err.classList.add('show');
+    return;
+  }
+  err.classList.remove('show');
+  userEmail = email;
+
+  const startBtn = document.getElementById('startBtn');
+  startBtn.disabled = true;
+  startBtn.textContent = 'Загружаю…';
+
+  try{
+    const res = await fetch(STATS_URL + '?email=' + encodeURIComponent(userEmail) + '&quiz=' + encodeURIComponent(QUIZ_NAME));
+    const data = await res.json();
+    attemptNumber = (data.attempts || 0) + 1;
+  } catch(e2){
+    attemptNumber = 1;
+  }
+
+  revealMode = attemptNumber >= 3;
+
+  loginScreen.style.display = 'none';
+  progressBar.style.display = 'block';
+  progressLabel.style.display = 'block';
+
+  renderQuestion();
+}
+
+function buildDots(){
+  dotsEl.innerHTML = '';
+  questions.forEach((q,i)=>{
+    const d = document.createElement('div');
+    const isDone = q.kind === 'open' ? openAnswered[i] : selectedAnswers[i]!==null;
+    d.className = 'dot' + (q.kind === 'open' ? ' open-type' : '') + (isDone ? ' done' : '') + (i===current ? ' current':'');
+    dotsEl.appendChild(d);
+  });
+}
+
+function updateProgress(){
+  progressFill.style.width = ((current+1)/questions.length*100) + '%';
+  progressLabel.textContent = 'Вопрос ' + (current+1) + ' из ' + questions.length;
+  buildDots();
+}
+
+function renderQuestion(){
+  quizArea.innerHTML = '';
+  resultCard.classList.remove('active');
+  const q = questions[current];
+  if(q.kind === 'open'){ renderOpenQuestion(q); } else { renderClosedQuestion(q); }
+  updateProgress();
+}
+
+function buildNavRow(){
+  const nav = document.createElement('div');
+  nav.className = 'nav-row';
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'btn';
+  prevBtn.textContent = '← Назад';
+  prevBtn.disabled = current===0;
+  prevBtn.onclick = ()=>{ current--; renderQuestion(); };
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'btn primary';
+  nextBtn.id = 'nextBtn';
+  nextBtn.textContent = current===questions.length-1 ? 'Завершить' : 'Далее →';
+  nextBtn.onclick = ()=>{
+    if(current===questions.length-1){ showResults(); }
+    else { current++; renderQuestion(); }
+  };
+  nav.appendChild(prevBtn);
+  nav.appendChild(nextBtn);
+  return nav;
+}
+
+function renderClosedQuestion(q){
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const tag = document.createElement('div');
+  tag.className = 'block-tag';
+  tag.textContent = q.block;
+  card.appendChild(tag);
+
+  const qtype = document.createElement('div');
+  qtype.className = 'q-type';
+  qtype.textContent = q.type + ' · Вопрос ' + (current+1) + ' из ' + questions.length;
+  card.appendChild(qtype);
+
+  const title = document.createElement('div');
+  title.className = 'q-title';
+  title.textContent = q.title;
+  card.appendChild(title);
+
+  if(q.context){
+    const ctx = document.createElement('div');
+    ctx.className = 'q-context';
+    ctx.textContent = q.context;
+    card.appendChild(ctx);
+  }
+
+  const opts = document.createElement('div');
+  opts.className = 'options';
+  q.options.forEach((optText, idx)=>{
+    const b = document.createElement('button');
+    b.className = 'option';
+    b.textContent = optText;
+    b.onclick = ()=>handleAnswer(idx);
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+
+  const fb = document.createElement('div');
+  fb.className = 'feedback';
+  fb.id = 'feedback';
+  card.appendChild(fb);
+
+  const note = document.createElement('div');
+  note.className = 'attempts-note';
+  note.id = 'attemptsNote';
+  card.appendChild(note);
+
+  card.appendChild(buildNavRow());
+  quizArea.appendChild(card);
+
+  if(selectedAnswers[current]!==null){ restoreClosedState(); }
+  document.getElementById('nextBtn').disabled = selectedAnswers[current]===null;
+}
+
+function renderOpenQuestion(q){
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const tag = document.createElement('div');
+  tag.className = 'block-tag';
+  tag.textContent = q.block;
+  card.appendChild(tag);
+
+  const qtype = document.createElement('div');
+  qtype.className = 'q-type';
+  qtype.textContent = q.type + ' · Вопрос ' + (current+1) + ' из ' + questions.length;
+  card.appendChild(qtype);
+
+  const title = document.createElement('div');
+  title.className = 'q-title';
+  title.textContent = q.title;
+  card.appendChild(title);
+
+  if(q.context){
+    const ctx = document.createElement('div');
+    ctx.className = 'q-context';
+    ctx.textContent = q.context;
+    card.appendChild(ctx);
+  }
+
+  const ta = document.createElement('textarea');
+  ta.className = 'open-textarea';
+  ta.id = 'openInput';
+  ta.placeholder = 'Напишите ответ клиенту здесь…';
+  if(openAnswers[current]) ta.value = openAnswers[current];
+  card.appendChild(ta);
+
+  const checkBtn = document.createElement('button');
+  checkBtn.className = 'btn primary';
+  checkBtn.id = 'checkBtn';
+  checkBtn.textContent = 'Проверить ответ (AI)';
+  checkBtn.onclick = checkOpenAnswer;
+  card.appendChild(checkBtn);
+
+  const fb = document.createElement('div');
+  fb.className = 'feedback';
+  fb.id = 'feedback';
+  card.appendChild(fb);
+
+  card.appendChild(buildNavRow());
+  quizArea.appendChild(card);
+
+  if(openAnswered[current]){
+    ta.disabled = true;
+    checkBtn.style.display = 'none';
+    const fbEl = document.getElementById('feedback');
+    if(openScores[current] !== null){
+      fbEl.className = 'feedback show ' + (openScores[current] >= 2 ? 'ok' : 'warn');
+      fbEl.innerHTML = '<b>Оценка AI: ' + openScores[current] + '/3</b><br>' + openFeedbacks[current];
+    } else {
+      fbEl.className = 'feedback show warn';
+      fbEl.textContent = openFeedbacks[current] || 'Не оценено автоматически.';
+    }
+  }
+  document.getElementById('nextBtn').disabled = !openAnswered[current];
+}
+
+function handleAnswer(idx){
+  const q = questions[current];
+  const optButtons = document.querySelectorAll('.option');
+  const isCorrect = idx === q.correct;
+
+  if(selectedAnswers[current]===null || !revealed[current]){
+    attemptsCount[current]++;
+  }
+  if(firstSelectedAnswers[current]===null){
+    firstSelectedAnswers[current] = idx;
+  }
+  selectedAnswers[current] = idx;
+
+  const fb = document.getElementById('feedback');
+  const note = document.getElementById('attemptsNote');
+
+  if(isCorrect){
+    optButtons[idx].classList.add('correct');
+    optButtons.forEach((b,i)=>{ if(i!==idx) b.disabled = true; });
+    fb.className = 'feedback show ok';
+    fb.textContent = '✓ Верно. ' + q.explain;
+    revealed[current] = true;
+  } else {
+    optButtons[idx].classList.add('incorrect');
+    optButtons[idx].disabled = true;
+
+    if(attemptsCount[current] >= 3 || revealMode){
+      optButtons[q.correct].classList.add('correct');
+      optButtons.forEach(b=>b.disabled = true);
+      fb.className = 'feedback show ok';
+      fb.textContent = '✓ Правильный ответ выделен. ' + q.explain;
+      revealed[current] = true;
+    } else {
+      fb.className = 'feedback show no';
+      fb.textContent = 'Не совсем. Попробуйте ещё раз.';
+      note.className = 'attempts-note show';
+      note.textContent = 'Попытка ' + attemptsCount[current] + ' из 3';
+    }
+  }
+
+  document.getElementById('nextBtn').disabled = false;
+  buildDots();
+}
+
+function restoreClosedState(){
+  const q = questions[current];
+  const optButtons = document.querySelectorAll('.option');
+  const fb = document.getElementById('feedback');
+  const note = document.getElementById('attemptsNote');
+  const chosen = selectedAnswers[current];
+
+  if(revealed[current]){
+    optButtons[q.correct].classList.add('correct');
+    optButtons.forEach(b=>b.disabled = true);
+    fb.className = 'feedback show ok';
+    fb.textContent = (chosen===q.correct ? '✓ Верно. ' : '✓ Правильный ответ выделен. ') + q.explain;
+  } else if(chosen!==null){
+    optButtons[chosen].classList.add('incorrect');
+    optButtons[chosen].disabled = true;
+    fb.className = 'feedback show no';
+    fb.textContent = 'Не совсем. Попробуйте ещё раз.';
+    note.className = 'attempts-note show';
+    note.textContent = 'Попытка ' + attemptsCount[current] + ' из 3';
+  }
+}
+
+async function checkOpenAnswer(){
+  const q = questions[current];
+  const ta = document.getElementById('openInput');
+  const text = ta.value.trim();
+  if(!text){
+    alert('Сначала напишите ответ.');
+    return;
+  }
+  openAnswers[current] = text;
+
+  const btn = document.getElementById('checkBtn');
+  btn.disabled = true;
+  btn.textContent = 'Проверяю…';
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show warn';
+  fb.textContent = 'Отправляю ответ на AI-проверку…';
+
+  try{
+    const promptText = "Ты проверяешь открытый ответ брокера в тесте по проекту Neo Bali, Legion Real Estate.\n\n" +
+      q.rubric + "\n\n" +
+      'Ответ брокера:\n"""\n' + text + '\n"""\n\n' +
+      'Оцени ответ по критериям выше. Верни ТОЛЬКО JSON без markdown-разметки и без преамбулы, в формате:\n' +
+      '{"score": число от 0 до 3, "passed": true или false (true если score >= 2), "feedback": "короткий комментарий на русском 2-3 предложения — что засчитано, чего не хватает или что стоит поправить"}';
+
+    const response = await fetch(AI_PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [ { role: "user", content: promptText } ]
+      })
+    });
+    const data = await response.json();
+    const textBlock = data.content.find(b => b.type === "text");
+    const cleaned = textBlock.text.replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(cleaned);
+
+    openScores[current] = parsed.score;
+    openFeedbacks[current] = parsed.feedback;
+    openAnswered[current] = true;
+
+    fb.className = 'feedback show ' + (parsed.score >= 2 ? 'ok' : 'warn');
+    fb.innerHTML = '<b>Оценка AI: ' + parsed.score + '/3</b><br>' + parsed.feedback;
+
+    ta.disabled = true;
+    btn.style.display = 'none';
+    document.getElementById('nextBtn').disabled = false;
+    buildDots();
+  } catch(err){
+    fb.className = 'feedback show no';
+    fb.textContent = 'Не получилось проверить автоматически (возможно, страница открыта не с GitHub Pages, где настроен доступ). Ответ сохранён — можно продолжить дальше.';
+    btn.disabled = false;
+    btn.textContent = 'Проверить ответ (AI)';
+    openAnswered[current] = true;
+    openScores[current] = null;
+    openFeedbacks[current] = 'Не оценено автоматически — требуется ручная проверка.';
+    document.getElementById('nextBtn').disabled = false;
+    buildDots();
+  }
+}
+
+async function showResults(){
+  quizArea.innerHTML = '';
+  resultCard.classList.add('active');
+
+  let firstTryCount = 0;
+  let closedTotal = 0;
+  let openTotal = 0;
+  let openMax = 0;
+  const blockStats = {};
+
+  questions.forEach((q,i)=>{
+    if(!blockStats[q.block]) blockStats[q.block] = {total:0, firstTry:0};
+    if(q.kind === 'closed'){
+      closedTotal++;
+      blockStats[q.block].total++;
+      const gotFirstTry = attemptsCount[i]===1 && selectedAnswers[i]===q.correct;
+      if(gotFirstTry) firstTryCount++;
+      if(gotFirstTry) blockStats[q.block].firstTry++;
+    } else {
+      openMax += 3;
+      if(openScores[i] !== null) openTotal += openScores[i];
+    }
+  });
+
+  document.getElementById('resultScore').textContent = firstTryCount + ' / ' + closedTotal;
+
+  const pct = Math.round(firstTryCount/closedTotal*100);
+  let msg = '';
+  if(pct >= 85) msg = 'Отличный результат по закрытым вопросам.';
+  else if(pct >= 60) msg = 'Хороший результат, но есть темы, которые стоит повторить.';
+  else msg = 'Стоит ещё раз пройти материал по проекту — многое ещё не закрепилось.';
+  document.getElementById('resultMsg').textContent = 'С первой попытки правильно: ' + firstTryCount + ' из ' + closedTotal + ' (' + pct + '%). ' + msg;
+  document.getElementById('resultOpen').textContent = 'По открытым вопросам: ' + openTotal + ' из ' + openMax + ' баллов (AI-оценка).';
+
+  const breakdown = document.getElementById('resultBreakdown');
+  breakdown.innerHTML = '';
+  Object.keys(blockStats).forEach(block=>{
+    const s = blockStats[block];
+    if(s.total === 0) return;
+    const row = document.createElement('div');
+    row.innerHTML = '<span>' + block + '</span><span>' + s.firstTry + ' / ' + s.total + '</span>';
+    breakdown.appendChild(row);
+  });
+
+  progressFill.style.width = '100%';
+  progressLabel.textContent = 'Готово';
+
+  // ---- Детализация по каждому вопросу: что ответили, с какой попытки, где ошиблись ----
+  const questionDetails = questions.map((q,i)=>{
+    if(q.kind === 'closed'){
+      const chosenIdx = selectedAnswers[i];
+      const firstIdx = firstSelectedAnswers[i];
+      const gotFirstTry = attemptsCount[i]===1 && chosenIdx===q.correct;
+      return {
+        num: i+1,
+        block: q.block,
+        title: q.title,
+        type: 'closed',
+        correctFirstTry: gotFirstTry,
+        attempts: attemptsCount[i],
+        chosenAnswer: chosenIdx!==null ? q.options[chosenIdx] : '',
+        firstWrongAnswer: (firstIdx!==null && firstIdx!==q.correct) ? q.options[firstIdx] : '',
+        correctAnswer: q.options[q.correct]
+      };
+    } else {
+      return {
+        num: i+1,
+        block: q.block,
+        title: q.title,
+        type: 'open',
+        score: openScores[i],
+        answer: openAnswers[i] || '',
+        feedback: openFeedbacks[i] || ''
+      };
+    }
+  });
+
+  // Вопрос считается "проблемным", если закрытый не взят с первой попытки,
+  // либо открытый оценён ниже проходного балла (или не оценён вовсе)
+  const wrongDetails = questionDetails.filter(d =>
+    (d.type === 'closed' && !d.correctFirstTry) ||
+    (d.type === 'open' && (d.score === null || d.score < 2))
+  );
+  const wrongQuestionsSummary = wrongDetails
+    .map(d => {
+      if(d.type === 'closed'){
+        return 'Вопрос ' + d.num + ' (' + d.block + '): ' + d.title +
+          ' — выбран неверный ответ: «' + d.firstWrongAnswer + '»' +
+          ' (правильный: «' + d.correctAnswer + '»)';
+      } else {
+        return 'Вопрос ' + d.num + ' (' + d.block + '): ' + d.title +
+          ' — ответ брокера: «' + d.answer + '»' +
+          ' (оценка AI: ' + (d.score !== null ? d.score + '/3' : 'не оценено') + ')';
+      }
+    })
+    .join(' || ');
+
+  // Показать список проблемных вопросов прямо на экране результата
+  const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const wrongBox = document.getElementById('wrongQuestionsBox');
+  wrongBox.style.display = 'block';
+  if(wrongDetails.length > 0){
+    wrongBox.innerHTML = '<div style="font-weight:600;color:var(--gold);margin-bottom:8px;">Стоит повторить:</div>' +
+      wrongDetails.map(d => {
+        const extra = d.type === 'closed'
+          ? 'Выбрано неверно: «' + escapeHtml(d.firstWrongAnswer) + '»'
+          : 'Ваш ответ: «' + escapeHtml(d.answer) + '»<br>Оценка AI: ' + (d.score !== null ? d.score + '/3' : 'не оценено');
+        return '<div style="display:block;border-bottom:1px solid var(--border);padding:6px 0;text-align:left;">' +
+          '<b>Вопрос ' + d.num + '</b> · ' + d.block + '<br><span style="color:var(--text-dim);">' + d.title + '</span>' +
+          '<br><span style="color:var(--text-dim);font-size:12.5px;">' + extra + '</span></div>';
+      }).join('');
+  } else {
+    wrongBox.innerHTML = '<div style="color:var(--good);text-align:center;">Ошибок нет — все вопросы закрыты с первой попытки или на проходной балл.</div>';
+  }
+
+  // Save to stats sheet
+  const saveStatus = document.getElementById('saveStatus');
+  saveStatus.textContent = 'Сохраняю результат…';
+  try{
+    const openIdxs = [];
+    questions.forEach((q,i)=>{ if(q.kind==='open') openIdxs.push(i); });
+
+    await fetch(STATS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        email: userEmail,
+        quiz: QUIZ_NAME,
+        attempt: attemptNumber,
+        mcqScore: firstTryCount,
+        mcqPercent: pct,
+        open1Answer: openAnswers[openIdxs[0]] || "",
+        open1Score: openScores[openIdxs[0]] !== null ? openScores[openIdxs[0]] : "",
+        open2Answer: openAnswers[openIdxs[1]] || "",
+        open2Score: openScores[openIdxs[1]] !== null ? openScores[openIdxs[1]] : "",
+        wrongQuestions: wrongQuestionsSummary,
+        questionDetails: JSON.stringify(questionDetails)
+      })
+    });
+    saveStatus.textContent = 'Результат сохранён в статистику.';
+  } catch(e){
+    saveStatus.textContent = 'Не удалось сохранить результат в статистику (соединение). Попробуйте пройти тест ещё раз позже.';
+  }
+}
+
+function restartQuiz(){
+  current = 0;
+  selectedAnswers = new Array(questions.length).fill(null);
+  firstSelectedAnswers = new Array(questions.length).fill(null);
+  attemptsCount = new Array(questions.length).fill(0);
+  revealed = new Array(questions.length).fill(false);
+  openAnswers = new Array(questions.length).fill(null);
+  openScores = new Array(questions.length).fill(null);
+  openFeedbacks = new Array(questions.length).fill(null);
+  openAnswered = new Array(questions.length).fill(false);
+  loginScreen.style.display = 'block';
+  progressBar.style.display = 'none';
+  progressLabel.style.display = 'none';
+  quizArea.innerHTML = '';
+  resultCard.classList.remove('active');
+  dotsEl.innerHTML = '';
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('startBtn').textContent = 'Начать проверку';
+}
+</script>
+</body>
+</html>
