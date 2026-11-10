@@ -187,9 +187,11 @@ td.pct{color:#c9a961;font-weight:600;}
         <tr><td class="pct">7%</td><td>+0.5% (50/50)</td><td>База + 0.25%*</td><td>min($500, 0.25%)</td></tr>
         <tr><td class="pct">8%</td><td>+1% (50/50)</td><td>База + 0.5%</td><td>0.5% от цены</td></tr>
         <tr><td class="pct">9%</td><td>+2% (50/50)</td><td>База + 1%</td><td>1% от цены</td></tr>
+        <tr><td class="pct">10%+</td><td>+1% бонуса за каждый +1% (10% → +3%)</td><td>База + бонус / 2</td><td>бонус / 2 (не менее $500)</td></tr>
       </tbody>
     </table>
-    <div style="font-size:11px;color:#8a8070;margin-top:10px;">* При 7%: если расчётная доля передающего &lt; $500 — дельта вычитается из бонуса закрывающего</div>
+    <div style="font-size:11px;color:#8a8070;margin-top:10px;">В калькуляторе комиссию можно ввести любую (от 6%). Промежуточные значения считаются по шкале между соседними уровнями. Комиссия выше 9% в стандарте не описана и согласуется с CEO / CCO / РОПом (п. 3.3.5.7).</div>
+    <div style="font-size:11px;color:#8a8070;margin-top:6px;">* При 7%: если расчётная доля передающего &lt; $500 — дельта вычитается из бонуса закрывающего</div>
   </div>
 </div>
 
@@ -237,12 +239,15 @@ td.pct{color:#c9a961;font-weight:600;}
       </div>
 
       <div class="field" id="f-level">
-        <label>Общая комиссия сделки — выберите<span class="req">*</span></label>
-        <div class="lvl-grid">
+        <label>Общая комиссия сделки (%)<span class="req">*</span></label>
+        <input type="number" id="c-level" placeholder="например, 10" min="6" max="20" step="0.5" oninput="syncLvl()" style="margin-bottom:8px;">
+        <div class="hint" style="margin:0 0 8px;">Введите любой % от 6 или нажмите быстрый выбор:</div>
+        <div class="lvl-grid" style="grid-template-columns:repeat(5,1fr);">
           <button class="lvl-btn" data-v="6" onclick="setLvl(this)">6%<span class="lvl-sub">базовая</span></button>
           <button class="lvl-btn" data-v="7" onclick="setLvl(this)">7%<span class="lvl-sub">+0.5%</span></button>
           <button class="lvl-btn" data-v="8" onclick="setLvl(this)">8%<span class="lvl-sub">+1%</span></button>
           <button class="lvl-btn" data-v="9" onclick="setLvl(this)">9%<span class="lvl-sub">+2%</span></button>
+          <button class="lvl-btn" data-v="10" onclick="setLvl(this)">10%<span class="lvl-sub">+3%</span></button>
         </div>
       </div>
       </div>
@@ -320,8 +325,27 @@ function goTab(id, btn) {
 function setLvl(btn) {
   document.querySelectorAll('.lvl-btn').forEach(function(b){b.classList.remove('on');});
   btn.classList.add('on');
-  sel = parseInt(btn.getAttribute('data-v'));
+  sel = parseFloat(btn.getAttribute('data-v'));
+  document.getElementById('c-level').value = sel;
   calc();
+}
+
+function syncLvl() {
+  var v = parseFloat(document.getElementById('c-level').value);
+  sel = (v >= 6 && v <= 20) ? v : null;
+  document.querySelectorAll('.lvl-btn').forEach(function(b){
+    b.classList.toggle('on', sel !== null && parseFloat(b.getAttribute('data-v')) === sel);
+  });
+  calc();
+}
+
+// Бонус сверх базы 6% (в долях цены): по таблице стандарта 6→0, 7→0.5%, 8→1%, 9→2%;
+// между точками — линейно, выше 9% — +1% бонуса за каждый +1% комиссии (10% → 3%).
+function bonusPct(level) {
+  if (level <= 6) return 0;
+  if (level <= 7) return (level - 6) * 0.005;
+  if (level <= 8) return 0.005 + (level - 7) * 0.005;
+  return (level - 7) * 0.01;
 }
 
 function mark(id, ok) {
@@ -342,7 +366,7 @@ function checkFields() {
   } else {
     var g = parseFloat(document.getElementById('c-grade').value);
     if (!mark('f-grade', g > 0 && g <= 100)) todo.push('Грейд закрывающего брокера, %');
-    if (!mark('f-level', !!sel)) todo.push('Общая комиссия сделки (6 / 7 / 8 / 9%)');
+    if (!mark('f-level', !!sel)) todo.push('Общая комиссия сделки, % (от 6)');
   }
   document.getElementById('r-todo').innerHTML = todo.map(function(t){return '<li>'+t+'</li>';}).join('');
   return todo.length === 0;
@@ -434,8 +458,7 @@ function calc() {
   document.getElementById('r-content').style.display = 'block';
 
   var baseClose = price * 0.06 * grade;
-  var bonusMap = {6:0, 7:0.005, 8:0.01, 9:0.02};
-  var bonusTot = price * bonusMap[level];
+  var bonusTot = price * bonusPct(level);
   var closeBonus = 0, refPay = 0, minApplied = false, delta = 0;
 
   if (level === 6) {
@@ -484,7 +507,7 @@ function calc() {
   var lines = [];
   lines.push('База = ' + fmt(price) + ' × 6% × ' + (grade*100).toFixed(1) + '% = ' + fmt(baseClose));
   if (level > 6 && hasRef) {
-    lines.push('Бонус итого = ' + fmt(price) + ' × ' + (bonusMap[level]*100) + '% = ' + fmt(bonusTot));
+    lines.push('Бонус итого = ' + fmt(price) + ' × ' + +(bonusPct(level)*100).toFixed(2) + '% = ' + fmt(bonusTot));
     if (minApplied) {
       lines.push('Передающий мин = $500 | дельта = ' + fmt(delta));
       lines.push('Бонус закрыв. = ' + fmt(bonusTot/2) + ' − ' + fmt(delta) + ' = ' + fmt(closeBonus));
