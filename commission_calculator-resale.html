@@ -82,6 +82,10 @@ td.pct{color:#c9a961;font-weight:600;}
 .fbox{background:#242424;border-radius:6px;padding:12px 14px;font-family:monospace;font-size:12px;color:#8a8070;line-height:1.8;margin-bottom:10px;}
 .fbox .fr{color:#c9a961;border-top:1px solid #3a3a3a;margin-top:6px;padding-top:6px;display:block;}
 .wbox{background:rgba(201,169,97,0.08);border:1px solid rgba(201,169,97,0.25);border-radius:6px;padding:10px 14px;font-size:12px;color:#c9b87a;line-height:1.5;}
+.rblock.rb-comp{border-left-color:#7a9a6a;}
+.rtotal.tco{color:#9ab88a;}
+.pc-card{background:#2f2f2f;border:1px solid #3a3a3a;border-left:3px solid #6b9ed2;border-radius:8px;padding:18px 22px;margin-bottom:28px;}
+.pc-card p{margin-bottom:8px;}
 .empty{text-align:center;padding:40px 0;color:#8a8070;font-size:13px;}
 
 @media(max-width:680px){
@@ -155,6 +159,15 @@ td.pct{color:#c9a961;font-weight:600;}
     </div>
   </div>
 
+  <div class="sec-title">Покупатель — личный клиент закрывающего брокера (п. 3.3.5.5)</div>
+  <div class="pc-card">
+    <p>Если объект на перепродажу передал брокер Legion, а покупатель — <strong>личный клиент</strong> закрывающего брокера (привлечён без маркетинга и партнёрского отдела), правила перепродаж выше <strong>не применяются</strong>. Считается по логике личных клиентов (п. 3.3.3):</p>
+    <div class="fr"><span class="fl">Закрывающий</span><span class="fv">60% от фактической комиссии агентства</span></div>
+    <div class="fr"><span class="fl">Передающий</span><span class="fv">$500 (фикс) — если работает в компании на момент сделки</span></div>
+    <div class="fr"><span class="fl">Компания</span><span class="fv">40% − $500</span></div>
+    <div class="note"><strong>Пример</strong> (объект $155k, комиссия агентства 10% = $15 500):<br>Закрывающий → $9 300 &nbsp;|&nbsp; Передающий → $500 &nbsp;|&nbsp; Компания → $5 700</div>
+  </div>
+
   <div class="sec-title">Сводная таблица</div>
   <div class="sum-wrap">
     <table class="sum">
@@ -181,10 +194,35 @@ td.pct{color:#c9a961;font-weight:600;}
         <input type="number" id="c-price" placeholder="200000" min="0" step="10000" oninput="calc()">
       </div>
 
+      <div class="tog-row" style="border-top:none;margin-top:0;padding-top:0;">
+        <div>
+          <div class="tl">Покупатель — личный клиент закрывающего</div>
+          <div class="ts">Расчёт 60/40 от комиссии агентства (п. 3.3.5.5)</div>
+        </div>
+        <label class="tog">
+          <input type="checkbox" id="c-pc" onchange="togglePc()">
+          <span class="tog-sl"></span>
+        </label>
+      </div>
+
+      <div id="pc-fields" style="display:none;">
+      <div class="field">
+        <label>Фактическая комиссия агентства (%)</label>
+        <input type="number" id="c-agency" placeholder="10" min="0" max="100" step="0.5" oninput="calc()">
+        <div class="hint">Полная комиссия, которую получает компания по сделке</div>
+      </div>
+      <div class="field">
+        <label>Дью-дил и согласованные скидки ($)</label>
+        <input type="number" id="c-ded" placeholder="0" min="0" step="100" oninput="calc()">
+        <div class="hint">Вычитаются из комиссии агентства до распределения</div>
+      </div>
+      </div>
+
+      <div id="std-fields">
       <div class="field">
         <label>Грейд закрывающего брокера (%)</label>
         <input type="number" id="c-grade" placeholder="37" min="0" max="100" step="0.5" oninput="calc()">
-        <div class="hint">Стандартный диапазон: 30–50%</div>
+        <div class="hint">По стандарту: 15% (Junior), 27–37% (Middle/Senior)</div>
       </div>
 
       <div class="field">
@@ -195,6 +233,7 @@ td.pct{color:#c9a961;font-weight:600;}
           <button class="lvl-btn" data-v="8" onclick="setLvl(this)">8%<span class="lvl-sub">+1%</span></button>
           <button class="lvl-btn" data-v="9" onclick="setLvl(this)">9%<span class="lvl-sub">+2%</span></button>
         </div>
+      </div>
       </div>
 
       <div class="tog-row">
@@ -218,6 +257,7 @@ td.pct{color:#c9a961;font-weight:600;}
           <span class="dl">Комиссия</span><span class="dv" id="r-com">—</span>
           <span class="dl">Грейд</span><span class="dv" id="r-grade">—</span>
         </div>
+        <div id="r-std">
         <div class="rblock rb-close">
           <div class="blbl">Закрывающий брокер</div>
           <div class="rtotal tc" id="r-ctot">$0</div>
@@ -229,6 +269,25 @@ td.pct{color:#c9a961;font-weight:600;}
           <div class="rtotal tr" id="r-rtot">$0</div>
           <div class="bdrow"><span class="bdl">Выплата</span><span class="bdv" id="r-rbon">$0</span></div>
           <div class="bdrow" id="r-minrow" style="display:none;"><span class="bdl" style="color:#c9b87a;">Применён минимум $500</span><span class="bdv" id="r-delta" style="color:#c9b87a;">—</span></div>
+        </div>
+        </div>
+        <div id="r-pc" style="display:none;">
+          <div class="rblock rb-close">
+            <div class="blbl">Закрывающий брокер (личный клиент)</div>
+            <div class="rtotal tc" id="p-ctot">$0</div>
+            <div class="bdrow"><span class="bdl">60% от комиссии агентства</span><span class="bdv" id="p-cdet">—</span></div>
+          </div>
+          <div class="rblock rb-refer" id="p-refblock">
+            <div class="blbl">Передающий брокер</div>
+            <div class="rtotal tr" id="p-rtot">$0</div>
+            <div class="bdrow"><span class="bdl">Минимальное вознаграждение (фикс)</span><span class="bdv">$500</span></div>
+          </div>
+          <div class="rblock rb-comp">
+            <div class="blbl">Компания</div>
+            <div class="rtotal tco" id="p-comp">$0</div>
+            <div class="bdrow"><span class="bdl">40% от комиссии агентства</span><span class="bdv" id="p-c40">—</span></div>
+            <div class="bdrow" id="p-c500row"><span class="bdl">Выплата передающему</span><span class="bdv">−$500</span></div>
+          </div>
         </div>
         <div class="fbox" id="r-formula"></div>
         <div class="wbox" id="r-warn" style="display:none;"></div>
@@ -254,6 +313,67 @@ function setLvl(btn) {
   calc();
 }
 
+function togglePc() {
+  var on = document.getElementById('c-pc').checked;
+  document.getElementById('pc-fields').style.display = on ? 'block' : 'none';
+  document.getElementById('std-fields').style.display = on ? 'none' : 'block';
+  calc();
+}
+
+function calcPc(price, hasRef) {
+  var pct = parseFloat(document.getElementById('c-agency').value);
+  var ded = parseFloat(document.getElementById('c-ded').value) || 0;
+  if (!price || price <= 0 || !pct || pct <= 0 || pct > 100 || ded < 0) {
+    document.getElementById('r-empty').style.display = 'block';
+    document.getElementById('r-content').style.display = 'none';
+    return;
+  }
+  document.getElementById('r-empty').style.display = 'none';
+  document.getElementById('r-content').style.display = 'block';
+  document.getElementById('r-std').style.display = 'none';
+  document.getElementById('r-pc').style.display = 'block';
+
+  var gross = price * pct / 100;
+  var agency = Math.max(gross - ded, 0);
+  var close = agency * 0.6;
+  var comp40 = agency * 0.4;
+  var refPay = hasRef ? 500 : 0;
+  var comp = comp40 - refPay;
+
+  document.getElementById('r-price').textContent = fmt(price);
+  document.getElementById('r-com').textContent = pct + '% агентства';
+  document.getElementById('r-grade').textContent = 'личный клиент';
+  document.getElementById('p-ctot').textContent = fmt(close);
+  document.getElementById('p-cdet').textContent = fmt(agency) + ' × 60%';
+  document.getElementById('p-refblock').style.display = hasRef ? 'block' : 'none';
+  document.getElementById('p-rtot').textContent = fmt(refPay);
+  document.getElementById('p-comp').textContent = fmt(comp);
+  document.getElementById('p-c40').textContent = fmt(comp40);
+  document.getElementById('p-c500row').style.display = hasRef ? 'flex' : 'none';
+
+  var lines = [];
+  lines.push('Комиссия агентства = ' + fmt(price) + ' × ' + pct + '% = ' + fmt(gross));
+  if (ded > 0) lines.push('После вычетов = ' + fmt(gross) + ' − ' + fmt(ded) + ' = ' + fmt(agency));
+  lines.push('Закрывающий = ' + fmt(agency) + ' × 60% = ' + fmt(close));
+  if (hasRef) {
+    lines.push('Передающий = $500 (фикс, из доли компании)');
+    lines.push('Компания = ' + fmt(comp40) + ' − $500 = ' + fmt(comp));
+  } else {
+    lines.push('Компания = ' + fmt(agency) + ' × 40% = ' + fmt(comp));
+  }
+  var fhtml = lines.map(function(l){return '<div>'+l+'</div>';}).join('');
+  fhtml += '<span class="fr">Итого: закрывающий ' + fmt(close) + (hasRef ? ' | передающий $500' : '') + ' | компания ' + fmt(comp) + '</span>';
+  document.getElementById('r-formula').innerHTML = fhtml;
+
+  var wb = document.getElementById('r-warn');
+  if (hasRef) {
+    wb.style.display = 'block';
+    wb.textContent = '$500 выплачиваются передающему брокеру, только если он работает в компании на момент заключения сделки. Правила перепродаж (база по грейду + бонус) в этом случае не применяются.';
+  } else {
+    wb.style.display = 'none';
+  }
+}
+
 function fmt(n) {
   return '$' + Math.round(n).toLocaleString('en-US');
 }
@@ -263,6 +383,10 @@ function calc() {
   var grade = parseFloat(document.getElementById('c-grade').value) / 100;
   var hasRef = document.getElementById('c-ref').checked;
   var level = sel;
+
+  if (document.getElementById('c-pc').checked) { calcPc(price, hasRef); return; }
+  document.getElementById('r-std').style.display = 'block';
+  document.getElementById('r-pc').style.display = 'none';
 
   if (!price || !grade || !level || price <= 0 || grade <= 0 || grade > 1) {
     document.getElementById('r-empty').style.display = 'block';
