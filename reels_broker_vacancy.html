@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Рилс: вакансия брокера</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Raleway:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    color-scheme: dark;
+    --page:#111113; --bg:#1b1c1f; --card:#26272a; --line:#3a3a3d;
+    --head:#efdf8f; --gold:#c9a961; --text:#d9d6d0; --soft:#a9a6a0;
+    --ok:#7fbf95; --no:#e08a7a;
+    --serif:'Gilda Display', Georgia, serif;
+    --sans:Raleway, 'Helvetica Neue', Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{background:var(--page)}
+  body{margin:0; color:var(--text); font-family:var(--sans); font-size:16px; line-height:1.6; padding:24px 16px 64px}
+  .wrap{max-width:860px; margin:0 auto}
+  h1,h2,h3{font-family:var(--serif); font-weight:400; color:var(--head); line-height:1.15; margin:0}
+  h1{font-size:clamp(28px,5vw,40px)}
+  h2{font-size:clamp(22px,3.4vw,28px); margin-bottom:14px}
+  h3{font-size:19px; color:var(--text); font-family:var(--sans); font-weight:600}
+  p{margin:0 0 10px}
+  ul,ol{margin:0; padding-left:22px}
+  li{margin:4px 0}
+
+  header{display:flex; align-items:center; gap:16px; margin-bottom:8px}
+  header img{width:44px; height:auto; flex:none}
+  .sub{color:var(--soft); margin:6px 0 22px}
+
+  .tabs{position:sticky; top:0; z-index:5; background:var(--page); display:flex; gap:8px; padding:10px 0; margin-bottom:18px; border-bottom:1px solid var(--line)}
+  .tab{flex:1; font:600 16px var(--sans); color:var(--soft); background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:12px 10px; cursor:pointer}
+  .tab[aria-selected="true"]{color:#1b1a17; background:var(--gold); border-color:var(--gold)}
+  .tab small{display:block; font-weight:500; font-size:12px; opacity:.8}
+
+  .panel[hidden]{display:none}
+  section{background:var(--bg); border-radius:12px; padding:clamp(18px,4vw,28px); margin-bottom:16px}
+  .hint{color:var(--soft); font-size:14px}
+  .big{font-family:var(--serif); color:var(--head); font-size:clamp(22px,4vw,30px); line-height:1.25; margin:6px 0 4px}
+
+  .fill{display:inline-block; border:1px dashed var(--gold); color:var(--head); border-radius:6px; padding:0 6px; font-size:.92em; white-space:nowrap}
+
+  .steps{list-style:none; padding:0; counter-reset:s}
+  .steps li{counter-increment:s; position:relative; padding:12px 0 12px 46px; border-top:1px solid var(--line); margin:0}
+  .steps li:first-child{border-top:0}
+  .steps li::before{content:counter(s); position:absolute; left:0; top:12px; width:32px; height:32px; border-radius:50%; background:var(--card); color:var(--gold); font-weight:700; display:flex; align-items:center; justify-content:center}
+  .steps b{color:var(--head); font-weight:600}
+  .say{display:block; margin-top:4px; padding-left:12px; border-left:2px solid var(--gold); font-style:italic}
+
+  .picks{list-style:none; padding:0; display:grid; gap:8px}
+  .picks label{display:flex; gap:12px; align-items:flex-start; background:var(--card); border-radius:8px; padding:12px 14px; cursor:pointer}
+  .picks input{width:20px; height:20px; accent-color:var(--gold); margin-top:3px; flex:none}
+  .picks em{display:block; color:var(--soft); font-size:14px}
+
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  .box{background:var(--card); border-radius:8px; padding:14px 16px}
+  .box h3{margin-bottom:6px}
+  .yes h3{color:var(--ok)} .no h3{color:var(--no)}
+
+  .tl{display:grid; gap:8px}
+  .row{display:grid; grid-template-columns:72px 1fr 1fr; gap:12px; background:var(--card); border-radius:8px; padding:12px 14px; align-items:start}
+  .row .t{color:var(--gold); font-weight:700; font-size:14px}
+  .row .b{font-weight:600; color:var(--text)}
+  .row .acc{color:var(--head); font-weight:600}
+  .row .lbl{display:none; color:var(--soft); font-size:12px; text-transform:uppercase; letter-spacing:.04em}
+
+  .warn{background:#3a2a1c; border:1px solid #6b4a2a; border-radius:8px; padding:12px 14px}
+
+  .copy{position:relative; background:var(--card); border-radius:8px; padding:16px; white-space:pre-wrap}
+  .copybtn{margin-top:10px; font:600 14px var(--sans); background:transparent; color:var(--gold); border:1px solid var(--gold); border-radius:8px; padding:8px 14px; cursor:pointer}
+  .copybtn:active{transform:translateY(1px)}
+
+  .todo{border:1px dashed var(--gold)}
+  .todo li{color:var(--text)}
+
+  @media (max-width:640px){
+    .two{grid-template-columns:1fr}
+    .row{grid-template-columns:1fr; gap:4px}
+    .row .lbl{display:block; margin-top:6px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img alt="Legion" src="data:image/png;base64,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">
+    <h1>Рилс: вакансия брокера</h1>
+  </header>
+  <p class="sub">Брокер идёт по улочке на Бали и рассказывает свою историю. Reels 40–45 секунд, с субтитрами и перебивками. Снимает сам брокер, монтирует и публикует SMM.</p>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="t-broker" aria-controls="broker">Брокеру<small>что говорить и как снимать</small></button>
+    <button class="tab" role="tab" id="t-smm" aria-controls="smm">SMM<small>монтаж и публикация</small></button>
+  </div>
+
+  <!-- ===================== БРОКЕР ===================== -->
+  <div class="panel" id="broker" role="tabpanel" aria-labelledby="t-broker">
+
+    <section>
+      <h2>Что снимаем</h2>
+      <p>Короткий ролик для Instagram. Ты идёшь по красивой улочке и рассказываешь, как пришёл в Legion и что получилось. Задача ролика — привести к нам сильных брокеров.</p>
+      <p>Снимаешь ты сам, на телефон. Монтаж, субтитры и публикацию делает SMM, от тебя нужны только исходники.</p>
+      <p class="big">Ничего не учи наизусть</p>
+      <p>Говори своими словами, как другу. Снимаем кусками по 1–2 фразы, всё склеим на монтаже. Ошибся — просто начни фразу заново.</p>
+    </section>
+
+    <section>
+      <h2>О чём говорить, по порядку</h2>
+      <ol class="steps">
+        <li><b>Крючок.</b> Смотришь прямо в камеру.
+          <span class="say">«Мне дали 20 лидов. Из них вышли две сделки. За три месяца».</span></li>
+        <li><b>Как было раньше.</b> Работал на себя, всё было на тебе: клиенты, застройщики, и совета спросить не у кого.</li>
+        <li><b>Как стало в Legion.</b> Лиды даёт компания. Условия от застройщиков, каких нет у других. Компания давно на рынке Бали. Команда всегда поможет советом.</li>
+        <li><b>Что тебе нравится.</b> 1–2 пункта из списка ниже, только то, что правда про тебя.</li>
+        <li><b>Кого ищем.</b> Брокеров с опытом продаж на большой чек, лучше в инвестициях, с подтверждёнными сделками. Языки: польский, плюс русский, украинский или английский.</li>
+        <li><b>Условия.</b> Ставки нет, процент от комиссии, потолка нет. Начать можно удалённо, а если уже на Бали — отлично.</li>
+        <li><b>Призыв.</b>
+          <span class="say">«Пиши <span class="fill">кодовое слово</span> в <span class="fill">куда писать</span>, расскажу подробнее».</span></li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Что тебе нравится в Legion</h2>
+      <p class="hint">Отметь 1–2 пункта, которые правда про тебя, и скажи их своими словами.</p>
+      <ul class="picks">
+        <li><label><input type="checkbox"><span>Лиды приходят уже прогретые<em>«С клиентом сначала поговорил квалификатор, мне передают того, кто реально интересуется»</em></span></label></li>
+        <li><label><input type="checkbox"><span>Разбирают мои звонки<em>«Подсказывают, где можно было дожать. Раньше учился только на своих ошибках»</em></span></label></li>
+        <li><label><input type="checkbox"><span>Турнирная таблица<em>«Видно, кто сколько закрыл, и это подстёгивает»</em></span></label></li>
+        <li><label><input type="checkbox"><span>Квизы по объектам<em>«Клиенту отвечаю уверенно, а не "уточню и перезвоню"»</em></span></label></li>
+        <li><label><input type="checkbox"><span>Всё в одной CRM<em>«Все клиенты и задачи в одной системе, ничего не теряется»</em></span></label></li>
+        <li><label><input type="checkbox"><span>Не трачу свои деньги на рекламу<em>«Раньше сам платил за рекламу и гадал, будут ли клиенты»</em></span></label></li>
+        <li><label><input type="checkbox"><span>Занимаюсь только продажами<em>«Делаю то, что умею лучше всего, остальное берёт на себя компания»</em></span></label></li>
+        <li><label><input type="checkbox"><span>Команда помогает, а не конкурирует</span></label></li>
+        <li><label><input type="checkbox"><span>Свой вариант</span></label></li>
+      </ul>
+      <p class="hint" style="margin-top:14px">Пример, как может звучать этот блок:</p>
+      <p class="say">«Раньше я сам платил за рекламу и гадал, будут ли клиенты. А здесь лиды уже прогретые. И мои звонки разбирают, подсказывают, где можно было дожать. Когда работаешь один, такого нет».</p>
+    </section>
+
+    <section>
+      <h2>Можно и нельзя</h2>
+      <div class="two">
+        <div class="box yes">
+          <h3>✓ Можно</h3>
+          <ul>
+            <li>говорить своими словами</li>
+            <li>переснимать фразу сколько угодно</li>
+            <li>улыбаться и жестикулировать</li>
+          </ul>
+        </div>
+        <div class="box no">
+          <h3>✕ Нельзя</h3>
+          <ul>
+            <li>имена клиентов</li>
+            <li>суммы сделок и комиссий</li>
+            <li>названия конкурентов</li>
+            <li>обещания дохода («заработаешь $X»)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Как подготовиться</h2>
+      <ul>
+        <li><b>Одежда:</b> однотонная, светлая или спокойных цветов, без крупных логотипов. Образ «деловой Бали»: рубашка или поло.</li>
+        <li><b>Время:</b> утро до 9:00 или за час до заката. В полдень будешь щуриться.</li>
+        <li><b>Перед съёмкой</b> проговори всё вслух 2–3 раза.</li>
+        <li><b>Иди спокойно</b>, не торопись, улыбайся.</li>
+      </ul>
+      <p class="hint" style="margin-top:10px">Съёмка займёт около часа вместе с кадрами в офисе.</p>
+    </section>
+
+    <section>
+      <h2>Как снимать себя на ходу</h2>
+      <ul>
+        <li><b>Телефон вертикально</b>, в настройках камеры 4K или 1080p, 30 кадров в секунду.</li>
+        <li><b>Камера:</b> лучше основная (задняя), она снимает заметно качественнее фронтальной. Если нужно видеть себя, подойдёт и фронтальная.</li>
+        <li><b>Держи телефон</b> на вытянутой руке или на селфи-палке, чуть выше уровня глаз. Если есть стабилизатор с отслеживанием лица — идеально.</li>
+        <li><b>Микрофон обязательно:</b> беспроводная петличка, подключённая к телефону. Без неё на улице будут слышны ветер и мопеды. Если петлички нет, снимай на тихой улочке без ветра.</li>
+        <li><b>Солнце</b> должно светить тебе в лицо или сбоку, не в спину.</li>
+        <li><b>Протри объектив</b> перед съёмкой.</li>
+        <li>Снимай <b>по одному блоку</b> из списка «О чём говорить», каждый 2–3 раза. Перед каждым дублем выдержи паузу 1–2 секунды, потом начинай говорить.</li>
+        <li>Сразу пересмотри первый дубль: слышно ли голос, видно ли лицо.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Перебивки: тоже снимаешь ты</h2>
+      <p class="hint">Короткие кадры по 5–10 секунд, без звука и без слов. Снимай вертикально.</p>
+      <ul class="picks">
+        <li><label><input type="checkbox"><span>Ты один за ноутбуком, вечер<em>Для фразы «раньше всё было на мне»</em></span></label></li>
+        <li><label><input type="checkbox"><span>Телефон в руке, переписка или уведомления<em>Для фразы про лиды</em></span></label></li>
+        <li><label><input type="checkbox"><span>Виллы, стройка, показ объекта<em>Для фразы про застройщиков</em></span></label></li>
+        <li><label><input type="checkbox"><span>Офис, коллеги, разговор, рукопожатие<em>Для фразы про команду</em></span></label></li>
+        <li><label><input type="checkbox"><span>Закат, океан, вид с виллы<em>Для фразы «без потолка»</em></span></label></li>
+      </ul>
+      <p class="warn" style="margin-top:14px">⚠️ <b>Конфиденциальность.</b> На экранах телефона и ноутбука не должно быть имён, номеров и переписки с реальными клиентами, CRM тоже не снимаем. Используй пустой экран или тестовый чат. Коллег снимай только с их согласия.</p>
+    </section>
+
+    <section>
+      <h2>Как передать видео</h2>
+      <ul>
+        <li>Загрузи все дубли и перебивки в общую папку <span class="fill">ссылка на папку</span>.</li>
+        <li><b>Не отправляй видео в Telegram как видео</b>: он сжимает качество. Если всё-таки через Telegram, то «Отправить как файл».</li>
+        <li>Плохие дубли можно не удалять, SMM выберет лучшие.</li>
+        <li>Напиши SMM, какие пункты ты выбрал в «Что тебе нравится».</li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- ===================== SMM ===================== -->
+  <div class="panel" id="smm" role="tabpanel" aria-labelledby="t-smm" hidden>
+
+    <section>
+      <h2>Задача ролика</h2>
+      <p>Найм брокеров на Бали.</p>
+      <p class="big">Главная метрика — сообщения с кодовым словом</p>
+      <p>Не просмотры. Считаем, сколько людей написали <span class="fill">кодовое слово</span> в <span class="fill">куда писать</span>.</p>
+    </section>
+
+    <section>
+      <h2>Формат и исходники</h2>
+      <ul>
+        <li>Reels, вертикально 9:16, 40–45 секунд.</li>
+        <li>Брокер идёт по живописной улочке и рассказывает историю на камеру. Субтитры по всей речи, на ключевых фразах короткие перебивки.</li>
+        <li><b>Снимает сам брокер</b> на телефон, селфи на ходу. Инструкция по съёмке у него во вкладке «Брокеру».</li>
+        <li>Брокер загрузит дубли и перебивки в папку <span class="fill">ссылка на папку</span> и напишет, какие пункты выбрал в «Что нравится».</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Когда пришли исходники</h2>
+      <p class="hint">Проверьте сразу, пока брокер может доснять.</p>
+      <ul>
+        <li>Голос слышно чётко, без ветра и гула.</li>
+        <li>Лицо в кадре, не пересвечено, не в тени.</li>
+        <li>Есть все 7 блоков рассказа.</li>
+        <li>Есть все 5 перебивок.</li>
+        <li>На экранах нет имён, номеров, переписки с клиентами и CRM.</li>
+      </ul>
+      <p style="margin-top:10px">Если чего-то не хватает, сразу напишите брокеру, что доснять.</p>
+    </section>
+
+    <section>
+      <h2>Монтажная схема</h2>
+      <div class="tl">
+        <div class="row"><div class="t">0–3 с</div><div><div class="b">Крючок</div>Брокер идёт навстречу, смотрит в камеру</div><div><div class="lbl">На экране</div><div class="acc">20 лидов → 2 сделки → 3 месяца</div></div></div>
+        <div class="row"><div class="t">3–10 с</div><div><div class="b">Раньше</div>Идёт, жестикулирует. На «не у кого спросить» перебивка: человек один за ноутбуком</div><div><div class="lbl">На экране</div>—</div></div>
+        <div class="row"><div class="t">10–14 с</div><div><div class="b">Лиды</div>Перебивка: телефон с перепиской</div><div><div class="lbl">На экране</div><div class="acc">лиды от компании</div></div></div>
+        <div class="row"><div class="t">14–18 с</div><div><div class="b">Застройщики</div>Перебивка: виллы, стройка, показ</div><div><div class="lbl">На экране</div><div class="acc">эксклюзивные условия</div></div></div>
+        <div class="row"><div class="t">18–23 с</div><div><div class="b">Команда</div>Перебивка: офис, коллеги</div><div><div class="lbl">На экране</div><div class="acc">опытная команда</div></div></div>
+        <div class="row"><div class="t">23–29 с</div><div><div class="b">Что нравится</div>Улочка, брокер улыбается</div><div><div class="lbl">На экране</div>по ответу брокера</div></div>
+        <div class="row"><div class="t">29–36 с</div><div><div class="b">Кого ищем</div>Оборачивается к камере</div><div><div class="lbl">На экране</div><div class="acc">Бали · большие чеки · PL + RU / UA / EN</div></div></div>
+        <div class="row"><div class="t">36–40 с</div><div><div class="b">Условия</div>Перебивка: закат, океан</div><div><div class="lbl">На экране</div><div class="acc">без потолка</div></div></div>
+        <div class="row"><div class="t">40–45 с</div><div><div class="b">Призыв</div>Останавливается, смотрит в камеру</div><div><div class="lbl">На экране</div><div class="acc">Пиши «<span class="fill">слово</span>» в <span class="fill">куда</span></div></div></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Перебивки от брокера</h2>
+      <ol>
+        <li>Брокер один за ноутбуком, вечер</li>
+        <li>Телефон с перепиской или уведомлениями</li>
+        <li>Виллы, стройка, показ объекта</li>
+        <li>Офис, команда, разговор, рукопожатие</li>
+        <li>Закат, океан, вид с виллы</li>
+      </ol>
+      <p class="warn" style="margin-top:14px">⚠️ <b>Конфиденциальность.</b> Если на экране телефона или ноутбука видны имена, номера, переписка с клиентами или CRM, такой кадр не используем или замазываем полностью.</p>
+    </section>
+
+    <section>
+      <h2>Субтитры, звук, обложка</h2>
+      <ul>
+        <li><b>Субтитры</b> по всей речи, 2–4 слова на экране, крупно, в нижней трети кадра, не перекрывают лицо.</li>
+        <li>Ключевые слова выделить цветом бренда: <i>20 лидов, 2 сделки, без потолка, большие чеки</i>.</li>
+        <li>Автосубтитры в CapCut, потом <b>обязательно</b> вычитать вручную.</li>
+        <li><b>Звук:</b> голос брокера главный. Фоновая музыка без слов, примерно на 15–20% громкости.</li>
+        <li><b>Обложка:</b> кадр с брокером и крупный текст «20 лидов → 2 сделки».</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Текст под постом</h2>
+      <div class="copy" id="caption">20 лидов → 2 сделки за 3 месяца 🌴
+Legion Real Estate ищет брокеров на Бали.
+
+✅ лиды от компании
+✅ эксклюзивные условия от застройщиков
+✅ процент от комиссии без потолка
+✅ можно начать удалённо
+
+Ищем тех, кто продаёт на большой чек и может подтвердить сделки. Языки: польский + русский / украинский / английский.
+
+Пиши «[СЛОВО]» в [КУДА] 👇
+
+#вакансиябали #брокербали #недвижимостьбали #работанабали #работаброкером #balirealestate #legionrealestate</div>
+      <button class="copybtn" data-copy="caption">Скопировать текст</button>
+    </section>
+
+    <section>
+      <h2>Версии и отчёт</h2>
+      <ul>
+        <li><b>Основная:</b> на русском, с русскими субтитрами.</li>
+        <li><b>Польская:</b> тот же ролик с польскими субтитрами и текстом под постом. <span class="fill">уточнить, нужна ли</span></li>
+        <li>После публикации закрепить ролик в профиле.</li>
+        <li>Через 3 и через 7 дней отчитаться: просмотры, досмотры до конца, сохранения и <b>сколько людей написали кодовое слово</b>.</li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="todo">
+    <h2>Осталось заполнить</h2>
+    <ul>
+      <li>Кодовое слово</li>
+      <li>Куда писать: директ, Telegram или WhatsApp</li>
+      <li>Что брокер выбрал из списка «Что нравится»</li>
+      <li>Ссылка на общую папку для видео</li>
+      <li>Нужна ли польская версия</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  function show(id){
+    tabs.forEach(t => {
+      const on = t.getAttribute('aria-controls') === id;
+      t.setAttribute('aria-selected', on);
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+  }
+  tabs.forEach(t => t.addEventListener('click', () => {
+    const id = t.getAttribute('aria-controls');
+    show(id);
+    history.replaceState(null, '', '#' + id);
+  }));
+  show(location.hash === '#smm' ? 'smm' : 'broker');
+
+  document.querySelectorAll('.copybtn').forEach(b => b.addEventListener('click', async () => {
+    const text = document.getElementById(b.dataset.copy).innerText;
+    try { await navigator.clipboard.writeText(text); b.textContent = 'Скопировано ✓'; }
+    catch(e){ b.textContent = 'Не получилось, выделите вручную'; }
+    setTimeout(() => b.textContent = 'Скопировать текст', 2000);
+  }));
+</script>
+</body>
+</html>
