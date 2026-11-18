@@ -119,9 +119,23 @@ footer{padding-block:32px;color:var(--muted);font-size:13px}
 .tg:hover{filter:brightness(1.08)}
 
 @media (max-width:640px){
-  .req,.send{grid-template-columns:1fr}
-  .hero .wrap{padding-block:40px 36px}
-  section{padding-block:44px}
+  body{font-size:15px;line-height:1.55}
+  .req,.send{grid-template-columns:1fr;gap:20px}
+  .hero .wrap{padding-block:28px;gap:18px}
+  .hero .lead{font-size:16px}
+  .brand img{height:36px}
+  section{padding-block:32px}
+  .head{margin-bottom:18px;gap:6px}
+  .duties{gap:18px}
+  .duty h3::before{margin-bottom:8px}
+  .offer{gap:10px}
+  .offer div{padding:14px 16px}
+  .steps li{grid-template-columns:28px 1fr;gap:10px;padding-block:12px}
+  .parts{gap:10px}
+  .part{padding:16px;gap:8px}
+  .task-bar{margin-bottom:14px}
+  .send{margin-top:16px}
+  .tg{width:100%;justify-content:center}
 }
 @media (prefers-reduced-motion:no-preference){
   .reel div:first-child{animation:pulse 2.4s ease-in-out infinite}
