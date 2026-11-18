@@ -141,9 +141,23 @@ footer{padding-block:32px;color:var(--muted);font-size:13px}
   .reel div:first-child{animation:pulse 2.4s ease-in-out infinite}
   @keyframes pulse{50%{opacity:.55}}
 }
+
+/* Scroll: stories-style progress bar + reveal */
+html{scroll-behavior:smooth}
+.sbar{position:fixed;left:0;right:0;top:0;z-index:50;display:flex;gap:3px;padding:calc(env(safe-area-inset-top,0px) + 6px) max(8px,env(safe-area-inset-right,0px)) 0 max(8px,env(safe-area-inset-left,0px));pointer-events:none}
+.sbar i{flex:1;height:3px;border-radius:2px;background:rgba(127,140,137,.35);overflow:hidden;display:block}
+.sbar b{display:block;height:100%;width:100%;background:var(--sand);transform-origin:left;transform:scaleX(0)}
+.js .rv{opacity:0;transform:translateY(22px) scale(.98);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0s)}
+.js .rv.in{opacity:1;transform:none}
+.steps .n{transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
+.js .steps li.rv:not(.in) .n{transform:scale(.4)}
+.duty h3::before{transition:width .7s cubic-bezier(.2,.7,.2,1) .15s}
+.js .duty.rv:not(.in) h3::before{width:0}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.js .rv{opacity:1;transform:none;transition:none}.js .steps li.rv .n{transform:none}.js .duty.rv h3::before{width:24px}}
 </style>
 </head>
 <body>
+<div class="sbar" id="sbar" aria-hidden="true"></div>
 
 <header class="hero">
   <div class="wrap">
@@ -342,6 +356,34 @@ footer{padding-block:32px;color:var(--muted);font-size:13px}
       var s=window.getSelection();s.removeAllRanges();s.addRange(r);done('Текст выделен, нажмите Ctrl+C');
     }
   });
+})();
+</script>
+<script>
+(function(){
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var parts=[].slice.call(document.querySelectorAll('header.hero, main section'));
+  var bar=document.getElementById('sbar'), fills=[];
+  parts.forEach(function(){var i=document.createElement('i'),b=document.createElement('b');i.appendChild(b);bar.appendChild(i);fills.push(b)});
+  var ticking=false;
+  function upd(){
+    ticking=false;
+    var vh=innerHeight, mid=scrollY+vh*0.6, end=document.documentElement.scrollHeight-vh;
+    parts.forEach(function(el,k){
+      var top=el.offsetTop, h=el.offsetHeight, f=(mid-top)/h;
+      if(scrollY>=end-2) f=1;
+      fills[k].style.transform='scaleX('+Math.max(0,Math.min(1,f))+')';
+    });
+  }
+  addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(upd)}},{passive:true});
+  addEventListener('resize',upd); upd();
+  if(reduce||!('IntersectionObserver' in window))return;
+  document.documentElement.classList.add('js');
+  var groups=['main .head','.duty','.req > div','.offer > div','.steps li','.task-bar','.part','.send > div'];
+  var items=[];
+  groups.forEach(function(sel){[].slice.call(document.querySelectorAll(sel)).forEach(function(el,i){el.classList.add('rv');el.style.setProperty('--d',(Math.min(i,4)*0.08)+'s');items.push(el)})});
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{rootMargin:'0px 0px -8% 0px',threshold:0.12});
+  items.forEach(function(el){io.observe(el)});
+  setTimeout(function(){items.forEach(function(el){if(el.getBoundingClientRect().top<innerHeight)el.classList.add('in')})},50);
 })();
 </script>
 </body>
